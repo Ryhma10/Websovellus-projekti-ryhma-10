@@ -3,10 +3,15 @@ import './App.css'
 import { getTheatresFromFinnkino } from '../components/api'
 
 function App() {
-  const [areas, setAreas] = useState([])
+  const [areas, setAreas] = useState([]);
+
   useEffect(() => {
-    const areas = getTheatresFromFinnkino()
-    setAreas(areas)
+    const fetchAreas = async () => {
+      const areasData = await getTheatresFromFinnkino(); // wait for the async function
+      setAreas(areasData); // now set the real array
+    };
+
+    fetchAreas();
   }, [])
 
   return (
