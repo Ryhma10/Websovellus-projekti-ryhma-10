@@ -1,31 +1,19 @@
-import { useState, useEffect } from 'react'
 import './App.css'
-import { getTheatresFromFinnkino } from '../components/api'
+import { Routes, Route } from 'react-router-dom'
+import NavBar from '../components/navBar'
+import Movies from "./Movies"
+import Home from './Home';
 
 function App() {
-  const [areas, setAreas] = useState([]);
-
-  useEffect(() => {
-    const fetchAreas = async () => {
-      const areasData = await getTheatresFromFinnkino(); // wait for the async function
-      setAreas(areasData); // now set the real array
-    };
-
-    fetchAreas();
-  }, [])
 
   return (
     <>
-      <h1>APP</h1>
-          <p>This is Finnkino data</p>
       <div>
-        <select>
-          {
-            areas.map(area => (
-              <option key={area.id} value={area.id}>{area.area}</option>
-            ))
-          }
-        </select>
+        <NavBar />
+        <Routes>
+            <Route path="/" element={<Home />}></Route>
+            <Route path="/movies" element={<Movies />}></Route>
+        </Routes>
       </div>
     </>
   )
