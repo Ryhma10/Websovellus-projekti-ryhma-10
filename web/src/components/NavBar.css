@@ -1,0 +1,8 @@
+.nav {
+    height: 4em;
+    background-color: rgb(59, 59, 59);
+}
+
+.nav a {
+    margin: 1em;
+}
