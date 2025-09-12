@@ -13,6 +13,25 @@ const getTheatresFromFinnkino = async () => {
     return tempTheaters; // still a Promise
 };
 
+const getDatesFromFinnkino = async () => {
+    const url = 'https://www.finnkino.fi/xml/Schedule/';
+    const apiData = await getFinnkinoApiData(url);
+    const tempDates = [];
+    const shows = apiData[0].children;
+    for (let i = 0; i < shows.length; i++) {
+            const s = shows[i];
+            tempDates.push({
+                title: s.getElementsByTagName('Title')[0]?.textContent,
+                start: s.getElementsByTagName('dttmShowStart')[0]?.textContent,
+                eventID: s.getElementsByTagName('EventID')[0]?.textContent
+            });
+            console.log(shows.length)
+            console.log(s.getElementsByTagName('Title')[0]?.textContent)
+    }
+    console.log(tempDates);
+    return tempDates;
+}
+
 const getFinnkinoApiData = async (url) => {
     try {
         const response = await fetch(url);
@@ -63,7 +82,7 @@ const getMoviesFromTmdb = async () => {
      --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkMmE3MmUwNmVhY2Y0YjE2MjM5NjAyYjAxMGZmMzVlNiIsIm5iZiI6MTc1NzQxMjYwMS4yMzEsInN1YiI6IjY4YmZmY2Y5NDIzMmZiZmNkNzRlNjUyMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ._NLY9FA8xhchoIcTLhMG2RFNFWrx4K8lbVJ5q7tQEjg' \
      --header 'accept: application/json'*/
 
-export { getTheatresFromFinnkino, getMoviesFromTmdb }
+export { getTheatresFromFinnkino, getMoviesFromTmdb, getDatesFromFinnkino }
 
 // import { useState, useEffect } from 'react'
 // import './App.css'

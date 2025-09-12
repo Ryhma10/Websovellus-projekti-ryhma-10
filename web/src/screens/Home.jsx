@@ -1,40 +1,28 @@
 import { useState, useEffect } from 'react';
 import { getMoviesFromTmdb, getTheatresFromFinnkino } from '../components/api';
+import './Home.css';
 
 export default function Home() {
-  const [areas, setAreas] = useState([]);
   const [movies, setMovies] = useState([]);
   const [pageCount, setPageCount] = useState(0);
 
   useEffect(() => {
-    const fetchAreas = async () => {
-      const areasData = await getTheatresFromFinnkino();
-      setAreas(areasData);
-    };
-
     const fetchMovies = async () => {
       const movieData = await getMoviesFromTmdb();
       setMovies(movieData.results);
-      setPageCount(movieData.total_pages);
     };
 
-    fetchAreas();
     fetchMovies();
   }, []);
 
   return (
     <>
-      <h1>APP</h1>
-      <p>This is Finnkino data</p>
+    <header>
+      <h1>Mad Moose Movies</h1>
+    </header>
 
-      <div>
-        <select>
-          {areas.map(area => (
-            <option key={area.id} value={area.id}>{area.area}</option>
-          ))}
-        </select>
-
-        <table>
+      <div className="movie-table-container">
+        <table className="movie-table">
           <thead>
             <tr><th>Title</th></tr>
           </thead>
