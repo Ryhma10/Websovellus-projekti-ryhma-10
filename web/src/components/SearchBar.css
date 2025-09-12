@@ -1,0 +1,15 @@
+body {
+    color: black;
+}
+
+.searchbar {
+    display: flex;
+    flex-direction: row;
+    gap: 2em;
+    position: relative;
+    margin-top: 10vh;
+}
+
+.theatres-dropdown {
+    padding: 0;
+}
