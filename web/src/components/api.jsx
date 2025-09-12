@@ -17,20 +17,20 @@ const getDatesFromFinnkino = async () => {
     const url = 'https://www.finnkino.fi/xml/Schedule/';
     const apiData = await getFinnkinoApiData(url);
     const tempDates = [];
-    const shows = apiData[0].children;
+    const shows = apiData[0].getElementsByTagName('Show'); // haetaan suoraan kaikki Show-nodet
     for (let i = 0; i < shows.length; i++) {
-            const s = shows[i];
-            tempDates.push({
-                title: s.getElementsByTagName('Title')[0]?.textContent,
-                start: s.getElementsByTagName('dttmShowStart')[0]?.textContent,
-                eventID: s.getElementsByTagName('EventID')[0]?.textContent
-            });
-            console.log(shows.length)
-            console.log(s.getElementsByTagName('Title')[0]?.textContent)
+        const s = shows[i];
+        tempDates.push({
+            title: s.getElementsByTagName('Title')[0]?.textContent,
+            start: s.getElementsByTagName('dttmShowStart')[0]?.textContent,
+            theatre: s.getElementsByTagName('Theatre')[0]?.textContent,
+            eventID: s.getElementsByTagName('EventID')[0]?.textContent
+        });
     }
-    console.log(tempDates);
     return tempDates;
 }
+
+
 
 const getFinnkinoApiData = async (url) => {
     try {
