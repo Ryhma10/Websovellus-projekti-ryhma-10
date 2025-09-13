@@ -3,8 +3,6 @@ body {
 }
 
 .searchbar {
-    display: flex;
-    flex-direction: row;
     gap: 2em;
     position: relative;
     margin-top: 10vh;
@@ -12,4 +10,15 @@ body {
 
 .theatres-dropdown {
     padding: 0;
+}
+
+.search {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+}
+
+.results {
+    display: flex;
+    flex-direction: column;
 }
