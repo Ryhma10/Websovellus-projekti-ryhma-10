@@ -25,3 +25,6 @@ dist-ssr
 
 #env
 .env
+
+# Ignore package.json
+package.json

@@ -17,10 +17,7 @@ export default function Home() {
 
   return (
     <>
-    <header>
-      <h1>Mad Moose Movies</h1>
-    </header>
-
+    
       <div className="movie-table-container">
         <table className="movie-table">
           <thead>

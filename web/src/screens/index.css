@@ -2,11 +2,14 @@
   --background-color: #0A0A0A;
   --accent-color: #78FFB5;
   --text-color: #FAF9F6;
-  --font-family: 'Arial', sans-serif;
+  --font-family: 'Inter';
 }
 
 
 body {
   display: flex;
   flex-direction: row;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: var(--font-family);
 }

@@ -56,8 +56,6 @@ export default function SearchBar() {
 
   return (
     <div className="searchbar">
-      <h1>This is search bar</h1>
-
       {/* Teatterin valinta */}
       <select className="theatres-dropdown">
         <option value="">Valitse teatteri</option>
@@ -79,7 +77,7 @@ export default function SearchBar() {
       </select>
 
       {/* Elokuvan haku inputilla */}
-      <input
+      <input 
         type="text"
         placeholder="Hae elokuvaa..."
         value={movieQuery}
