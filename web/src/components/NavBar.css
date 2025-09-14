@@ -11,9 +11,12 @@
 }
 
 .nav ul {
-    margin-left: 3em;
-    margin-top: 2.5em;
+    display: flex;
+    align-items: center;
     list-style-type: none;
+    width: 100%;
+    padding: 0;
+    margin: 0;
 }
 
 .nav a {
@@ -30,9 +33,30 @@
 
 
 .logo {
-    position: absolute;
+    position: static;
     left: 10px;
     top: 20px;
     width: 80px;
     height: auto;
+}
+.nav .profile-link {
+    margin-left: auto;
+    margin-right: 40px;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  padding: 2em;
+  border-radius: 10px;
+  min-width: 300px;
 }
