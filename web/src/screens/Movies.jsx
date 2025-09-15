@@ -19,16 +19,10 @@ function Movies() {
       } else {
         setPageCount(page);
       }
-      const movieMatches = (movieData.results || movieData).filter(movie => 
-        movie.title && movie.title.toLowerCase().includes(movieQuery.toLowerCase())
-      );
-      setExternalMovies(movieMatches);
-      setPageCount(movieData.total_pages);
     };
     fetchMovies();
     console.log(page);
     console.log(movieQuery);
-    console.log(externalMovies);
   }, [page, movieQuery]);
 
   return (
