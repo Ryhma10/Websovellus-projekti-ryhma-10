@@ -56,6 +56,9 @@ export default function SearchBar() {
 
   return (
     <div className="searchbar">
+
+      <div className="search">
+
       {/* Teatterin valinta */}
       <select className="theatres-dropdown">
         <option value="">Valitse teatteri</option>
@@ -84,7 +87,8 @@ export default function SearchBar() {
         onChange={(e) => setMovieQuery(e.target.value)}
         className="movie-search"
       />
-
+      </div>
+      <div className="results">
       {/* Finnkino-elokuvat */}
       {filteredMovies.length > 0 && (
         <ul className="movie-results">
@@ -106,6 +110,7 @@ export default function SearchBar() {
           ))}
         </ul>
       )}
+      </div>
     </div>
   );
 }

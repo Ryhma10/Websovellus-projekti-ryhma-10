@@ -3,8 +3,6 @@ body {
 }
 
 .searchbar {
-    display: flex;
-    flex-direction: row;
     gap: 2em;
     position: relative;
     margin-top: 15vh;
@@ -34,4 +32,15 @@ body {
 .movie-results {
     list-style: none;
     color: var(--text-color);
+}
+
+.search {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+}
+
+.results {
+    display: flex;
+    flex-direction: column;
 }
