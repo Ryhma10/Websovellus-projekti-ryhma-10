@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import "./NavBar.css"
-import logo from "../assets/MadMooseMoviesLogoImage.png"
+import logo from "../assets/MadMooseMoviesLogo2.png"
+import tempLogo from "../assets/MadMooseMoviesLogo.png"
 import CreateAccountModal from "../screens/CreateAccountModal";
 import React from "react";
 
@@ -10,6 +11,8 @@ function NavBar() {
 
     return (
         <>
+        <img src={tempLogo} alt="Temporary Logo" className="temp-logo"/>
+        
         <nav className="nav">
             <ul>
             <li><img src={logo} alt="Mad Moose Movies Logo" className="logo" /></li>

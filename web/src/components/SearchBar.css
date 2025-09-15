@@ -5,13 +5,34 @@ body {
 .searchbar {
     gap: 2em;
     position: relative;
-    margin-top: 10vh;
+    margin-top: 15vh;
 }
 
-.theatres-dropdown {
-    padding: 0;
+.theatres-dropdown, .times-dropdown, .movie-search{
+    background-color: rgb(30,30,30);
+    color: var(--text-color);
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    outline: none;
+    font-size: 1em;
+    font-family: var(--font-family);
 }
 
+.theatres-dropdown:focus, .times-dropdown:focus, .movie-search:focus {
+    border-color: var(--accent-color);
+    outline: none;
+    transition: border-color 0.5s ease;
+}
+
+.movie-search::placeholder {
+    color: var(--text-color);
+}
+
+.movie-results {
+    list-style: none;
+    color: var(--text-color);
+}
 
 .search {
     display: flex;
