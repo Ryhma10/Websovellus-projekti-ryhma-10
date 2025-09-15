@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getMoviesFromTmdb } from "../components/api";
 import ReactPaginate from "react-paginate";
+import placeholder from '../assets/placeholder.png';
 import "./Movies.css";
 
 function Movies() {
@@ -45,13 +46,15 @@ function Movies() {
       <div className="movie-table-container">
         <ul className="movie-results">
           {externalMovies.map(movie => (
-            <li key={movie.id}>
-              {movie.poster_path && (
-                <img className="movie-poster"
-                  src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
-                  alt={movie.title}
-                />
-              )}
+            <li className="movie-item" key={movie.id}>
+            {!movie.poster_path ? (
+              <img src={placeholder} alt="Placeholder" className="placeholder-image" />
+            ) : (
+              <img className="movie-poster"
+                src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
+                alt={movie.title}
+              />
+            )}
               <div className="movie-info">
               {movie.title} <br />
               {/* {movie.release_date} <br />
