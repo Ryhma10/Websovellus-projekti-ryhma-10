@@ -17,7 +17,7 @@ function NavBar() {
             <ul>
             <li><img src={logo} alt="Mad Moose Movies Logo" className="logo" /></li>
             <li><Link to="/">Home</Link></li>
-            <li><Link to="/movies">Movies</Link></li>
+            <li><Link to="/movies"> All Movies</Link></li>
             <li><Link to="/groups">Groups</Link></li>
             <li><Link to="/reviews">Reviews</Link></li>
                     <li className="create-account-link">

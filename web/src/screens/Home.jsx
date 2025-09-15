@@ -1,37 +1,14 @@
 import { useState, useEffect } from 'react';
 import { getMoviesFromTmdb, getTheatresFromFinnkino } from '../components/api';
 import './Home.css';
+import SearchBar from '../components/SearchBar';
 
-export default function Home() {
-  const [movies, setMovies] = useState([]);
-  const [pageCount, setPageCount] = useState(0);
-
-  useEffect(() => {
-    const fetchMovies = async () => {
-      const movieData = await getMoviesFromTmdb();
-      setMovies(movieData.results);
-    };
-
-    fetchMovies();
-  }, []);
-
+function Home() {
   return (
     <>
-    
-      <div className="movie-table-container">
-        <table className="movie-table">
-          <thead>
-            <tr><th>Title</th></tr>
-          </thead>
-          <tbody>
-            {movies.map(movie => (
-              <tr key={movie.id}>
-                <td>{movie.title}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <SearchBar />
     </>
   );
 }
+
+export default Home;
