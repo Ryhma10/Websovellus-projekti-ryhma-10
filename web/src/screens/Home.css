@@ -1,9 +1,0 @@
-.movie-table-container  {
-    position: relative;
-    margin-top: 10vh;
-    color: var(--text-color);
-}
-
-.movie-table-container th {
-    font-size: 4em;
-}

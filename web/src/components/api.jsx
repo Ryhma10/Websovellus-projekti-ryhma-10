@@ -45,9 +45,9 @@ const getFinnkinoApiData = async (url) => {
     }
 }
 
-const getMoviesFromTmdb = async () => {
+const getMoviesFromTmdb = async (query, page) => {
     try {
-        const url = 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc'
+        const url = 'https://api.themoviedb.org/3/search/movie?query=' + query + '&include_adult=false&language=en-US&page=' + page;
         console.log("getMoviesFromTmdb has been called", url)
         const apiKey = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkMmE3MmUwNmVhY2Y0YjE2MjM5NjAyYjAxMGZmMzVlNiIsIm5iZiI6MTc1NzQxMjYwMS4yMzEsInN1YiI6IjY4YmZmY2Y5NDIzMmZiZmNkNzRlNjUyMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ._NLY9FA8xhchoIcTLhMG2RFNFWrx4K8lbVJ5q7tQEjg'
         const response = await fetch(url, {

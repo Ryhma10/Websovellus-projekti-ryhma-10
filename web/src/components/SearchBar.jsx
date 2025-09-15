@@ -82,7 +82,7 @@ export default function SearchBar() {
       {/* Elokuvan haku inputilla */}
       <input 
         type="text"
-        placeholder="Hae elokuvaa..."
+        placeholder="Hae Finnkinosta..."
         value={movieQuery}
         onChange={(e) => setMovieQuery(e.target.value)}
         className="movie-search"

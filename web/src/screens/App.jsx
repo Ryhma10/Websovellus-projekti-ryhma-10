@@ -15,7 +15,6 @@ function App() {
       <div>
         <div className='topnav'>
         <NavBar />
-        <SearchBar />
         </div>
         <Routes>
             <Route path="/" element={<Home />}></Route>
