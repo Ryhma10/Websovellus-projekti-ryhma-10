@@ -13,13 +13,22 @@ function Movies() {
   useEffect(() => {
     const fetchMovies = async () => {
       const movieData = await getMoviesFromTmdb(movieQuery, page);
+      setExternalMovies(movieData.results || []);
+      if(movieData.results && movieData.results.length > 0) {
+        setPageCount(movieData.total_pages);
+      } else {
+        setPageCount(page);
+      }
       const movieMatches = (movieData.results || movieData).filter(movie => 
-        movie.title.toLowerCase().includes(movieQuery.toLowerCase())
+        movie.title && movie.title.toLowerCase().includes(movieQuery.toLowerCase())
       );
       setExternalMovies(movieMatches);
       setPageCount(movieData.total_pages);
     };
     fetchMovies();
+    console.log(page);
+    console.log(movieQuery);
+    console.log(externalMovies);
   }, [page, movieQuery]);
 
   return (
