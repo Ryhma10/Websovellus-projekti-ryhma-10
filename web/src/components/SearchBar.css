@@ -7,6 +7,7 @@ body {
     position: relative;
     margin-top: 15vh;
     z-index: 1001;
+    align-items: center;
 }
 
 .theatres-dropdown, .times-dropdown, .movie-search{
@@ -39,9 +40,35 @@ body {
     display: flex;
     flex-direction: row;
     gap: 1em;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2em;
 }
 
 .results {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    max-width: 90vw;
+    column-gap: 8px;
+    row-gap: 10px;
+}
+
+.movie-result-item {
+    border-radius: 16px;
+    border: 1px solid var(--accent-color);
+    padding: 10px;
+    text-align: center;
+    max-width: 250px;
+}
+
+.show-poster {
+    border-radius: 20px;
+    align-items: center;
+    max-width: 200px;
+    width: 90%;
+}
+
+.show-info {
+    margin-top: 10px;
+    text-align: center;
 }

@@ -13,21 +13,25 @@ const getTheatresFromFinnkino = async () => {
     return tempTheaters; // still a Promise
 };
 
-const getDatesFromFinnkino = async () => {
-    const url = 'https://www.finnkino.fi/xml/Schedule/';
+const getDatesFromFinnkino = async (areaIds = []) => {
+    let allDates = [];
+    for (const areaId of areaIds) {
+        const url = 'https://www.finnkino.fi/xml/Schedule/?area=' + areaId;
     const apiData = await getFinnkinoApiData(url);
-    const tempDates = [];
     const shows = apiData[0].getElementsByTagName('Show'); // haetaan suoraan kaikki Show-nodet
     for (let i = 0; i < shows.length; i++) {
         const s = shows[i];
-        tempDates.push({
+        allDates.push({
             title: s.getElementsByTagName('Title')[0]?.textContent,
             start: s.getElementsByTagName('dttmShowStart')[0]?.textContent,
             theatre: s.getElementsByTagName('Theatre')[0]?.textContent,
-            eventID: s.getElementsByTagName('EventID')[0]?.textContent
+            eventID: s.getElementsByTagName('EventID')[0]?.textContent,
+            image: s.getElementsByTagName('EventMediumImagePortrait')[0]?.textContent,
+            theatreId: areaId
         });
     }
-    return tempDates;
+    }
+    return allDates;
 }
 
 

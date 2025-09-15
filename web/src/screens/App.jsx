@@ -1,12 +1,11 @@
 import './App.css'
 import { Routes, Route } from 'react-router-dom'
-import NavBar from '../components/navBar'
+import NavBar from '../components/NavBar'
 import Movies from "./Movies"
 import Groups from './Groups'
 import Reviews from './Reviews'
 import Profile from './Profile'
 import Home from './Home';
-import SearchBar from '../components/SearchBar';
 
 function App() {
 
