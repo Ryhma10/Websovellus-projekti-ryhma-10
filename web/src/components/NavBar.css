@@ -11,7 +11,7 @@
     justify-content: center;
     animation: entryAnimation 1s ease-in 2s;
     animation-fill-mode: forwards;
-    z-index: 1000;
+    z-index: 3000;
 }
 
 @keyframes entryAnimation {
@@ -24,8 +24,11 @@
 }
 
 .nav ul {
-    display: flex;
     position: relative;
+    left: -10vw;
+    top: 0;
+    display: flex;
+    justify-content: center;
     list-style-type: none;
     opacity: 0;
     animation: fadeIn 1.5s ease-in 3s;
@@ -42,7 +45,7 @@
 }
 
 .nav a {
-    font-size: 2em;
+    font-size: 1.5em;
     text-decoration: none;
     color: var(--text-color);
     margin: 0.5em;
@@ -61,9 +64,11 @@
 }
 
 .logo {
-    width: 200px;
+    position: fixed;
+    left: 20px;
+    top: -50px;
+    width: 13em;
     height: auto;
-    margin: 0;
     align-self: center;
 }
 
@@ -75,7 +80,7 @@
     opacity: 1;
     animation: fadeOut 1.5s ease-in 0.5s;
     animation-fill-mode: forwards;
-    z-index: 10000001;
+    z-index: 4000;
     width: 40em;
     height: auto;
 }
@@ -86,12 +91,15 @@
     }
     100% {
         opacity: 0;
+        display: none;
     }
 }
 
 .nav .profile-link {
-    margin-left: auto;
-    margin-right: 40px;
+    z-index: 3001;
+    position: absolute;
+    right: 0;
+    top: 0;
 }
 
 .modal-backdrop {
