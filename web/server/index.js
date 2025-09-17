@@ -14,17 +14,17 @@ app.use(express.json())         //parsitaan application/json-rungot req.bodyyn
 app.use(express.urlencoded({extended: false})) //parsii lomakepostit (application/x-form-urlencoded). extended:false = perusparseri
 
 const openDb = () => {          //tehdään tietokannan avaamiselle oma funktio, jota voi kutsua muualtakin
-    const pool = new Pool({
-        user: 'postgres',
-        host: 'localhost',
-        database: 'movie',
-        password: process.env.PGPASSWORD, //tehdään oma .env tiedosto server-kansioon, johon määritetään PGPASSWORD=omasalasanasi
-        port: 5432
+    const pool = new Pool({     ////tehdään oma .env tiedosto server-kansioon, johon määritellään seuraavat:
+        user: process.env.PGUSER,
+        host: process.env.PGHOST,
+        database: process.env.PGNAME,
+        password: process.env.PGPASSWORD,  //.enviin PGPASSWORD=omasalasanasi
+        port: process.env.PGPORT
     })
     return pool
 }
 
-app.get('/', (req,res) => {     //tehdään GET-kutsu, jossa 
+app.get('/', (req,res) => {     //tehdään GET-kutsu, jossa haetaan kaikki käyttäjät
     const pool = openDb()
 
     pool.query('SELECT * from users', (err, result) => {
