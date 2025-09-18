@@ -4,18 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
     "test": "echo \"Error: no test specified\" && exit 1",
     "devStart": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.2",
-    "express": "^5.1.0",
+  "license": "ISC"
   "type": "module",
   "dependencies": {
     "bcrypt": "^6.0.0",
