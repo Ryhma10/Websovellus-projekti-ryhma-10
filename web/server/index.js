@@ -1,7 +1,7 @@
 import express from 'express'   //endpointtien (reitit) määrittelyyn
 import cors from 'cors'         //sallii pyynnöt eri porteista (myöh. domaineista)           
 import 'dotenv/config'          //ympäristömuuttujien käyttöä varten
-import { pool } from '../helper/db.js'
+import { pool } from '../server/helper/db.js'
 
 const PORT = process.env.PORT || 3001  //Express-palvelin käynnistetään portissa 3001           
 
