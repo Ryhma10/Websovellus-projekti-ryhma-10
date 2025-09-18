@@ -13,3 +13,35 @@ body {
   color: var(--text-color);
   font-family: var(--font-family);
 }
+
+input,
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 1em;
+    color: var(--text-color);
+    outline: none;
+    box-shadow: none;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+}
+
+select {
+    cursor: pointer;
+}
+
+select::-ms-expand {
+    display: none;
+}
+select::-webkit-inner-spin-button,
+select::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
