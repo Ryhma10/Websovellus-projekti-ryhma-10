@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import './Profile.css';
+import { useState } from "react";
+import './CreateAccountModal.css'
 
-
-function Profile({ onClose}) {
+function CreateAccountModal({ onClose}) {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -52,4 +51,5 @@ function Profile({ onClose}) {
         </div>
     );
 }
-export default Profile;
+
+export default CreateAccountModal;
