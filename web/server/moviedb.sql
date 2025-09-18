@@ -13,9 +13,6 @@ CREATE TABLE IF NOT EXISTS users (
   -- saadaan APIssa ilmaistua 409 joko email tai username taken
   CONSTRAINT users_username_uq UNIQUE (username),
   CONSTRAINT users_email_uq    UNIQUE (email),
-
-  -- Varmistetaan käyttäjänimen muoto: 3–32 merkkiä, a–z, A–Z, 0–9, . _ -
-  CONSTRAINT users_username_format_chk CHECK (username ~ '^[A-Za-z0-9._-]{3,32}$')
 );
 
 -- Tehdään trigger, joka varmistaa, että vain käyttäjä itse saa poistaa tilinsä
