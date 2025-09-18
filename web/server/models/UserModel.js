@@ -1,0 +1,1 @@
+// Modelissa sijaitsee tietokantalogiikka (SQL-pyynnöt)
