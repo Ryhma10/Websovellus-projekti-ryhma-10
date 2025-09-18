@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
   -- Varmistetaan uniikit arvot kirjainkoosta riippumatta (citext hoitaa tässä), 
   -- saadaan APIssa ilmaistua 409 joko email tai username taken
   CONSTRAINT users_username_uq UNIQUE (username),
-  CONSTRAINT users_email_uq    UNIQUE (email),
+  CONSTRAINT users_email_uq    UNIQUE (email)
 );
 
 -- Tehdään trigger, joka varmistaa, että vain käyttäjä itse saa poistaa tilinsä
