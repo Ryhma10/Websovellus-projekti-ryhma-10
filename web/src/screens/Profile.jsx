@@ -6,13 +6,51 @@ function Profile({ isOpen, onClose }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:3001/api/users/signup", {
+        method: "POST",
+        headers: {"Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password })
+      });
+      if(response.ok) {
+        onClose();
+      } else {
+        alert("Registration failed");
+      }
+
+    } catch (error) {
+      alert("Error connecting to server");
+    }
+  }
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:3001/api/users/signin", {
+        method: "POST",
+        headers: {"Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await response.json();
+      if(data.token) {
+        localStorage.setItem("token", data.token);
+      } else {
+        alert("Login failed");
+      }
+    } catch (error) {
+      alert("Error connecting to server");
+    }
+  }
+
   if (!isOpen) return null; // tämä estää koko komponenttia piirtymästä
 
   return (
     <div className="modal-backdrop">
       <div className="modal">
-        <h2>Sign In</h2>
-        <form>
+        <h2>Sign up</h2>
+        <form onSubmit={handleSubmit}>
           <input
             type="text"
             placeholder="Username"
@@ -31,7 +69,7 @@ function Profile({ isOpen, onClose }) {
             value={password}
             onChange={e => setPassword(e.target.value)}
           />
-          <button type="submit" className="login-btn">Login</button>
+          <button type="submit" className="login-btn">Register</button>
         </form>
         <button onClick={onClose} className="close-btn">Close</button>
       </div>
