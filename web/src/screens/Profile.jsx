@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import "./Profile.css";
 
 function Profile({ setIsLoggedIn, setUser }) {
   const navigate = useNavigate();
@@ -51,7 +52,7 @@ function Profile({ setIsLoggedIn, setUser }) {
   return (
     <div>
       <h1>Welcome, {username}!</h1>
-      <button onClick={handleLogout}>Log Out</button>
+      <button className="log-out-btn" onClick={handleLogout}>Log Out</button>
       <button className="delete-account-btn" onClick={handleDeleteAccount}>Delete Account</button>
     </div>
   );
