@@ -3,7 +3,7 @@
 import jwt from "jsonwebtoken";
 import { createUser, findByUsername } from "../models/UserModel.js";
 import { hash, compare } from "bcrypt";
- 
+
 export const signup = async (req, res, next) => {
   try {
     console.log("Request body:", req.body); // See what data arrives
@@ -20,8 +20,8 @@ export const signup = async (req, res, next) => {
     console.error(err); // See the error in your backend terminal
     next(err);
   }
-};
- 
+}
+
 export const signin = async (req, res, next) => {
   try {
     const { username, password } = req.body;
@@ -36,20 +36,20 @@ export const signin = async (req, res, next) => {
       error.status = 404;
       return next(error);
     }
- 
+
     const isMatch = await compare(password, dbUser.password_hash);
     if (!isMatch) {
       const error = new Error("Invalid password");
       error.status = 401;
       return next(error);
     }
- 
+
     const token = jwt.sign(
       { userId: dbUser.id, username: dbUser.username },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "1h" }
     );
- 
+
     res.status(200).json({
       id: dbUser.id,
       email: dbUser.email,

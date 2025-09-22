@@ -30,7 +30,6 @@ function Movies() {
       }
     };
     
-   useEffect(() => {
     const fetchPopular = async () => {
      const data = await getPopularMoviesFromTmdb(); //Haetaan TMDB:stä suosituimmat elokuvat
       setPopular(data || []);
@@ -137,4 +136,4 @@ function Movies() {
   )
 }
 
-export default Movies;
+export default Movies
