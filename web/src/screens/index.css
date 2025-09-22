@@ -45,3 +45,19 @@ select::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+
+/* For Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-color);      /* Thumb color */
+  border-radius: 6px;
+  padding: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-color);   /* Track color */
+}

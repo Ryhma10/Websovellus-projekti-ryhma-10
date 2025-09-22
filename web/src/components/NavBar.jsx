@@ -2,11 +2,12 @@ import { Link } from "react-router-dom";
 import "./NavBar.css";
 import logo from "../assets/MadMooseMoviesLogo2.png";
 import tempLogo from "../assets/MadMooseMoviesLogo.png";
-import Profile from "../screens/Profile";
+import SignIn from "../screens/Signin.jsx";
+import SignUp from "../screens/SignUp.jsx";
 import { useState } from "react";
 
 function NavBar() {
-    const [showModal, setShowModal] = useState(false);
+    const [modalType, setModalType] = useState(null); // 'signin' or 'signup' or null
 
     return (
         <>
@@ -19,23 +20,26 @@ function NavBar() {
                     <li><Link to="/groups">Groups</Link></li>
                     <li><Link to="/reviews">Reviews</Link></li>
                     <li className="profile-link">
-                        <a
-                            href="#"
-                            onClick={e => {
-                                e.preventDefault();
-                                setShowModal(true);
-                            }}
-                        >
-                            Profile
+                        <a href='#' onClick={e => { e.preventDefault(); setModalType("signin"); }}>
+                            Sign In
                         </a>
+                        {modalType === "signin" && (
+                            <SignIn
+                            isOpen={true}
+                            onClose={() => setModalType(null)}
+                            onSignUp={() => setModalType("signup")}
+                            />
+                        )}
+                        {modalType === "signup" && (
+                            <SignUp
+                            isOpen={true}
+                            onClose={() => setModalType(null)}
+                            onSignIn={() => setModalType("signin")}
+                            />
+                        )}
                     </li>
                 </ul>
             </nav>
-            {/* Only render modal when showModal is true */}
-            {showModal && (
-                <Profile isOpen={showModal} onClose={() => setShowModal(false)} />
-            )}
-
         </>
     );
 }

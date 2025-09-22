@@ -1,8 +1,8 @@
 //Sovelluslogiikka (HTTP-pyynnöt, tietokantakyselyt jne.)import { hash, compare } from "bcrypt";
 
 import jwt from "jsonwebtoken";
-import { createUser } from "../models/UserModel.js";
-import { hash } from "bcrypt";
+import { createUser, findByUsername } from "../models/UserModel.js";
+import { hash, compare } from "bcrypt";
  
 export const signup = async (req, res, next) => {
   try {
@@ -24,19 +24,20 @@ export const signup = async (req, res, next) => {
  
 export const signin = async (req, res, next) => {
   try {
-    const { user } = req.body;
-    if (!user || !user.email || !user.password) {
-      return next(new Error("Email and password are required"));
+    const { username, password } = req.body;
+    console.log("Signin request body:", req.body); // Debug line
+    if (!username || !password) {
+      return next(new Error("Username and password are required"));
     }
- 
-    const dbUser = await User.findByEmail(user.email);
+
+    const dbUser = await findByUsername(username);
     if (!dbUser) {
       const error = new Error("User not found");
       error.status = 404;
       return next(error);
     }
  
-    const isMatch = await compare(user.password, dbUser.password);
+    const isMatch = await compare(password, dbUser.password_hash);
     if (!isMatch) {
       const error = new Error("Invalid password");
       error.status = 401;
@@ -44,8 +45,8 @@ export const signin = async (req, res, next) => {
     }
  
     const token = jwt.sign(
-      { userId: dbUser.id, email: dbUser.email },
-      process.env.JWT_SECRET,
+      { userId: dbUser.id, username: dbUser.username },
+      process.env.JWT_SECRET_KEY,
       { expiresIn: "1h" }
     );
  
