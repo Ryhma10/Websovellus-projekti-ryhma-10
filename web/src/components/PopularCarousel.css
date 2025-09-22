@@ -1,0 +1,72 @@
+.popular-carousel {
+  margin: 32px auto;
+  max-width: 400px;
+  text-align: center;
+}
+
+.carousel-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.movie-item {
+  background: #111;
+  border: 2px solid #33ff99;
+  border-radius: 16px;
+  padding: 16px;
+  margin: 0 20px;
+  box-shadow: 0 2px 8px #000a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.movie-poster {
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  transition: all 0.3s;
+  width: 140px;
+  height: 210px;
+  opacity: 0.8;
+}
+
+.movie-item-center {
+  width: 272px;
+  height: 392px;
+}
+
+.movie-item-center .movie-poster {
+  width: 240px;
+  height: 360px;
+  opacity: 1;
+}
+
+.movie-info {
+  color: #fff;
+  font-size: 1.1em;
+  margin-top: 8px;
+}
+
+.popular-carousel button {
+  background: #222;
+  color: #33ff99;
+  border: 2px solid #33ff99;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.5em;
+  cursor: pointer;
+  margin: 0 8px;
+  transition: background 0.2s;
+}
+.popular-carousel button:hover {
+  background: #33ff99;
+  color: #111;
+}
+
+.popular-carousel h2 {
+  text-align: center;
+  color: white;
+}

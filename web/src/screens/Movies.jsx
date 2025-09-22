@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { getMoviesFromTmdb, getGenresFromTmdb } from "../components/api";
+import { getMoviesFromTmdb, getGenresFromTmdb, getPopularMoviesFromTmdb } from "../components/api";
 import ReactPaginate from "react-paginate";
 import placeholder from '../assets/placeholder.png';
 import "./Movies.css";
+import PopularCarousel from "../components/PopularCarousel"; //Tuodaan karuselli
 
 function Movies() {
   const [movieQuery, setMovieQuery] = useState("");
@@ -12,6 +13,7 @@ function Movies() {
   const [externalGenres, setExternalGenres] = useState([]);
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
+  const [popular, setPopular] = useState([]); // Tarkistetaan suosituimmat elokuvat
 
   // tehdään lista vuosista 1900 -> nykyhetki
   const currentYear = new Date().getFullYear();
@@ -27,6 +29,14 @@ function Movies() {
         setPageCount(page);
       }
     };
+    
+   useEffect(() => {
+    const fetchPopular = async () => {
+     const data = await getPopularMoviesFromTmdb(); //Haetaan TMDB:stä suosituimmat elokuvat
+      setPopular(data || []);
+    };
+    fetchPopular();  //Haetaan vain kerran komponentin alussa
+    
     fetchMovies();
   }, [page, movieQuery]);
 
@@ -52,6 +62,7 @@ function Movies() {
       (movie.release_date && movie.release_date.startsWith(yearQuery));
 
     return matchesTitle && matchesGenre && matchesYear;
+
   });
 
   return (
@@ -89,6 +100,7 @@ function Movies() {
             </option>
           ))}
         </select>
+
       </div>
       <ReactPaginate className="pagination"
         breakLabel="..."
@@ -120,7 +132,8 @@ function Movies() {
           ))}
         </ul>
       </div>
-    </>
+      {movieQuery.trim() === "" && popular.length > 0 && <PopularCarousel movies={popular} />}
+    </> //Näytetään karuselli, jos hakukenttä on tyhjä
   )
 }
 
