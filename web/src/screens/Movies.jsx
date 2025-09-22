@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { getMoviesFromTmdb, getGenresFromTmdb } from "../components/api";
+import { getMoviesFromTmdb, getGenresFromTmdb, getPopularMoviesFromTmdb } from "../components/api";
 import ReactPaginate from "react-paginate";
 import placeholder from '../assets/placeholder.png';
 import "./Movies.css";
+import PopularCarousel from "../components/PopularCarousel"; //Tuodaan karuselli
 
 function Movies() {
   const [movieQuery, setMovieQuery] = useState("");
@@ -11,6 +12,7 @@ function Movies() {
   const [externalGenres, setExternalGenres] = useState([]);
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
+  const [popular, setPopular] = useState([]); // Tarkistetaan suosituimmat elokuvat
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -23,56 +25,62 @@ function Movies() {
       }
     };
     fetchMovies();
-    console.log(page);
-    console.log(movieQuery);
-    }, [page, movieQuery]);
+  }, [page, movieQuery]);
 
-    useEffect(() => {
-      const fetchGenres = async () => {
-        const genreData = await getGenresFromTmdb();
-        setExternalGenres(genreData);
-      };
-      fetchGenres();
-    }, [page, movieQuery, genreQuery]);
-    
+  useEffect(() => {
+    const fetchGenres = async () => {
+      const genreData = await getGenresFromTmdb();
+      setExternalGenres(genreData);
+    };
+    fetchGenres();
+  }, [page, movieQuery, genreQuery]);
+
+  useEffect(() => {
+    const fetchPopular = async () => {
+      const data = await getPopularMoviesFromTmdb(); //Haetaan TMDB:stä suosituimmat elokuvat
+      setPopular(data || []);
+    };
+    fetchPopular();
+  }, []); //Haetaan vain kerran komponentin alussa
+
   const filteredMovies = externalMovies.filter(movie => {
-  const matchesTitle =
-    movieQuery.trim() === "" ||
-    (movie.title && movie.title.toLowerCase().includes(movieQuery.toLowerCase()));
-  const matchesGenre =
-    genreQuery === "" ||
-    (movie.genre_ids && movie.genre_ids.includes(Number(genreQuery)));
-  return matchesTitle && matchesGenre;
-});
+    const matchesTitle =
+      movieQuery.trim() === "" ||
+      (movie.title && movie.title.toLowerCase().includes(movieQuery.toLowerCase()));
+    const matchesGenre =
+      genreQuery === "" ||
+      (movie.genre_ids && movie.genre_ids.includes(Number(genreQuery)));
+    return matchesTitle && matchesGenre;
+  });
 
   return (
     <>
       <h1 className="movies">Find Your Favorite Movies</h1>
       <div className="all-movies-search">
-      <input 
-        type="text"
-        placeholder="Hae Elokuvia..."
-        value={movieQuery}
-        onChange={(e) => setMovieQuery(e.target.value)}
-        className="movie-search"
-      />
-      <select
-        value={genreQuery}
-        onChange={e => setGenreQuery(e.target.value)}
-        className="genre-select"
-      >
-        <option value="">All genres</option>
-        {externalGenres.map(genre => (
-          <option key={genre.id} value={genre.id}>
-            {genre.name}
-          </option>
-        ))}
-      </select>
+        <input 
+          type="text"
+          placeholder="Hae Elokuvia..."
+          value={movieQuery}
+          onChange={(e) => setMovieQuery(e.target.value)}
+          className="movie-search"
+        />
+        <select
+          value={genreQuery}
+          onChange={e => setGenreQuery(e.target.value)}
+          className="genre-select"
+        >
+          <option value="">All genres</option>
+          {externalGenres.map(genre => (
+            <option key={genre.id} value={genre.id}>
+              {genre.name}
+            </option>
+          ))}
+        </select>
       </div>
       <ReactPaginate className="pagination"
         breakLabel="..."
         nextLabel=">"
-        onPageChange={(e) => setPage(e.selected + 1)} //alkuarvo 0, joten lisättävä ykkönen, määritellään sivunvaihto päivittämättä tilamuuttuja
+        onPageChange={(e) => setPage(e.selected + 1)}
         pageRangeDisplayed={5}
         pageCount={pageCount}
         previousLabel="<"
@@ -99,8 +107,9 @@ function Movies() {
           ))}
         </ul>
       </div>
-    </>
+      {movieQuery.trim() === "" && popular.length > 0 && <PopularCarousel movies={popular} />}
+    </> //Näytetään karuselli, jos hakukenttä on tyhjä
   )
 }
 
-export default Movies
+export default Movies;

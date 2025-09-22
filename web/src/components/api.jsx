@@ -80,23 +80,20 @@ const getGenresFromTmdb = async () => {
   return data.genres || [];
 };
 
-// const getTmdbApiData = async () => {
+const getPopularMoviesFromTmdb = async () => {
+    const url = 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1';
+    const apiKey = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkMmE3MmUwNmVhY2Y0YjE2MjM5NjAyYjAxMGZmMzVlNiIsIm5iZiI6MTc1NzQxMjYwMS4yMzEsInN1YiI6IjY4YmZmY2Y5NDIzMmZiZmNkNzRlNjUyMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ._NLY9FA8xhchoIcTLhMG2RFNFWrx4K8lbVJ5q7tQEjg';
+    const response = await fetch(url, {
+        headers: {
+            'Authorization': 'Bearer ' + apiKey,
+            'accept': 'application/json'
+        }
+    });
+    const data = await response.json();
+    return data.results;
+};
 
-//     const response = await fetch(process.env.VITE_TMDB_URL, {
-//         headers: {
-//             'Authorization' : 'Bearer ' + process.env.VITE_TMDB_API_KEY,
-//             'accept' : 'application/json'
-//         }
-//     })
-
-    
-    
-   /* curl --request GET \
-     --url 'https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US&page=1' \
-     --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkMmE3MmUwNmVhY2Y0YjE2MjM5NjAyYjAxMGZmMzVlNiIsIm5iZiI6MTc1NzQxMjYwMS4yMzEsInN1YiI6IjY4YmZmY2Y5NDIzMmZiZmNkNzRlNjUyMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ._NLY9FA8xhchoIcTLhMG2RFNFWrx4K8lbVJ5q7tQEjg' \
-     --header 'accept: application/json'*/
-
-export { getTheatresFromFinnkino, getMoviesFromTmdb, getDatesFromFinnkino, getGenresFromTmdb }
+export { getTheatresFromFinnkino, getMoviesFromTmdb, getDatesFromFinnkino, getGenresFromTmdb, getPopularMoviesFromTmdb }
 
 // import { useState, useEffect } from 'react'
 // import './App.css'
