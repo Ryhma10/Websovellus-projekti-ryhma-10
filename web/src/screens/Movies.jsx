@@ -7,72 +7,93 @@ import "./Movies.css";
 function Movies() {
   const [movieQuery, setMovieQuery] = useState("");
   const [genreQuery, setGenreQuery] = useState("");
+  const [yearQuery, setYearQuery] = useState("");
   const [externalMovies, setExternalMovies] = useState([]);
   const [externalGenres, setExternalGenres] = useState([]);
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
 
+  // tehdään lista vuosista 1900 -> nykyhetki
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => currentYear - i);
+
   useEffect(() => {
     const fetchMovies = async () => {
       const movieData = await getMoviesFromTmdb(movieQuery, page);
       setExternalMovies(movieData.results || []);
-      if(movieData.results && movieData.results.length > 0) {
+      if (movieData.results && movieData.results.length > 0) {
         setPageCount(movieData.total_pages);
       } else {
         setPageCount(page);
       }
     };
     fetchMovies();
-    console.log(page);
-    console.log(movieQuery);
-    }, [page, movieQuery]);
+  }, [page, movieQuery]);
 
-    useEffect(() => {
-      const fetchGenres = async () => {
-        const genreData = await getGenresFromTmdb();
-        setExternalGenres(genreData);
-      };
-      fetchGenres();
-    }, [page, movieQuery, genreQuery]);
-    
+  useEffect(() => {
+    const fetchGenres = async () => {
+      const genreData = await getGenresFromTmdb();
+      setExternalGenres(genreData);
+    };
+    fetchGenres();
+  }, [page, movieQuery, genreQuery]);
+
   const filteredMovies = externalMovies.filter(movie => {
-  const matchesTitle =
-    movieQuery.trim() === "" ||
-    (movie.title && movie.title.toLowerCase().includes(movieQuery.toLowerCase()));
-  const matchesGenre =
-    genreQuery === "" ||
-    (movie.genre_ids && movie.genre_ids.includes(Number(genreQuery)));
-  return matchesTitle && matchesGenre;
-});
+    const matchesTitle =
+      movieQuery.trim() === "" ||
+      (movie.title && movie.title.toLowerCase().includes(movieQuery.toLowerCase()));
+
+    const matchesGenre =
+      genreQuery === "" ||
+      (movie.genre_ids && movie.genre_ids.includes(Number(genreQuery)));
+
+    const matchesYear =
+      yearQuery === "" ||
+      (movie.release_date && movie.release_date.startsWith(yearQuery));
+
+    return matchesTitle && matchesGenre && matchesYear;
+  });
 
   return (
     <>
       <h1 className="movies">Find Your Favorite Movies</h1>
       <div className="all-movies-search">
-      <input 
-        type="text"
-        placeholder="Hae Elokuvia..."
-        value={movieQuery}
-        onChange={(e) => setMovieQuery(e.target.value)}
-        className="movie-search"
-      />
-      <select
-        value={genreQuery}
-        onChange={e => setGenreQuery(e.target.value)}
-        className="genre-select"
-      >
-        <option value="">All genres</option>
-        {externalGenres.map(genre => (
-          <option key={genre.id} value={genre.id}>
-            {genre.name}
-          </option>
-        ))}
-      </select>
+        <input
+          type="text"
+          placeholder="Hae Elokuvia..."
+          value={movieQuery}
+          onChange={(e) => setMovieQuery(e.target.value)}
+          className="movie-search"
+        />
+        <select
+          value={genreQuery}
+          onChange={e => setGenreQuery(e.target.value)}
+          className="genre-select"
+        >
+          <option value="">All genres</option>
+          {externalGenres.map(genre => (
+            <option key={genre.id} value={genre.id}>
+              {genre.name}
+            </option>
+          ))}
+        </select>
+        <select
+          value={yearQuery}
+          onChange={(e) => setYearQuery(e.target.value)}
+          className="year-select"
+        >
+          <option value="">All years</option>
+          {years.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
       </div>
       <ReactPaginate className="pagination"
         breakLabel="..."
         nextLabel=">"
-        onPageChange={(e) => setPage(e.selected + 1)} //alkuarvo 0, joten lisättävä ykkönen, määritellään sivunvaihto päivittämättä tilamuuttuja
+        onPageChange={(e) => setPage(e.selected + 1)}
         pageRangeDisplayed={5}
         pageCount={pageCount}
         previousLabel="<"
@@ -103,4 +124,4 @@ function Movies() {
   )
 }
 
-export default Movies
+export default Movies;
