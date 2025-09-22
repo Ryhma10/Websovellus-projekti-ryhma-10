@@ -57,7 +57,7 @@
     justify-content: center;
 }
 
-.genre-select{
+.genre-select, .year-select {
     background-color: rgb(30,30,30);
     color: var(--text-color);
     border-radius: 8px;
@@ -69,7 +69,7 @@
     font-family: var(--font-family);
 }
 
-.genre-select:focus{
+.genre-select:focus, .year-select:focus {
     border-color: var(--accent-color);
     outline: none;
     transition: border-color 0.5s ease;

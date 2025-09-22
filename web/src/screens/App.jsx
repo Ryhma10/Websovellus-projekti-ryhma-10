@@ -4,7 +4,7 @@ import NavBar from '../components/NavBar'
 import Movies from "./Movies"
 import Groups from './Groups'
 import Reviews from './Reviews'
-import Profile from './Profile'
+import Profile from './Signin'
 import Home from './Home';
 
 function App() {
