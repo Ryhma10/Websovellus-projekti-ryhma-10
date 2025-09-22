@@ -29,6 +29,8 @@ function Movies() {
         setPageCount(page);
       }
     };
+    fetchMovies();
+  }, [page, movieQuery]);
     
    useEffect(() => {
     const fetchPopular = async () => {
@@ -36,9 +38,7 @@ function Movies() {
       setPopular(data || []);
     };
     fetchPopular();  //Haetaan vain kerran komponentin alussa
-    
-    fetchMovies();
-  }, [page, movieQuery]);
+    }, []);
 
   useEffect(() => {
     const fetchGenres = async () => {
