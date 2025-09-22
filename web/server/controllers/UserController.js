@@ -1,7 +1,7 @@
 //Sovelluslogiikka (HTTP-pyynnöt, tietokantakyselyt jne.)import { hash, compare } from "bcrypt";
 
 import jwt from "jsonwebtoken";
-import { createUser, findByUsername } from "../models/UserModel.js";
+import { createUser, findByUsername, deleteById } from "../models/UserModel.js";
 import { hash, compare } from "bcrypt";
 
 export const signup = async (req, res, next) => {
@@ -59,3 +59,17 @@ export const signin = async (req, res, next) => {
     next(err);
   }
 };
+
+export const deleteAccount = async (req, res, next) => {
+  try {
+    const userId = req.user.userId; // get userId from JWT payload
+    if (!userId) {
+      return res.status(400).json({ message: "User ID missing in token." });
+    }
+    await deleteById(userId);
+    res.status(200).json({ message: "Account deleted." });
+  } catch (err) {
+    next(err);
+  }
+};
+

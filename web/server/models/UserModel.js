@@ -17,9 +17,12 @@ export async function findByUsername(username) {
 }
 
 export async function deleteById(id) {
+  // Set session variable for trigger
+    // Set session variable for trigger (must use string interpolation, not $1)
+    await pool.query(`SET app.user_id = '${id}'`);
   const result = await pool.query(
     "DELETE FROM users WHERE id = $1 RETURNING *",
     [id]
-    );
-    return result.rows[0] || null;
-  }
+  );
+  return result.rows[0] || null;
+}

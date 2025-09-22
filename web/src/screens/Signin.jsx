@@ -16,10 +16,11 @@ function SignIn({ isOpen, onClose, onSignUp, onLoginSuccess }) {
       const data = await response.json();
       if(data.token) {
         localStorage.setItem("token", data.token);
-        localStorage.setItem("username", username);
-        console.log("Login successful, token stored and username stored.");
+        localStorage.setItem("username", data.username || username);
+        localStorage.setItem("userId", data.id);
+        console.log("Login successful, token stored.");
         onClose();
-        if(onLoginSuccess) onLoginSuccess();
+        if(onLoginSuccess) onLoginSuccess(data); // pass user data
       } else {
         alert("Login failed");
       }
