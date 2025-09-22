@@ -2,12 +2,18 @@ import { Link } from "react-router-dom";
 import "./NavBar.css";
 import logo from "../assets/MadMooseMoviesLogo2.png";
 import tempLogo from "../assets/MadMooseMoviesLogo.png";
-import SignIn from "../screens/SignIn.jsx";
+import SignIn from "../screens/Signin.jsx";
 import SignUp from "../screens/SignUp.jsx";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-function NavBar({ isLoggedIn, setIsLoggedIn }) { // <- propit ylhäältä
-  const [modalType, setModalType] = useState(null); // vain modalien hallintaan
+function NavBar({ isLoggedIn, setIsLoggedIn }) {
+  const [modalType, setModalType] = useState(null);
+
+  // On mount, check localStorage for token
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, [setIsLoggedIn]);
 
   return (
     <>
@@ -38,8 +44,8 @@ function NavBar({ isLoggedIn, setIsLoggedIn }) { // <- propit ylhäältä
                     isOpen={true}
                     onClose={() => setModalType(null)}
                     onSignUp={() => setModalType("signup")}
-                    onLoginSuccess={() => {
-                      setIsLoggedIn(true);  // päivitetään App.jsx:n tila
+                    onLoginSuccess={(userData) => {
+                      setIsLoggedIn(true);
                       setModalType(null);
                     }}
                   />
