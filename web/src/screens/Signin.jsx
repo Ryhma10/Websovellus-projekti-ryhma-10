@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import './Modal.css';
 
-function SignIn({ isOpen, onClose, onSignUp}) {
+function SignIn({ isOpen, onClose, onSignUp, onLoginSuccess }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -17,6 +17,8 @@ function SignIn({ isOpen, onClose, onSignUp}) {
       if(data.token) {
         localStorage.setItem("token", data.token);
         console.log("Login successful, token stored.");
+        onClose();
+        if(onLoginSuccess) onLoginSuccess();
       } else {
         alert("Login failed");
       }
@@ -25,7 +27,7 @@ function SignIn({ isOpen, onClose, onSignUp}) {
     }
   }
 
-  if (!isOpen) return null; // tämä estää koko komponenttia piirtymästä
+  if (!isOpen) return null;
 
   return (
     <div className="modal-backdrop">

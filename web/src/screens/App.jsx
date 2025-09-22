@@ -1,30 +1,38 @@
-import './App.css'
-import { Routes, Route } from 'react-router-dom'
-import NavBar from '../components/NavBar'
-import Movies from "./Movies"
-import Groups from './Groups'
-import Reviews from './Reviews'
-import Profile from './Signin'
+import './App.css';
+import { Routes, Route } from 'react-router-dom';
+import { useState } from 'react';
+
+import NavBar from '../components/NavBar';
+import Movies from "./Movies";
+import Groups from './Groups';
+import Reviews from './Reviews';
 import Home from './Home';
+import Profile from './Profile';
 
 function App() {
+  // Kirjautumistila App-tasolla, jotta NavBar ja Profile saavat saman tilan
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
     <>
       <div>
+        {/* NavBar näkyy kaikilla sivuilla */}
         <div className='topnav'>
-        <NavBar />
+          <NavBar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
         </div>
+
+        {/* Routes */}
         <Routes>
-            <Route path="/" element={<Home />}></Route>
-            <Route path="/movies" element={<Movies />}></Route>
-            <Route path="/groups" element={<Groups />} />
-            <Route path='/reviews' element={<Reviews />} />
-            <Route path='/profile' element={<Profile />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/movies" element={<Movies />} />
+          <Route path="/groups" element={<Groups />} />
+          <Route path="/reviews" element={<Reviews />} />
+          {/* Profile saa setIsLoggedIn propin, jotta logout toimii */}
+          <Route path="/profile" element={<Profile setIsLoggedIn={setIsLoggedIn} />} />
         </Routes>
       </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
