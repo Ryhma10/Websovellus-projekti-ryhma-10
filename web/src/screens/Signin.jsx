@@ -16,7 +16,8 @@ function SignIn({ isOpen, onClose, onSignUp, onLoginSuccess }) {
       const data = await response.json();
       if(data.token) {
         localStorage.setItem("token", data.token);
-        console.log("Login successful, token stored.");
+        localStorage.setItem("username", username);
+        console.log("Login successful, token stored and username stored.");
         onClose();
         if(onLoginSuccess) onLoginSuccess();
       } else {
