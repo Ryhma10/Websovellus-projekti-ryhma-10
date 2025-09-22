@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 
 function Profile({ setIsLoggedIn, setUser }) {
   const navigate = useNavigate();
+  const username = localStorage.getItem("username")
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("username")
     setIsLoggedIn(false);
     navigate("/"); // vie etusivulle
   };
@@ -48,7 +50,7 @@ function Profile({ setIsLoggedIn, setUser }) {
 
   return (
     <div>
-      <h1>Welcome to your profile!</h1>
+      <h1>Welcome, {username}!</h1>
       <button onClick={handleLogout}>Log Out</button>
       <button className="delete-account-btn" onClick={handleDeleteAccount}>Delete Account</button>
     </div>
