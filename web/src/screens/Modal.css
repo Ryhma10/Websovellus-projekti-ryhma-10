@@ -11,11 +11,14 @@ input:focus {
 
 .modal-backdrop {
      z-index: 9999999999999;
+     color: var(--text-color);
+     background-color: rgba(0, 0, 0, 0.8);
 }
 
 .modal {
-    background-color: rgb(30, 30, 30);
     color: var(--text-color);
+    background-color: rgb(30, 30, 30);
+    border-radius: 16px;
 }
 
 .login-btn, .close-btn {

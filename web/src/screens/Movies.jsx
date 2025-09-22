@@ -8,22 +8,35 @@ import PopularCarousel from "../components/PopularCarousel"; //Tuodaan karuselli
 function Movies() {
   const [movieQuery, setMovieQuery] = useState("");
   const [genreQuery, setGenreQuery] = useState("");
+  const [yearQuery, setYearQuery] = useState("");
   const [externalMovies, setExternalMovies] = useState([]);
   const [externalGenres, setExternalGenres] = useState([]);
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [popular, setPopular] = useState([]); // Tarkistetaan suosituimmat elokuvat
 
+  // tehdään lista vuosista 1900 -> nykyhetki
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => currentYear - i);
+
   useEffect(() => {
     const fetchMovies = async () => {
       const movieData = await getMoviesFromTmdb(movieQuery, page);
       setExternalMovies(movieData.results || []);
-      if(movieData.results && movieData.results.length > 0) {
+      if (movieData.results && movieData.results.length > 0) {
         setPageCount(movieData.total_pages);
       } else {
         setPageCount(page);
       }
     };
+    
+   useEffect(() => {
+    const fetchPopular = async () => {
+     const data = await getPopularMoviesFromTmdb(); //Haetaan TMDB:stä suosituimmat elokuvat
+      setPopular(data || []);
+    };
+    fetchPopular();  //Haetaan vain kerran komponentin alussa
+    
     fetchMovies();
   }, [page, movieQuery]);
 
@@ -35,29 +48,28 @@ function Movies() {
     fetchGenres();
   }, [page, movieQuery, genreQuery]);
 
-  useEffect(() => {
-    const fetchPopular = async () => {
-      const data = await getPopularMoviesFromTmdb(); //Haetaan TMDB:stä suosituimmat elokuvat
-      setPopular(data || []);
-    };
-    fetchPopular();
-  }, []); //Haetaan vain kerran komponentin alussa
-
   const filteredMovies = externalMovies.filter(movie => {
     const matchesTitle =
       movieQuery.trim() === "" ||
       (movie.title && movie.title.toLowerCase().includes(movieQuery.toLowerCase()));
+
     const matchesGenre =
       genreQuery === "" ||
       (movie.genre_ids && movie.genre_ids.includes(Number(genreQuery)));
-    return matchesTitle && matchesGenre;
+
+    const matchesYear =
+      yearQuery === "" ||
+      (movie.release_date && movie.release_date.startsWith(yearQuery));
+
+    return matchesTitle && matchesGenre && matchesYear;
+
   });
 
   return (
     <>
       <h1 className="movies">Find Your Favorite Movies</h1>
       <div className="all-movies-search">
-        <input 
+        <input
           type="text"
           placeholder="Hae Elokuvia..."
           value={movieQuery}
@@ -76,6 +88,19 @@ function Movies() {
             </option>
           ))}
         </select>
+        <select
+          value={yearQuery}
+          onChange={(e) => setYearQuery(e.target.value)}
+          className="year-select"
+        >
+          <option value="">All years</option>
+          {years.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
+
       </div>
       <ReactPaginate className="pagination"
         breakLabel="..."
