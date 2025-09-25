@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS reviews (
   user_id    int NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   tmdb_id    int NOT NULL,
   stars      int NOT NULL,
-  body       citext NOT NULL,
+  body       text NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT chk_reviews_stars CHECK (stars BETWEEN 1 AND 10)
 );
@@ -59,8 +59,6 @@ CREATE INDEX IF NOT EXISTS idx_reviews_user ON reviews (user_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_tmdb ON reviews (tmdb_id);
 
 SELECT * FROM reviews;
-
-CREATE EXTENSION IF NOT EXISTS citext; -- Varmistetaan, että citext on käytössä
  
 -- Käyttäjien suosikkielokuvien taulu
 CREATE TABLE user_favorites (

@@ -1,11 +1,10 @@
 import express from 'express'   //endpointtien (reitit) määrittelyyn
 import cors from 'cors'         //sallii pyynnöt eri porteista (myöh. domaineista)           
 import 'dotenv/config'          //ympäristömuuttujien käyttöä varten
-import { pool } from '../server/helper/db.js'
-import userRouter from './routes/UserRouter.js';
+import { pool } from './helper/db.js'
+import userRouter from './routes/userRouter.js'
 
-
-const PORT = process.env.PORT  //Express-palvelin käynnistetään portissa 3001           
+const PORT = process.env.PORT || 3001 //Express-palvelin käynnistetään portissa 3001           
 
 const app = express()           //luodaan Express-sovellus
 
@@ -27,5 +26,5 @@ app.get('/', (req,res) => {     //tehdään GET-kutsu, jossa haetaan kaikki käy
 app.use('/api/users', userRouter);
 
 app.listen(PORT, () => {          //käynnistetään palvelin
-    console.log(`Server is running on http://localhost:${PORT}`)
+    console.log(`Server is running on http://localhost:${PORT} (env PORT=${process.env.PORT})`)
 })
