@@ -3,6 +3,7 @@ import cors from 'cors'         //sallii pyynnöt eri porteista (myöh. domainei
 import 'dotenv/config'          //ympäristömuuttujien käyttöä varten
 import { pool } from '../server/helper/db.js'
 import userRouter from './routes/UserRouter.js';
+import reviewRouter from './routes/reviewRouter.js';
 
 
 const PORT = process.env.PORT  //Express-palvelin käynnistetään portissa 3001           
@@ -25,6 +26,7 @@ app.get('/', (req,res) => {     //tehdään GET-kutsu, jossa haetaan kaikki käy
 })
 
 app.use('/api/users', userRouter);
+app.use('/api/reviews', reviewRouter);
 
 app.listen(PORT, () => {          //käynnistetään palvelin
     console.log(`Server is running on http://localhost:${PORT}`)
