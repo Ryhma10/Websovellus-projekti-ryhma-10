@@ -59,3 +59,15 @@ CREATE INDEX IF NOT EXISTS idx_reviews_user ON reviews (user_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_tmdb ON reviews (tmdb_id);
 
 SELECT * FROM reviews;
+
+CREATE EXTENSION IF NOT EXISTS citext; -- Varmistetaan, että citext on käytössä
+ 
+-- Käyttäjien suosikkielokuvien taulu
+CREATE TABLE user_favorites (
+    user_id BIGINT NOT NULL, -- Viittaa käyttäjään (users-taulun id)
+    tmdb_id INT NOT NULL, -- Elokuvan TMDB-tietokannan id
+    position INT, -- Suosikin järjestys (valinnainen)
+    added_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), -- Aikaleima
+    PRIMARY KEY (user_id, tmdb_id), -- Yhdistelmäavain: yksi elokuva voi olla vain kerran
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE-- Jos käyttäjä poistetaan, suosikkilista poistuu
+);
