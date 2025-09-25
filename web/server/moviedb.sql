@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS reviews (
   stars      int NOT NULL,
   body       text NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now(),
-  CONSTRAINT chk_reviews_stars CHECK (stars BETWEEN 1 AND 10)
+  CONSTRAINT chk_reviews_stars CHECK (stars BETWEEN 1 AND 5)
 );
 CREATE UNIQUE INDEX IF NOT EXISTS uq_reviews_user_tmdb ON reviews (user_id, tmdb_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_user ON reviews (user_id);

@@ -4,6 +4,7 @@ import ReactPaginate from "react-paginate";
 import placeholder from '../assets/placeholder.png';
 import "./Movies.css";
 import PopularCarousel from "../components/PopularCarousel"; //Tuodaan karuselli
+import MovieModal from "../components/MovieModal"; // Tuodaan elokuvan tiedot -modal
 
 function Movies() {
   const [movieQuery, setMovieQuery] = useState("");
@@ -14,6 +15,8 @@ function Movies() {
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [popular, setPopular] = useState([]); // Tarkistetaan suosituimmat elokuvat
+  const [selectedMovie, setSelectedMovie] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   // tehdään lista vuosista 1900 -> nykyhetki
   const currentYear = new Date().getFullYear();
@@ -124,6 +127,10 @@ function Movies() {
                     : placeholder
                 }
                 alt={movie.title}
+                onClick={() => {
+                  setSelectedMovie(movie);
+                  setShowModal(true);
+                }}
               />
               <div className="movie-info">
                 {movie.title}
@@ -133,6 +140,12 @@ function Movies() {
         </ul>
       </div>
       {movieQuery.trim() === "" && popular.length > 0 && <PopularCarousel movies={popular} />}
+      {showModal && selectedMovie && (
+        <MovieModal
+          movie={selectedMovie}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </> //Näytetään karuselli, jos hakukenttä on tyhjä
   )
 }
