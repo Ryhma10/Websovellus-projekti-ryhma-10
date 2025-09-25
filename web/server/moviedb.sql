@@ -43,3 +43,4 @@ CREATE TRIGGER trg_users_delete_guard
 BEFORE DELETE ON users
 FOR EACH ROW
 EXECUTE FUNCTION users_delete_guard();
+
