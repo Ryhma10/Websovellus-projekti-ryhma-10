@@ -1,4 +1,4 @@
-import pool from '../db/pool.js';
+import { pool } from '../helper/db.js';
 
 export async function createReview({ user_id, tmdb_id, stars, body }) {
   const result = await pool.query(
@@ -10,7 +10,10 @@ export async function createReview({ user_id, tmdb_id, stars, body }) {
 
 export async function getReviewsByMovie(tmdb_id) {
   const result = await pool.query(
-    'SELECT * FROM reviews WHERE tmdb_id = $1',
+    `SELECT reviews.*, users.username
+     FROM reviews
+     JOIN users ON reviews.user_id = users.id
+     WHERE reviews.tmdb_id = $1`,
     [tmdb_id]
   );
   return result.rows;
