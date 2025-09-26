@@ -49,7 +49,7 @@ const getFinnkinoApiData = async (url) => {
     }
 }
 
-const getMoviesFromTmdb = async (query, page) => {
+/*const getMoviesFromTmdb = async (query, page) => {
     try {
         const url = 'https://api.themoviedb.org/3/search/movie?query=' + query + '&include_adult=false&language=en-US&page=' + page;
         console.log("getMoviesFromTmdb has been called", url)
@@ -92,9 +92,9 @@ const getPopularMoviesFromTmdb = async () => {
     });
     const data = await response.json();
     return data.results;
-};
+}; */
 
-export { getTheatresFromFinnkino, getMoviesFromTmdb, getDatesFromFinnkino, getGenresFromTmdb, getPopularMoviesFromTmdb }
+export { getTheatresFromFinnkino, getDatesFromFinnkino }
 
 // import { useState, useEffect } from 'react'
 // import './App.css'

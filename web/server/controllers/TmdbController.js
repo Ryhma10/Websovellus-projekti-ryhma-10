@@ -13,7 +13,7 @@ export const searchMovies = async (req, res, next) => {
 export const getGenres = async (req, res, next) => {
     try {
         const genres = await TmdbModel.getGenres();
-        res.json(genres);
+        res.json({ genres });
     } catch (err) {
         next(err);
     }
