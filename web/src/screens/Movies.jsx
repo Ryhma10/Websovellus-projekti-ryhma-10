@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { getMoviesFromTmdb, getGenresFromTmdb, getPopularMoviesFromTmdb } from "../components/api";
 import ReactPaginate from "react-paginate";
 import placeholder from '../assets/placeholder.png';
 import "./Movies.css";
@@ -23,32 +22,65 @@ function Movies() {
   const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => currentYear - i);
 
   useEffect(() => {
-    const fetchMovies = async () => {
-      const movieData = await getMoviesFromTmdb(movieQuery, page);
-      setExternalMovies(movieData.results || []);
-      if (movieData.results && movieData.results.length > 0) {
-        setPageCount(movieData.total_pages);
-      } else {
-        setPageCount(page);
+    const fetchData = async () => {
+      try {
+        // Fetch movies
+        const movieResponse = await fetch(`http://localhost:3001/api/apis/?query=${movieQuery}&page=${page}`, {
+          method: "GET",
+          headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (movieResponse.ok) {
+          const movieData = await movieResponse.json();
+          console.log("Movie data fetched:", movieData);
+          setExternalMovies(movieData.results || []);
+          setPageCount(movieData.total_pages || 0);
+        } else {
+          console.error("Failed to fetch movies:", movieResponse.statusText);
+        }
+
+        // Fetch popular movies
+        const popularResponse = await fetch("http://localhost:3001/api/apis/popular", {
+          method: "GET",
+          headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (popularResponse.ok) {
+          const popularData = await popularResponse.json();
+          console.log("Popular movies fetched:", popularData);
+          setPopular(popularData || []);
+        } else {
+          console.error("Failed to fetch popular movies:", popularResponse.statusText);
+        }
+
+        // Fetch genres
+        const genreResponse = await fetch("http://localhost:3001/api/apis/genres", {
+          method: "GET",
+          headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (genreResponse.ok) {
+          const genreData = await genreResponse.json();
+          console.log("Genres fetched:", genreData);
+          setExternalGenres(genreData || []);
+        } else {
+          console.error("Failed to fetch genres:", genreResponse.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
       }
     };
-    fetchMovies();
-  }, [page, movieQuery]);
-    
-  useEffect(() => {
-    const fetchPopular = async () => {
-     const data = await getPopularMoviesFromTmdb(); //Haetaan TMDB:stä suosituimmat elokuvat
-      setPopular(data || []);
-    };
-    fetchPopular();  //Haetaan vain kerran komponentin alussa
-    }, []);
 
-  useEffect(() => {
-    const fetchGenres = async () => {
-      const genreData = await getGenresFromTmdb();
-      setExternalGenres(genreData);
-    };
-    fetchGenres();
+    fetchData();
   }, [page, movieQuery, genreQuery]);
 
   const filteredMovies = externalMovies.filter(movie => {

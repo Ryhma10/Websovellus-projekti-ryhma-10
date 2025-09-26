@@ -1,5 +1,4 @@
 import * as favoritesModel from '../models/FavoritesModel.js'
-import { getMoviesFromTmdb } from '../helper/tmdb.js'
 
 export const addFavorite = async (req, res, next) => {
   try {
