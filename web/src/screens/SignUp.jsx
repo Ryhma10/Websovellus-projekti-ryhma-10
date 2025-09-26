@@ -1,27 +1,41 @@
-import React, { useState } from "react";
+import React, { useState } from "react"
 import './Modal.css';
 
 function SignUp({ isOpen, onClose, onSignIn }) {
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [username, setUsername] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [error, setError] = useState(null) //virhetila
+    const [loading, setLoading] = useState(false) //lataustila
 
     const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
+
     try {
-      const response = await fetch("http://localhost:3001/api/users/signup", {
+      const res = await fetch("http://localhost:3001/api/users/signup", {
         method: "POST",
         headers: {"Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password })
-      });
-      if(response.ok) {
-        onClose();
-      } else {
-        alert("Registration failed");
-      }
+      })
 
-    } catch (error) {
-      alert("Error connecting to server");
+      const raw = await res.text()
+      let data = null
+      try { data = raw ? JSON.parse(raw) : null } catch {}
+
+      if(!res.ok) {
+        const msg = data?.error || raw || `Registration failed (HTTP ${res.status})`
+        setError(msg)
+        alert(msg)
+        return
+      }
+        onClose()
+      } catch {
+        setError("Error connecting to server")
+        alert("Error connecting to server")
+      } finally {
+      setLoading(false)
     }
   }
 

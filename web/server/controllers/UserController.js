@@ -1,73 +1,119 @@
-//Sovelluslogiikka (HTTP-pyynnöt, tietokantakyselyt jne.)import { hash, compare } from "bcrypt";
+//Sovelluslogiikka (HTTP-pyynnöt, tietokantakyselyt jne.). Import { hash, compare } from "bcrypt";
 
-import jwt from "jsonwebtoken";
-import { createUser, findByUsername, deleteById } from "../models/UserModel.js";
-import { hash, compare } from "bcrypt";
+import jwt from "jsonwebtoken"
+import { createUser, findByUsername, deleteById } from "../models/UserModel.js"
+import { hash, compare } from "bcrypt"
+
+//tehdään validointiapuri, domain koostuu labeleista, välissä vähintään yksi piste. i lopussa = case-insensitive
+const EMAIL_RE = /^[^\s@]+@[a-z0-9-]+(?:\.[a-z0-9-]+)+$/i
+
+//salasanassa vähintään 8 merkkiä, vähintään 1 iso kirjain ja yksi numero
+const PASS_RE = /^(?=.*[A-Z])(?=.*\d).{8,}$/
+
+//siivousapuri
+const clean = (v) => String(v ?? "").trim();
+
+//tehdään viive epäonnistuneisiin signin pyyntöihin, auttaa botteja vastaan
+const sleep = (baseMs = 250, jitterMs = 250) =>
+  new Promise(resolve => setTimeout(resolve, baseMs + Math.floor(Math.random() * jitterMs)))
 
 export const signup = async (req, res, next) => {
   try {
-    console.log("Request body:", req.body); // See what data arrives
-    const { email, password, username } = req.body;
+    //console.log("Request body:", req.body); // See what data arrives
+    //const { email, password, username } = req.body;
+    const username = clean(req.body.username)
+    const email = clean(req.body.email).toLowerCase()
+    const password = String(req.body.password ?? "")
+
     if (!username || !email || !password) {
-      return next(new Error("Email and password are required"));
+      //return next(new Error("Email and password are required"));
+      return res.status(400).json({ error: "Username, email and password are required"})
+    }
+    if (!EMAIL_RE.test(email)) {
+      return res.status(400).json({ error: "Invalid email"})
+    }
+    if (!PASS_RE.test(password)) {
+      return res.status(400).json({ 
+        error: "Password must be at least 8 characters long and include at least one uppercase letter and one digit"})
     }
 
     const hashedPassword = await hash(password, 10);
-    const newUser = await createUser(username, email, hashedPassword);
+    
+    let newUser;
+    try {
+      newUser = await createUser(username, email, hashedPassword)
+    } catch (err) {
+      if (err?.code === "23505") {
+        return res.status(409).json({ error: "Account identifier already in use"})
+      }
+      throw err
+    }
 
-    res.status(201).json({ id: newUser.id, email: newUser.email });
+    return res.status(201).json({ 
+      id: newUser.id, 
+      email: newUser.email,
+      username: newUser.username
+    });
   } catch (err) {
-    console.error(err); // See the error in your backend terminal
-    next(err);
+    //console.error(err); //tarkistetaan error
+    return next(err);
   }
 }
 
 export const signin = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
-    console.log("Signin request body:", req.body); // Debug line
+    const username = clean(req.body.username)
+    const password = String(req.body.password ?? "")
+    //console.log("Signin request body:", req.body); // Debuggaus
+
     if (!username || !password) {
-      return next(new Error("Username and password are required"));
+      await sleep() //200-500 ms viive
+      return res.status(400).json({ error: "Username and password are required"})
     }
 
-const dbUser = await findByUsername(username); // Haetaan käyttäjä tietokannasta käyttäjänimellä
-let isMatch = false;
-if (dbUser) {
-  isMatch = await compare(password, dbUser.password_hash); // Tarkistetaan, että salasana täsmää
-}
-if (!dbUser || !isMatch) {
-  // Jos käyttäjää ei löydy tai salasana on väärä, palautetaan virhe
-  const error = new Error("Invalid username or password");
-  error.status = 401; // HTTP 401 unauthorized
-  return next(error); // Siirrä virhe Expressiin virheenkäsittelijälle
-}
+    const dbUser = await findByUsername(username);
+    if (!dbUser) {
+      await sleep() //200-500 ms viive
+      return res.status(401).json({ error: "Invalid credentials"});
+    }
+
+    const isMatch = await compare(password, dbUser.password_hash);
+    if (!isMatch) {
+      await sleep() //200-500 ms viive
+      return res.status(401).json({ error: "Invalid credentials"})
+    }
+
+    if (!process.env.JWT_SECRET_KEY) {
+      return res.status(500).json({ error: "JWT secret not configured"})
+    }
 
     const token = jwt.sign(
       { userId: dbUser.id, username: dbUser.username },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "1h" }
-    );
+    )
 
     res.status(200).json({
       id: dbUser.id,
       email: dbUser.email,
       token,
-    });
+    })
+
   } catch (err) {
-    next(err);
+    return next(err)
   }
-};
+}
 
 export const deleteAccount = async (req, res, next) => {
   try {
-    const userId = req.user.userId; // get userId from JWT payload
+    const userId = req.user?.userId //vaatii auth-middlewarea
     if (!userId) {
-      return res.status(400).json({ message: "User ID missing in token." });
+      return res.status(401).json({ message: "Authentication required" })
     }
-    await deleteById(userId);
-    res.status(200).json({ message: "Account deleted." });
+    await deleteById(userId)
+    res.status(200).json({ message: "Account deleted." })
   } catch (err) {
-    next(err);
+    return next(err)
   }
-};
+}
 

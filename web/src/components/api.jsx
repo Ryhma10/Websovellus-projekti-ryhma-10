@@ -1,4 +1,7 @@
-const getTheatresFromFinnkino = async () => {
+//Api-client
+//Asynkroniset funktiot, joilla React-komponentit hakevat dataa Finnkinosta ja TMDB:stä.
+
+const getTheatresFromFinnkino = async () => { //haetaan teatterialueet endpointista
     const url = 'https://www.finnkino.fi/xml/TheatreAreas/';
     const apiData = await getFinnkinoApiData(url);
     const tempTheaters = [];
@@ -32,8 +35,6 @@ const getDatesFromFinnkino = async (areaIds = []) => {
     }
     return allDates;
 }
-
-
 
 const getFinnkinoApiData = async (url) => {
     try {

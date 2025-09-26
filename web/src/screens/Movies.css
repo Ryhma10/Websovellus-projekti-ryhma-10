@@ -38,6 +38,7 @@
 .movie-item {
     border-radius: 16px;
     border: 1px solid var(--accent-color);
+    cursor: pointer;
 }
 
 .movie-poster {

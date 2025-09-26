@@ -5,8 +5,7 @@ import { pool } from '../server/helper/db.js'
 import userRouter from './routes/UserRouter.js';
 import reviewRouter from './routes/reviewRouter.js';
 
-
-const PORT = process.env.PORT  //Express-palvelin käynnistetään portissa 3001           
+const PORT = process.env.PORT || 3001 //Express-palvelin käynnistetään portissa 3001           
 
 const app = express()           //luodaan Express-sovellus
 
@@ -29,5 +28,5 @@ app.use('/api/users', userRouter);
 app.use('/api/reviews', reviewRouter);
 
 app.listen(PORT, () => {          //käynnistetään palvelin
-    console.log(`Server is running on http://localhost:${PORT}`)
+    console.log(`Server is running on http://localhost:${PORT} (env PORT=${process.env.PORT})`)
 })
