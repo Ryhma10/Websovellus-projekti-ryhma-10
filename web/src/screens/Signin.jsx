@@ -58,7 +58,7 @@ function SignIn({ isOpen, onClose, onSignUp, onLoginSuccess }) {
           />
           <button type="submit" className="login-btn">Login</button>
         </form>
-        <button onClick={onClose} className="close-btn">Close</button>
+        <button onClick={onClose} className="close-btn">X</button>
 
         {error && <div className="error-message">{error}</div>}
 

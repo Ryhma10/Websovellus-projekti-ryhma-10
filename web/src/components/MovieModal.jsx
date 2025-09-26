@@ -7,6 +7,7 @@ function MovieModal({ movie, onClose }) {
     const [stars, setStars] = useState(0);
     const [reviews, setReviews] = useState([]);
     const [showReviews, setShowReviews] = useState(false);
+    const [isFavorite, setIsFavorite] = useState(false);
 
     useEffect(() => {
         async function fetchReviews() {
@@ -42,6 +43,28 @@ function MovieModal({ movie, onClose }) {
         console.log("Review submitted: ", data);
     };
 
+    const handleAddToFavorites = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const res = await fetch("http://localhost:3001/api/user_favorites", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    tmdb_id: movie.id,
+                    user_id: localStorage.getItem("userId")
+                })
+            });
+            if (res.ok) {
+                setIsFavorite(true);
+            }
+        } catch (error) {
+            console.error("Error adding to favorites:", error);
+        }
+    }
+
     //Calculate average stars
     const averageStars = reviews.length
     ? (reviews.reduce((sum, r) => sum + r.stars, 0) / reviews.length).toFixed(1)
@@ -64,6 +87,14 @@ function MovieModal({ movie, onClose }) {
                 <button onClick={() => setShowReviews(!showReviews)}>
                     {showReviews ? "Hide Reviews" : "Show Reviews"}
                 </button>
+                <button 
+                    className="favorite-btn"
+                    onClick={handleAddToFavorites}
+                    disabled={isFavorite}
+                >
+                    {isFavorite ? "Added to Favorites" : "Add to Favorites"}
+                </button>
+                <button className="group-btn">Add to Group</button>
                 {showReviews && (
                     <ul className="reviews-list">
                         {reviews.length === 0 ? (
