@@ -1,7 +1,6 @@
 import * as favoritesModel from '../models/FavoritesModel.js'
-import { getMoviesFromTmdb } from '../helper/tmdb.js'
 
-export const addFavorite = async (req, res, next) => {
+export const createFavorite = async (req, res, next) => {
   try {
     const user_id = req.user.userId // JWT
     const { tmdb_id } = req.body

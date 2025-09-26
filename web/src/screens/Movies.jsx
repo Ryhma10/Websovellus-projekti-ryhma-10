@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { getMoviesFromTmdb, getGenresFromTmdb, getPopularMoviesFromTmdb } from "../components/api";
 import ReactPaginate from "react-paginate";
 import placeholder from '../assets/placeholder.png';
 import "./Movies.css";
-import PopularCarousel from "../components/PopularCarousel"; //Tuodaan karuselli
-import MovieModal from "../components/MovieModal"; // Tuodaan elokuvan tiedot -modal
+import PopularCarousel from "../components/PopularCarousel";
+import MovieModal from "../components/MovieModal";
 
 function Movies() {
   const [movieQuery, setMovieQuery] = useState("");
@@ -14,43 +13,62 @@ function Movies() {
   const [externalGenres, setExternalGenres] = useState([]);
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
-  const [popular, setPopular] = useState([]); // Tarkistetaan suosituimmat elokuvat
+  const [popular, setPopular] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  // tehdään lista vuosista 1900 -> nykyhetki
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => currentYear - i);
 
+  // Fetch movies whenever movieQuery or page changes
   useEffect(() => {
     const fetchMovies = async () => {
-      const movieData = await getMoviesFromTmdb(movieQuery, page);
-      setExternalMovies(movieData.results || []);
-      if (movieData.results && movieData.results.length > 0) {
-        setPageCount(movieData.total_pages);
-      } else {
-        setPageCount(page);
+      try {
+        const res = await fetch(`http://localhost:3001/api/tmdb/search?query=${movieQuery}&page=${page}`);
+        const movieData = await res.json();
+        setExternalMovies(movieData.results || []);
+        setPageCount(movieData.total_pages || 1);
+      } catch (err) {
+        console.error("Failed to fetch movies:", err);
       }
     };
-    fetchMovies();
-  }, [page, movieQuery]);
-    
+    if (movieQuery.trim() !== "") {
+      fetchMovies();
+    } else {
+      setExternalMovies([]);
+      setPageCount(1);
+    }
+  }, [movieQuery, page]);
+
+  // Fetch popular movies once
   useEffect(() => {
     const fetchPopular = async () => {
-     const data = await getPopularMoviesFromTmdb(); //Haetaan TMDB:stä suosituimmat elokuvat
-      setPopular(data || []);
+      try {
+        const res = await fetch('http://localhost:3001/api/tmdb/popular');
+        const data = await res.json();
+        setPopular(data || []);
+      } catch (err) {
+        console.error("Failed to fetch popular movies:", err);
+      }
     };
-    fetchPopular();  //Haetaan vain kerran komponentin alussa
-    }, []);
+    fetchPopular();
+  }, []);
 
+  // Fetch genres once
   useEffect(() => {
     const fetchGenres = async () => {
-      const genreData = await getGenresFromTmdb();
-      setExternalGenres(genreData);
+      try {
+        const res = await fetch('http://localhost:3001/api/tmdb/genres');
+        const genreData = await res.json();
+        setExternalGenres(genreData.genres || []); // Take the array from the response
+      } catch (err) {
+        console.error("Failed to fetch genres:", err);
+      }
     };
     fetchGenres();
-  }, [page, movieQuery, genreQuery]);
+  }, []);
 
+  // Filter movies based on genre and year
   const filteredMovies = externalMovies.filter(movie => {
     const matchesTitle =
       movieQuery.trim() === "" ||
@@ -65,20 +83,21 @@ function Movies() {
       (movie.release_date && movie.release_date.startsWith(yearQuery));
 
     return matchesTitle && matchesGenre && matchesYear;
-
   });
 
   return (
     <>
       <h1 className="movies">Find Your Favorite Movies</h1>
+
       <div className="all-movies-search">
         <input
           type="text"
-          placeholder="Hae Elokuvia..."
+          placeholder="Search Movies..."
           value={movieQuery}
           onChange={(e) => setMovieQuery(e.target.value)}
           className="movie-search"
         />
+
         <select
           value={genreQuery}
           onChange={e => setGenreQuery(e.target.value)}
@@ -91,6 +110,7 @@ function Movies() {
             </option>
           ))}
         </select>
+
         <select
           value={yearQuery}
           onChange={(e) => setYearQuery(e.target.value)}
@@ -103,17 +123,20 @@ function Movies() {
             </option>
           ))}
         </select>
-
       </div>
-      <ReactPaginate className="pagination"
-        breakLabel="..."
-        nextLabel=">"
-        onPageChange={(e) => setPage(e.selected + 1)}
-        pageRangeDisplayed={5}
-        pageCount={pageCount}
-        previousLabel="<"
-        renderOnZeroPageCount={null}
-      />
+
+      {filteredMovies.length > 0 && (
+        <ReactPaginate
+          className="pagination"
+          breakLabel="..."
+          nextLabel=">"
+          onPageChange={(e) => setPage(e.selected + 1)}
+          pageRangeDisplayed={5}
+          pageCount={pageCount}
+          previousLabel="<"
+          renderOnZeroPageCount={null}
+        />
+      )}
 
       <div className="movie-table-container">
         <ul className="movie-results">
@@ -132,22 +155,24 @@ function Movies() {
                   setShowModal(true);
                 }}
               />
-              <div className="movie-info">
-                {movie.title}
-              </div>
+              <div className="movie-info">{movie.title}</div>
             </li>
           ))}
         </ul>
       </div>
+
+      {/* Show popular carousel if no search query */}
       {movieQuery.trim() === "" && popular.length > 0 && <PopularCarousel movies={popular} />}
+
+      {/* Modal for selected movie */}
       {showModal && selectedMovie && (
         <MovieModal
           movie={selectedMovie}
           onClose={() => setShowModal(false)}
         />
       )}
-    </> //Näytetään karuselli, jos hakukenttä on tyhjä
-  )
+    </>
+  );
 }
 
-export default Movies
+export default Movies;
