@@ -4,25 +4,39 @@ export async function createUser(username, email, hashedPassword) {
   const result = await pool.query(
     "INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3) RETURNING *",
     [username, email, hashedPassword]
-  );
-  return result.rows[0];
+  )
+  return result.rows[0]
 }
 
 export async function findByUsername(username) {
   const result = await pool.query(
     "SELECT * FROM users WHERE username = $1",
     [username]
-  );
-  return result.rows[0] || null;
+  )
+  return result.rows[0] || null
 }
 
+//poistaa kirjautuneen käyttäjän tilin turvallisesti transaktiossa:
+//asettaa app.user_id vain operaation ajaksi (set_config(..., true)) ja tekee DELETE:n 
+//samassa transaktiossa, jotta users_delete_guard sallii poiston.
 export async function deleteById(id) {
-  // Set session variable for trigger
-    // Set session variable for trigger (must use string interpolation, not $1)
-    await pool.query(`SET app.user_id = '${id}'`);
-  const result = await pool.query(
+  const client = await pool.connect()
+  try {
+    await client.query("BEGIN")
+    await client.query(
+      "SELECT set_config('app.user_id', $1::text, true)",
+      [String(id)]
+    )
+    const result = await client.query(
     "DELETE FROM users WHERE id = $1 RETURNING *",
     [id]
-  );
-  return result.rows[0] || null;
+    )
+    await client.query("COMMIT")
+    return result.rows[0] || null
+  } catch (err) {
+    try { await client.query("ROLLBACK") } catch {}
+    throw err
+  } finally {
+    client.release()
+  }
 }
