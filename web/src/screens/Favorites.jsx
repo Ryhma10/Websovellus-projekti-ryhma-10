@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import './Favorites.css';
 
 function Favorites() {
-  const [favorites, setFavorites] = useState([]);
   const [movies, setMovies] = useState([]);
 
   useEffect(() => {
@@ -10,27 +9,14 @@ function Favorites() {
       const token = localStorage.getItem("token");
       const res = await fetch("http://localhost:3001/api/user_favorites", {
         headers: {
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       });
       const data = await res.json();
-      setFavorites(data);
+      setMovies(data);
     };
     fetchFavorites();
   }, []);
-
-  useEffect(() => {
-    const fetchMovieDetails = async () => {
-      const details = await Promise.all(
-        favorites.map(async fav => {
-          const res = await fetch(`https://api.themoviedb.org/3/movie/${fav.tmdb_id}?api_key=YOUR_TMDB_API_KEY`);
-          return await res.json();
-        })
-      );
-      setMovies(details);
-    };
-    if (favorites.length > 0) fetchMovieDetails();
-  }, [favorites]);
 
   return (
     <div>
@@ -41,9 +27,11 @@ function Favorites() {
         ) : (
           movies.map(movie => (
             <div key={movie.id} className="favorite-movie">
-              <img 
-                src={movie.poster_path ? `https://image.tmdb.org/t/p/w200${movie.poster_path}` : "/placeholder.png"}  
-                alt={movie.title} 
+              <img
+                src={movie.poster_path
+                  ? `https://image.tmdb.org/t/p/w200${movie.poster_path}`
+                  : "/placeholder.png"}
+                alt={movie.title}
               />
               <h3>{movie.title}</h3>
               <p>{movie.overview}</p>
