@@ -1,4 +1,5 @@
 import rateLimit from 'express-rate-limit'
+import { ipKeyGenerator } from 'express-rate-limit'
 
 export const signinLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,     // 15 min
@@ -6,7 +7,7 @@ export const signinLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   // avain: käyttäjätunnus jos annettu, muuten IP
-  keyGenerator: (req) => req.body?.username?.toLowerCase?.() || req.ip,
+  keyGenerator: (req) => req.body?.username?.toLowerCase?.() || ipKeyGenerator(req),
   message: { error: 'Too many sign-in attempts. Try again later.' }
 })
 
@@ -15,6 +16,6 @@ export const signupLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.body?.email?.toLowerCase?.() || req.ip,
+  keyGenerator: (req) => req.body?.email?.toLowerCase?.() || ipKeyGenerator(req),
   message: { error: 'Too many sign-up attempts. Try again later.' }
 })
