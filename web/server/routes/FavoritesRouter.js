@@ -4,7 +4,7 @@ import * as favoritesController from "../controllers/FavoritesController.js";
 
 const router = Router();
 
-router.post("/", Authentication, favoritesController.addFavorite);
+router.post("/", Authentication, favoritesController.createFavorite);
 router.get("/", Authentication, favoritesController.getFavoritesByUser);
 
 export default router;
