@@ -4,8 +4,8 @@ import ApiController from "../controllers/ApiController.js";
 
 const router = Router();
 
-router.get("/", Authentication , ApiController.fetchMovies);
-router.get("/genres", Authentication , ApiController.fetchGenres);
-router.get("/popular", Authentication , ApiController.fetchPopularMovies);
+router.get("/", ApiController.fetchMovies);
+router.get("/genres", ApiController.fetchGenres);
+router.get("/popular" , ApiController.fetchPopularMovies);
 
 export default router;

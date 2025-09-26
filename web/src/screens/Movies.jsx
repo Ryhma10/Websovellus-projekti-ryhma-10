@@ -7,6 +7,7 @@ import MovieModal from "../components/MovieModal"; // Tuodaan elokuvan tiedot -m
 
 function Movies() {
   const [movieQuery, setMovieQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState(""); // Debounced value
   const [genreQuery, setGenreQuery] = useState("");
   const [yearQuery, setYearQuery] = useState("");
   const [externalMovies, setExternalMovies] = useState([]);
@@ -22,10 +23,21 @@ function Movies() {
   const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => currentYear - i);
 
   useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(movieQuery);
+    }, 500); // 500ms debounce delay
+
+    // Clear the timeout if the input changes before the delay is over
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [movieQuery]);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch movies
-        const movieResponse = await fetch(`http://localhost:3001/api/apis/?query=${movieQuery}&page=${page}`, {
+        // Fetch movies using the debounced query
+        const movieResponse = await fetch(`http://localhost:3001/api/apis/?query=${debouncedQuery}&page=${page}`, {
           method: "GET",
           headers: {
             "Authorization": "Bearer " + localStorage.getItem("token"),
@@ -35,7 +47,6 @@ function Movies() {
 
         if (movieResponse.ok) {
           const movieData = await movieResponse.json();
-          console.log("Movie data fetched:", movieData);
           setExternalMovies(movieData.results || []);
           setPageCount(movieData.total_pages || 0);
         } else {
@@ -53,7 +64,6 @@ function Movies() {
 
         if (popularResponse.ok) {
           const popularData = await popularResponse.json();
-          console.log("Popular movies fetched:", popularData);
           setPopular(popularData || []);
         } else {
           console.error("Failed to fetch popular movies:", popularResponse.statusText);
@@ -70,7 +80,6 @@ function Movies() {
 
         if (genreResponse.ok) {
           const genreData = await genreResponse.json();
-          console.log("Genres fetched:", genreData);
           setExternalGenres(genreData || []);
         } else {
           console.error("Failed to fetch genres:", genreResponse.statusText);
@@ -80,8 +89,10 @@ function Movies() {
       }
     };
 
-    fetchData();
-  }, [page, movieQuery, genreQuery]);
+    if (debouncedQuery.trim() !== "") {
+      fetchData();
+    }
+  }, [debouncedQuery, page]); // Run this effect whenever `debouncedQuery` or `page` changes
 
   const filteredMovies = externalMovies.filter(movie => {
     const matchesTitle =

@@ -6,7 +6,7 @@ const ApiController = {
         console.log(req.query);
         try {
             const movies = await getMoviesFromTmdb(query, page);
-            res.status(201).json(movies);
+            res.status(200).json(movies);
         } catch (error) {
             res.status(500).json({ error: 'Failed to fetch movies' });
         }
@@ -15,7 +15,7 @@ const ApiController = {
     fetchGenres: async (req, res) => {
         try {
             const genres = await getGenresFromTmdb();
-            res.json(genres);
+            res.status(200).json(genres);
         } catch (error) {
             res.status(500).json({ error: 'Failed to fetch genres' });
         }
@@ -24,7 +24,7 @@ const ApiController = {
     fetchPopularMovies: async (req, res) => {
         try {
             const popularMovies = await getPopularMoviesFromTmdb();
-            res.json(popularMovies);
+            res.status(200).json(popularMovies);
         } catch (error) {
             res.status(500).json({ error: 'Failed to fetch popular movies' });
         }
