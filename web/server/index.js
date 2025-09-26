@@ -34,3 +34,5 @@ app.use('/api/tmdb', TmdbRouter);
 app.listen(PORT, () => {          //käynnistetään palvelin
     console.log(`Server is running on http://localhost:${PORT} (env PORT=${process.env.PORT})`)
 })
+
+export default app;
