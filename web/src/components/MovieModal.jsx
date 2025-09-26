@@ -71,7 +71,7 @@ function MovieModal({ movie, onClose }) {
                         ) : (
                             reviews.map((r, idx) => (
                                 <li key={idx}>
-                                    <strong>{r.username}</strong>: {r.stars} ⭐ - {r.body}
+                                    <strong>{r.username}</strong>: {r.stars} ⭐ - "{r.body}"
                                 </li>
                             ))
                         )}
