@@ -66,7 +66,7 @@ function SignUp({ isOpen, onClose, onSignIn }) {
           />
           <button type="submit" className="login-btn">Register</button>
         </form>
-        <button onClick={onClose} className="close-btn">Close</button>
+        <button onClick={onClose} className="close-btn">X</button>
 
         <p>Already have an account? <a href="#" onClick={e => { e.preventDefault(); onSignIn(); }}>Sign in</a></p>
       </div>

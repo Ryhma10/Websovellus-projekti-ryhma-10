@@ -5,7 +5,7 @@ import { useState } from 'react';
 import NavBar from '../components/NavBar';
 import Movies from "./Movies";
 import Groups from './Groups';
-import Reviews from './Reviews';
+import Favorites from './Favorites';
 import Home from './Home';
 import Profile from './Profile';
 
@@ -26,7 +26,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/movies" element={<Movies />} />
           <Route path="/groups" element={<Groups />} />
-          <Route path="/reviews" element={<Reviews />} />
+          <Route path="/favorites" element={<Favorites />} />
           {/* Profile saa setIsLoggedIn propin, jotta logout toimii */}
           <Route path="/profile" element={<Profile setIsLoggedIn={setIsLoggedIn} />} />
         </Routes>

@@ -24,7 +24,7 @@ function NavBar({ isLoggedIn, setIsLoggedIn }) {
           <li><Link to="/">Home</Link></li>
           <li><Link to="/movies">All Movies</Link></li>
           <li><Link to="/groups">Groups</Link></li>
-          <li><Link to="/reviews">Reviews</Link></li>
+          <li><Link to="/favorites">Favorites</Link></li>
           <li className="profile-link">
             {isLoggedIn ? (
               <Link to="/profile">Profile</Link>

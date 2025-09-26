@@ -1,0 +1,5 @@
+
+.favorites-title, p{
+    top: 20vh;
+    color: var(--text-color);
+}
