@@ -24,7 +24,12 @@ function Movies() {
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/tmdb/search?query=${movieQuery}&page=${page}`);
+        const token = localStorage.getItem("token");
+        const res = await fetch(`http://localhost:3001/api/tmdb/search?query=${movieQuery}&page=${page}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         const movieData = await res.json();
         setExternalMovies(movieData.results || []);
         setPageCount(movieData.total_pages || 1);
@@ -44,7 +49,12 @@ function Movies() {
   useEffect(() => {
     const fetchPopular = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/tmdb/popular');
+        const token = localStorage.getItem("token");
+        const res = await fetch('http://localhost:3001/api/tmdb/popular', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         const data = await res.json();
         setPopular(data || []);
       } catch (err) {
@@ -58,7 +68,12 @@ function Movies() {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/tmdb/genres');
+        const token = localStorage.getItem("token");
+        const res = await fetch('http://localhost:3001/api/tmdb/genres', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         const genreData = await res.json();
         setExternalGenres(genreData.genres || []); // Take the array from the response
       } catch (err) {

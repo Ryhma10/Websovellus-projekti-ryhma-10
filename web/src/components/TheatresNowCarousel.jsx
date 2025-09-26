@@ -26,7 +26,7 @@ const TheatresNowCarousel = () => {
                     title: show.getElementsByTagName("Title")[0]?.textContent,
                     //theatre: show.getElementsByTagName("Theatre")[0]?.textContent, // Jos halutaan näyttää teatteri
                     //start: show.getElementsByTagName("dttmShowStart")[0]?.textContent, // Jos halutaan näyttää elokuvan alkuaika
-                    image: show.getElementsByTagName("EventSmallImagePortrait")[0]?.textContent 
+                    image: show.getElementsByTagName("EventMediumImagePortrait")[0]?.textContent 
                 })));
                 setLoading(false);
             })

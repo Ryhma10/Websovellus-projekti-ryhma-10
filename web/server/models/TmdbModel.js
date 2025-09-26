@@ -1,3 +1,7 @@
+import dotenv from "dotenv";
+import fetch from "node-fetch";
+dotenv.config();
+
 const apiKey = process.env.TMDB_API_KEY;
 
 export async function searchMovies(query, page = 1) {

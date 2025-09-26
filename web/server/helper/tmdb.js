@@ -1,4 +1,6 @@
 import fetch from "node-fetch";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Movie by ID (esim. tmdb_id = 550 => Fight Club)
 export async function getMovieByIdFromTmdb(id) {
