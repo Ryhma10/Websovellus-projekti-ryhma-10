@@ -30,19 +30,17 @@ export const signin = async (req, res, next) => {
       return next(new Error("Username and password are required"));
     }
 
-    const dbUser = await findByUsername(username);
-    if (!dbUser) {
-      const error = new Error("User not found");
-      error.status = 404;
-      return next(error);
-    }
-
-    const isMatch = await compare(password, dbUser.password_hash);
-    if (!isMatch) {
-      const error = new Error("Invalid password");
-      error.status = 401;
-      return next(error);
-    }
+const dbUser = await findByUsername(username); // Haetaan käyttäjä tietokannasta käyttäjänimellä
+let isMatch = false;
+if (dbUser) {
+  isMatch = await compare(password, dbUser.password_hash); // Tarkistetaan, että salasana täsmää
+}
+if (!dbUser || !isMatch) {
+  // Jos käyttäjää ei löydy tai salasana on väärä, palautetaan virhe
+  const error = new Error("Invalid username or password");
+  error.status = 401; // HTTP 401 unauthorized
+  return next(error); // Siirrä virhe Expressiin virheenkäsittelijälle
+}
 
     const token = jwt.sign(
       { userId: dbUser.id, username: dbUser.username },
