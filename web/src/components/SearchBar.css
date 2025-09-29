@@ -5,7 +5,6 @@ body {
 .searchbar {
     gap: 2em;
     position: relative;
-    margin-top: 15vh;
     z-index: 1001;
     align-items: center;
 }

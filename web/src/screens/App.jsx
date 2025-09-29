@@ -8,6 +8,7 @@ import Groups from './Groups';
 import Favorites from './Favorites';
 import Home from './Home';
 import Profile from './Profile';
+import PublicFavorites from './PublicFavorites';
 
 function App() {
   // Kirjautumistila App-tasolla, jotta NavBar ja Profile saavat saman tilan
@@ -29,6 +30,7 @@ function App() {
           <Route path="/favorites" element={<Favorites />} />
           {/* Profile saa setIsLoggedIn propin, jotta logout toimii */}
           <Route path="/profile" element={<Profile setIsLoggedIn={setIsLoggedIn} />} />
+          <Route path="/public/:userId" element={<PublicFavorites />} />
         </Routes>
       </div>
     </>
