@@ -35,3 +35,5 @@ app.use("/api/favorites", FavoriteRouter);
 app.listen(PORT, () => {          //käynnistetään palvelin
     console.log(`Server is running on http://localhost:${PORT} (env PORT=${process.env.PORT})`)
 })
+
+export default app;
