@@ -1,0 +1,5 @@
+.public-title, .public-info, .public-items{
+    color: var(--text-color);
+    text-align: center;
+    list-style: none;
+}

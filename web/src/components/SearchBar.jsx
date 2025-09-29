@@ -57,7 +57,7 @@ export default function SearchBar() {
         {/* Elokuvan haku inputilla */}
       <input 
         type="text"
-        placeholder="Hae Finnkinosta..."
+        placeholder="Search Finnkino..."
         value={movieQuery}
         onChange={(e) => setMovieQuery(e.target.value)}
         className="movie-search"
@@ -69,7 +69,7 @@ export default function SearchBar() {
           value={selectedArea}
           onChange={e => setSelectedArea(e.target.value)}
         >
-          <option value="">Valitse teatteri</option>
+          <option value="">Select theatre</option>
           {uniqueTheatres.map((theatre, i) => (
             <option key={theatre.id} value={theatre.id}>
               {theatre.area}
@@ -83,7 +83,7 @@ export default function SearchBar() {
           value={selectedTime}
           onChange={e => setSelectedTime(e.target.value)}
         >
-          <option value="">Valitse näytösaika</option>
+          <option value="">Select showtime</option>
           {uniqueTimes.map((time, i) => (
             <option key={i} value={time}>
               {new Date(time).toLocaleString('fi-FI')}

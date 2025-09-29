@@ -30,6 +30,7 @@ app.use('/api/users', userRouter);
 app.use('/api/reviews', reviewRouter);
 app.use('/api/user_favorites', FavoriteRouter);
 app.use('/api/tmdb', TmdbRouter);
+app.use("/api/favorites", FavoriteRouter);
 
 app.listen(PORT, () => {          //käynnistetään palvelin
     console.log(`Server is running on http://localhost:${PORT} (env PORT=${process.env.PORT})`)

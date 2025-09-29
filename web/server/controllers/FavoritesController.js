@@ -35,3 +35,20 @@ export const getFavoritesByUser = async (req, res, next) => {
     next(err);
   }
 };
+
+export const getPublicFavorites = async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+    const tmdbIds = await favoritesModel.getPublicFavoritesByUser(userId)
+
+    //Haetaan elokuvan tiedot jokaiselle tmdb_id:lle käyttäen tmdb.js helperiä
+    const movies = await Promise.all(
+      tmdbIds.map(id => getMovieByIdFromTmdb(id))
+    )
+
+    res.status(200).json(movies)
+  } catch (err) {
+    console.error("getPublicFavorites error:", err.message);
+    next(err);
+  }
+}

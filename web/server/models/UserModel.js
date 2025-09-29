@@ -16,6 +16,14 @@ export async function findByUsername(username) {
   return result.rows[0] || null
 }
 
+export async function findById(user_id) {
+  const result = await pool.query(
+    "SELECT * FROM users WHERE id = $1",
+    [user_id]
+  )
+  return result.rows[0] || null
+}
+
 //poistaa kirjautuneen käyttäjän tilin turvallisesti transaktiossa:
 //asettaa app.user_id vain operaation ajaksi (set_config(..., true)) ja tekee DELETE:n 
 //samassa transaktiossa, jotta users_delete_guard sallii poiston.
