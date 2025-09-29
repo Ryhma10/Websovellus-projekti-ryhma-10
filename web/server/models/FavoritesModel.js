@@ -15,3 +15,11 @@ export async function getFavoritesByUser(user_id) {
     );
     return result.rows;
 }
+
+export const getPublicFavoritesByUser = async (user_id) => {
+  const result = await pool.query(
+    'SELECT tmdb_id FROM user_favorites WHERE user_id = $1',
+    [user_id]
+  )
+  return result.rows.map(row => row.tmdb_id)
+}

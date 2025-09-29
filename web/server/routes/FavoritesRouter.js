@@ -6,5 +6,6 @@ const router = Router();
 
 router.post("/", Authentication, favoritesController.createFavorite);
 router.get("/", Authentication, favoritesController.getFavoritesByUser);
+router.get("/public/:userId", favoritesController.getPublicFavorites);
 
 export default router;

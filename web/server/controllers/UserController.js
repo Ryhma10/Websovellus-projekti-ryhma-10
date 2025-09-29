@@ -1,7 +1,7 @@
 //Sovelluslogiikka (HTTP-pyynnöt, tietokantakyselyt jne.). Import { hash, compare } from "bcrypt";
 
 import jwt from "jsonwebtoken"
-import { createUser, findByUsername, deleteById } from "../models/UserModel.js"
+import { createUser, findByUsername, deleteById, findById } from "../models/UserModel.js"
 import { hash, compare } from "bcrypt"
 
 //tehdään validointiapuri, domain koostuu labeleista, välissä vähintään yksi piste. i lopussa = case-insensitive
@@ -114,6 +114,19 @@ export const deleteAccount = async (req, res, next) => {
     res.status(200).json({ message: "Account deleted." })
   } catch (err) {
     return next(err)
+  }
+}
+
+export const getUsernameById = async (req, res, next) => {
+  try {
+    const user = await findById(req.params.userId)
+    if (!user) {
+      return res.status(404).json({error: "User not found"})
+    }
+    res.json({username: user.username})
+  } catch (err) {
+    console.error("getUsernameById error:", err.message);
+    next(err);
   }
 }
 

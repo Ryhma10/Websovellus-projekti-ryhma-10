@@ -12,5 +12,6 @@ router.post("/logout", Authentication, (req, res) => {
   res.status(200).json({ message: "Logout successful" });
 }); //Logout ei tee mitään backendissä, mutta auth tarvitaan
 router.delete("/delete", Authentication, userController.deleteAccount); //delete tarvitsee authin
+router.get("/public/:userId", userController.getUsernameById);
 
 export default router;
