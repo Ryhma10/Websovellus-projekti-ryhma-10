@@ -1,11 +1,11 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
 import './Modal.css';
 
 function SignUp({ isOpen, onClose, onSignIn }) {
     const [username, setUsername] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-    const [error, setError] = useState(null) //virhetila
+    const [error, setError] = useState("") //virhetila
     const [loading, setLoading] = useState(false) //lataustila
 
     const handleSubmit = async (e) => {
@@ -25,9 +25,7 @@ function SignUp({ isOpen, onClose, onSignIn }) {
       try { data = raw ? JSON.parse(raw) : null } catch {}
 
       if(!res.ok) {
-        const msg = data?.error || raw || `Registration failed (HTTP ${res.status})`
-        setError(msg)
-        alert(msg)
+        setError(data?.error || data?.message || "Sing up failed")
         return
       }
         onClose()
@@ -56,17 +54,19 @@ function SignUp({ isOpen, onClose, onSignIn }) {
             type="email"
             placeholder="Email"
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={e => { setEmail(e.target.value); if (error) setError("") }}
           />
           <input
             type="password"
             placeholder="Password"
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={e => { setPassword(e.target.value); if (error) setError("") }}
           />
           <button type="submit" className="login-btn">Register</button>
         </form>
         <button onClick={onClose} className="close-btn">X</button>
+
+        {error && <div className="error-message" role="alert" aria-live="assertive">{error}</div>}
 
         <p>Already have an account? <a href="#" onClick={e => { e.preventDefault(); onSignIn(); }}>Sign in</a></p>
       </div>
