@@ -5,7 +5,7 @@ form {
 }
 
 input:focus {
-    border-color: solid var(--accent-color);
+    border: 1 px solid var(--accent-color);
     outline: 2px solid var(--accent-color);
 }
 
@@ -19,6 +19,19 @@ input:focus {
     color: var(--text-color);
     background-color: rgb(30, 30, 30);
     border-radius: 16px;
+}
+
+.signin-modal, .signup-modal {
+    width: 100%;
+    max-width: 28rem;
+    box-sizing: border-box;
+}
+
+.error-message {
+    white-space : pre-wrap; /*rivittää ja säilyttää välilyönnin*/
+    overflow-wrap: anywhere; /*katkoo pitkät sanat*/
+    word-break: break-word; /*fallback*/
+    max-width: 100%;
 }
 
 .login-btn, .close-btn {
