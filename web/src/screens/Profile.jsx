@@ -51,7 +51,7 @@ function Profile({ setIsLoggedIn, setUser }) {
 
   return (
     <div>
-      <h1>Welcome, {username}!</h1>
+      <h1 className="profile-header">Welcome, {username}!</h1>
       <button className="log-out-btn" onClick={handleLogout}>Log Out</button>
       <button className="delete-account-btn" onClick={handleDeleteAccount}>Delete Account</button>
     </div>
