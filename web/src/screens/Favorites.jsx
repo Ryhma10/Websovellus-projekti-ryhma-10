@@ -42,6 +42,10 @@ function Favorites() {
   const token = localStorage.getItem("token");
   const userId = getUserIdFromToken(token);
 
+  const handleLinkClick = () => {
+    setShareLink("");
+  }
+
   const handleShareClick = () => {
     if (userId) {
       const url = `${window.location.origin}/public/${userId}`;
@@ -71,7 +75,7 @@ function Favorites() {
       {shareLink && (
         <div>
           <p>Share this link:</p>
-          <a href={shareLink} target="_blank" rel="noopener noreferrer">{shareLink}</a>
+          <a href={shareLink} target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>{shareLink}</a>
         </div>
       )}
       <div className="favorites-list">
