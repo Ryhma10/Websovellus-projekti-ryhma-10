@@ -42,12 +42,6 @@ web/
 - **group_memberships:** Group membership and roles.
 - **group_movies:** Movies added to groups.
 
-## Usage
-
-- Register a new user, log in, and explore features.
-- Upload a profile picture from your profile page.
-- Add reviews, mark favorites, and join groups.
-
 ---
 
 **Ryhmä 10**  
