@@ -48,3 +48,19 @@ export async function deleteById(id) {
     client.release()
   }
 }
+
+export async function addProfilePicture(userId, pictureUrl) {
+  const result = await pool.query(
+    "UPDATE users SET profile_picture_url = $1 WHERE id = $2 RETURNING *",
+    [pictureUrl, userId]
+  )
+  return result.rows[0] || null
+}
+
+export async function getProfilePictureById(userId) {
+  const result = await pool.query(
+    "SELECT profile_picture_url FROM users WHERE id = $1",
+    [userId]
+  )
+  return result.rows[0] || null
+}

@@ -1,5 +1,5 @@
 import express from 'express'   //endpointtien (reitit) määrittelyyn
-import cors from 'cors'         //sallii pyynnöt eri porteista (myöh. domaineista)           
+import cors from 'cors'            
 import 'dotenv/config'          //ympäristömuuttujien käyttöä varten
 import { pool } from '../server/helper/db.js'
 import userRouter from './routes/UserRouter.js';
@@ -13,8 +13,8 @@ const app = express()           //luodaan Express-sovellus
 
 //Middlewaret kaikille pyynnöille
 app.use(cors())                 //sallitaan CORS
-app.use(express.json())         //parsitaan application/json-rungot req.bodyyn
-app.use(express.urlencoded({extended: false})) //parsii lomakepostit (application/x-form-urlencoded). extended:false = perusparseri
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.get('/', (req,res) => {     //tehdään GET-kutsu, jossa haetaan kaikki käyttäjät
 
