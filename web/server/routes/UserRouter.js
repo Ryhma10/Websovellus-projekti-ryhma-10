@@ -13,5 +13,7 @@ router.post("/logout", Authentication, (req, res) => {
 }); //Logout ei tee mitään backendissä, mutta auth tarvitaan
 router.delete("/delete", Authentication, userController.deleteAccount); //delete tarvitsee authin
 router.get("/public/:userId", userController.getUsernameById);
+router.put("/profile-picture", Authentication, userController.uploadProfilePicture);
+router.get("/profile-picture", Authentication, userController.getProfilePicture);
 
 export default router;

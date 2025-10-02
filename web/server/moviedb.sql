@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
   username      citext      NOT NULL,
   email         citext      NOT NULL,
   password_hash text        NOT NULL,
+  profile_picture_url text,
   -- created_at timestamptz NOT NULL DEFAULT now(),  -- otetaan käyttöön ehkä myöhemmin
 
   -- Varmistetaan uniikit arvot kirjainkoosta riippumatta (citext hoitaa tässä), 

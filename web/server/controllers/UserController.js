@@ -1,7 +1,7 @@
 //Sovelluslogiikka (HTTP-pyynnöt, tietokantakyselyt jne.). Import { hash, compare } from "bcrypt";
 
 import jwt from "jsonwebtoken"
-import { createUser, findByUsername, deleteById, findById } from "../models/UserModel.js"
+import { createUser, findByUsername, deleteById, findById, addProfilePicture, getProfilePictureById } from "../models/UserModel.js"
 import { hash, compare } from "bcrypt"
 
 //tehdään validointiapuri, domain koostuu labeleista, välissä vähintään yksi piste. i lopussa = case-insensitive
@@ -126,6 +126,46 @@ export const getUsernameById = async (req, res, next) => {
     res.json({username: user.username})
   } catch (err) {
     console.error("getUsernameById error:", err.message);
+    next(err);
+  }
+}
+
+export const uploadProfilePicture = async (req, res, next) => {
+  try {
+    const userId = req.user?.userId; // vaatii auth-middlewarea
+    if (!userId) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    const pictureUrl = req.body.pictureUrl;
+    if (!pictureUrl) {
+      return res.status(400).json({ message: "Picture URL is required" });
+    }
+
+    const updatedUser = await addProfilePicture(userId, pictureUrl);
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "Profile picture updated", user: updatedUser });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export const getProfilePicture = async (req, res, next) => {
+  try {
+    const userId = req.user?.userId; // vaatii auth-middlewarea
+    if (!userId) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    const user = await getProfilePictureById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({ profilePictureUrl: user.profile_picture_url });
+  } catch (err) {
     next(err);
   }
 }
