@@ -17,6 +17,7 @@ A movie web application built with React, Express, and PostgreSQL. Users can sig
 - **Frontend:** React (Vite)
 - **Backend:** Express (Node.js)
 - **Database:** PostgreSQL
+- **Testing:** Mocha, Supertest, Postman
 
 ## Project Structure
 
