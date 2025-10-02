@@ -52,5 +52,6 @@ web/
 
 **Ryhmä 10**  
 Jesse Hirvonen, Merja Sotkasiira, Salla-Mari Rokkonen, Tommy Seppänen, Anna Seppänen
+
 Oulu University of Applied Sciences  
 2025
