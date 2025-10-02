@@ -38,7 +38,8 @@ function GroupModal({ isOpen, onClose }) {
 
   return (
     <div className="modal-backdrop">
-      <div className="modal">
+      <div className="modal modal--narrow">
+        <button onClick={onClose} className="close-btn">X</button>
         <h2>Create Group</h2>
         <form onSubmit={handleSubmit}>
           <input
@@ -50,7 +51,6 @@ function GroupModal({ isOpen, onClose }) {
           <button type="submit" className="login-btn">Create</button>
         </form>
         {error && <p className="error-message">{error}</p>}
-        <button onClick={onClose} className="close-btn">X</button>
       </div>
     </div>
   );

@@ -28,8 +28,6 @@
     font-size: 2em;
 }
 
-
-
 .modal-content {
     display: flex;
     flex-direction: row;
@@ -51,6 +49,7 @@
     border-top: 1px solid var(--accent-color);
     margin-top: 1em;
 }
+
 .close-btn {
   position: absolute;
   top: 1rem;
@@ -141,20 +140,24 @@
   transition: background 0.2s, color 0.2s;
   white-space: nowrap; 
 }
+
 .modal-buttons button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
 .modal-buttons button:hover:not(:disabled) {
   background: var(--accent-color);
   color: var(--background-color);
 }
+
 .stars-label {
-    display: block;
-    text-align: center;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
+  display: block;
+  text-align: center;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }
+
 .modal-btn {
   min-width: 160px;
   font-size: 1.1rem;
@@ -170,10 +173,12 @@
   display: block;
   text-align: center;
 }
+
 .modal-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
 .modal-btn:hover:not(:disabled) {
   background: var(--accent-color);
   color: var(--background-color);
