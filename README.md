@@ -7,7 +7,7 @@ A movie web application built with React, Express, and PostgreSQL. Users can sig
 - **User Authentication:** Sign up, sign in, and delete account.
 - **Profile Management:** Upload and display profile pictures.
 - **Movie Reviews:** Add reviews with star ratings and comments.
-- **Movie Search:** Search movies from tmdb with name, genre and release year. Search movies from finnkino with name, theatre and showtime
+- **Movie Search:** Search movies from tmdb with name, genre and release year. Search movies from finnkino with name, theatre and showtime.
 - **Favorites:** Mark movies as favorites and share favorites.
 - **Groups:** Create and join groups, manage group memberships.
 - **Group Movies:** Add movies to groups with notes and ratings.
