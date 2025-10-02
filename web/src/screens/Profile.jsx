@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import placeholder from "../assets/placeholder.png";
 import "./Profile.css";
 
 function Profile({ setIsLoggedIn, setUser }) {
@@ -17,7 +18,7 @@ function Profile({ setIsLoggedIn, setUser }) {
     })
       .then(res => res.json())
       .then(data => {
-        setProfilePicture(data.profilePictureUrl); // or data.profile_picture_url
+        setProfilePicture(data.profilePictureUrl);
       });
   }, []);
 
@@ -98,7 +99,7 @@ function Profile({ setIsLoggedIn, setUser }) {
     <div className="profile-container">
       <h1 className="profile-header">Welcome, {username}!</h1>
       {profilePicture && (
-        <img src={profilePicture ? profilePicture : "./assets/placeholder.png"} alt="Profile" className="profile-picture"/>
+        <img src={profilePicture ? profilePicture : placeholder } alt="Profile" className="profile-picture"/>
       )}
       <details className="change-picture-details">
         <summary>Change Profile Picture</summary>
