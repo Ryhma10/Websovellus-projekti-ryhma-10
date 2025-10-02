@@ -84,17 +84,19 @@ function MovieModal({ movie, onClose }) {
                 <p className="movie-overview">{movie.overview}</p>
                 </div>
                 <h3>Average Rating: {averageStars} ⭐</h3>
-                <button onClick={() => setShowReviews(!showReviews)}>
-                    {showReviews ? "Hide Reviews" : "Show Reviews"}
-                </button>
-                <button 
-                    className="favorite-btn"
-                    onClick={handleAddToFavorites}
-                    disabled={isFavorite}
-                >
-                    {isFavorite ? "Added to Favorites" : "Add to Favorites"}
-                </button>
-                <button className="group-btn">Add to Group</button>
+                <div className="modal-buttons">
+                    <button onClick={() => setShowReviews(!showReviews)}>
+                        {showReviews ? "Hide Reviews" : "Show Reviews"}
+                    </button>
+                    <button 
+                        className="favorite-btn"
+                        onClick={handleAddToFavorites}
+                        disabled={isFavorite}
+                    >
+                        {isFavorite ? "Added to Favorites" : "Add to Favorites"}
+                    </button>
+                    <button className="group-btn">Add to Group</button>
+                </div>
                 {showReviews && (
                     <ul className="reviews-list">
                         {reviews.length === 0 ? (
@@ -117,17 +119,16 @@ function MovieModal({ movie, onClose }) {
                         maxLength={300}
                         required
                     />
-                    <br />
-                    <label>
+                    <label className="stars-label">
                         Stars:
-                            <div style={{ display: "inline-block", marginLeft: "8px" }}>
-                                {[1, 2, 3, 4, 5].map((star) => (
+                        <div style={{ display: "inline-block", marginLeft: "8px" }}>
+                            {[1, 2, 3, 4, 5].map((star) => (
                                 <span
                                     key={star}
                                     style={{
-                                    cursor: "pointer",
-                                    color: star <= stars ? "#FFD700" : "#ccc",
-                                    fontSize: "1.5rem",
+                                        cursor: "pointer",
+                                        color: star <= stars ? "#FFD700" : "#ccc",
+                                        fontSize: "1.5rem",
                                     }}
                                     onClick={() => setStars(star)}
                                     onMouseOver={() => setStars(star)}
@@ -137,11 +138,12 @@ function MovieModal({ movie, onClose }) {
                                 >
                                     ★
                                 </span>
-                                ))}
-                            </div>
+                            ))}
+                        </div>
                     </label>
-                    <br />
-                    <button type="submit" className="submit">Submit Review</button>
+                    <div style={{ textAlign: "center", marginTop: "1em" }}>
+                        <button type="submit" className="modal-btn">Submit Review</button>
+                    </div>
                 </form>
             </div>
         </div>
