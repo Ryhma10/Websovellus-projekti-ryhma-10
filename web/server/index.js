@@ -13,19 +13,10 @@ const app = express()           //luodaan Express-sovellus
 
 //Middlewaret kaikille pyynnöille
 app.use(cors())                 //sallitaan CORS
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-app.get('/', (req,res) => {     //tehdään GET-kutsu, jossa haetaan kaikki käyttäjät
-
-    pool.query('SELECT * from users', (err, result) => {
-        if(err) {
-            return res.status(500).json({error: err.message})
-        }
-        res.status(200).json(result.rows)
-    })
-})
-
+//Reitit
 app.use('/api/users', userRouter);
 app.use('/api/reviews', reviewRouter);
 app.use('/api/user_favorites', FavoriteRouter);

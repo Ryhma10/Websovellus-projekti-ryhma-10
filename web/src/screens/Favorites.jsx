@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import SignIn from "./Signin.jsx";
 import './Favorites.css';
 
 // Helper to decode JWT and get userId
@@ -15,10 +17,16 @@ function getUserIdFromToken(token) {
 function Favorites() {
   const [movies, setMovies] = useState([]);
   const [shareLink, setShareLink] = useState("");
+  const navigate = useNavigate();
+  const [showSignInModal, setShowSignInModal] = useState(false);
 
   useEffect(() => {
     const fetchFavorites = async () => {
       const token = localStorage.getItem("token");
+      if (!token) {
+        setShowSignInModal(true);
+        return;
+      }
       const res = await fetch("http://localhost:3001/api/user_favorites", {
         headers: {
           Authorization: `Bearer ${token}`
@@ -28,7 +36,7 @@ function Favorites() {
       setMovies(data);
     };
     fetchFavorites();
-  }, []);
+  }, [navigate]);
 
   // Get userId from JWT token
   const token = localStorage.getItem("token");
@@ -40,6 +48,19 @@ function Favorites() {
       setShareLink(url);
     }
   };
+
+   if (showSignInModal) {
+    return (
+      <SignIn
+        isOpen={true}
+        onClose={() => setShowSignInModal(false)}
+        onLoginSuccess={() => {
+          setShowSignInModal(false);
+          window.location.reload(); // reload to fetch favorites after login
+        }}
+      />
+    );
+  }
 
   return (
     <div>

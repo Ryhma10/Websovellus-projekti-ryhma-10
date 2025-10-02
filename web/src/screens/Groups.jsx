@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from "react";
+import SignIn from "./Signin.jsx";
 import GroupModal from "./GroupModal";
 
 function Groups() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [myGroups, setMyGroups] = useState([]);
   const [allGroups, setAllGroups] = useState([]);
+  const [showSignInModal, setShowSignInModal] = useState(false);
 
   const token = localStorage.getItem("token");
+    
+ useEffect(() => {
+    if (!token) {
+      setShowSignInModal(true);
+    }
+  }, [token]);
 
   // Haetaan omat ryhmät
   useEffect(() => {
@@ -42,6 +50,19 @@ function Groups() {
       .then((msg) => alert(msg.message))
       .catch((err) => console.error(err));
   };
+
+  if (showSignInModal) {
+    return (
+      <SignIn
+        isOpen={true}
+        onClose={() => setShowSignInModal(false)}
+        onLoginSuccess={() => {
+          setShowSignInModal(false);
+          window.location.reload(); // reload to fetch favorites after login
+        }}
+      />
+    );
+  }
 
   return (
     <div>
