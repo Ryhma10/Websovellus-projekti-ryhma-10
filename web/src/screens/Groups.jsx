@@ -6,8 +6,7 @@ function Groups() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [myGroups, setMyGroups] = useState([]);
   const [allGroups, setAllGroups] = useState([]);
-  const [showSignInModal, setShowSignInModal] = useState(false);
-
+  const [showSignInModal, setShowSignInModal] = useState(false)
   const token = localStorage.getItem("token");
     
  useEffect(() => {
@@ -18,37 +17,75 @@ function Groups() {
 
   // Haetaan omat ryhmät
   useEffect(() => {
-    fetch("http://localhost:3001/api/groups/my", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then(setMyGroups)
-      .catch((err) => console.error("Error fetching my groups:", err));
+    const fetchMyGroups = async () => {
+      if (!token) return;
+      try {
+        const res = await fetch("http://localhost:3001/api/groups/my", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Virhe haettaessa omia ryhmiä");
+        const data = await res.json();
+        setMyGroups(data);
+      } catch (err) {
+        console.error("Error fetching my groups:", err);
+      }
+    };
+    fetchMyGroups();
   }, [token]);
 
   // Haetaan kaikki ryhmät
   useEffect(() => {
-    fetch("http://localhost:3001/api/groups", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then(setAllGroups)
-      .catch((err) => console.error("Error fetching all groups:", err));
+    const fetchAllGroups = async () => {
+      try {
+        const res = await fetch("http://localhost:3001/api/groups", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (!res.ok) throw new Error("Virhe haettaessa ryhmiä");
+        const data = await res.json();
+        setAllGroups(data);
+      } catch (err) {
+        console.error("Error fetching all groups:", err);
+      }
+    };
+    fetchAllGroups();
   }, [token]);
 
   // Lähetä liittymispyyntö
-  const handleJoinRequest = (groupId) => {
-    fetch("http://localhost:3001/api/groups/join", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ groupId }),
-    })
-      .then((res) => res.json())
-      .then((msg) => alert(msg.message))
-      .catch((err) => console.error(err));
+  const handleJoinRequest = async (groupId) => {
+    if (!token) {
+      alert("Sinun täytyy kirjautua sisään tai luoda käyttäjä liittyäksesi ryhmään.");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3001/api/groups/join", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ groupId }),
+      });
+
+      const msg = await res.json();
+
+      if (!res.ok) {
+        throw new Error(msg.error || "Liittymispyyntö epäonnistui");
+      }
+
+      alert(msg.message);
+      // Päivitetään omat ryhmät, jotta status näkyy heti
+      setMyGroups((prev) => [...prev, { id: groupId, status: "pending" }]);
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  };
+
+  // Tarkistetaan onko ryhmässä jo jäsenyyttä (ja mikä status)
+  const getMembershipStatus = (groupId) => {
+    const membership = myGroups.find((g) => g.id === groupId);
+    return membership ? membership.status : null;
   };
 
   if (showSignInModal) {
@@ -67,26 +104,40 @@ function Groups() {
   return (
     <div>
       <h1>Groups</h1>
-      <button onClick={() => setIsModalOpen(true)}>Create Group</button>
+
+      {token && (
+        <button onClick={() => setIsModalOpen(true)}>Create Group</button>
+      )}
       <GroupModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
-      <h2>My Groups</h2>
-      <ul>
-        {myGroups.map((g) => (
-          <li key={g.id}>
-            <a href={`/groups/${g.id}`}>{g.name}</a>
-          </li>
-        ))}
-      </ul>
+      {token && (
+        <>
+          <h2>My Groups</h2>
+          <ul>
+            {myGroups.map((g) => (
+              <li key={g.id}>
+                <a href={`/groups/${g.id}`}>{g.name}</a> – {g.role} ({g.status})
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
       <h2>All Groups</h2>
       <ul>
-        {allGroups.map((g) => (
-          <li key={g.id}>
-            {g.name}{" "}
-            <button onClick={() => handleJoinRequest(g.id)}>Join</button>
-          </li>
-        ))}
+        {allGroups.map((g) => {
+          const status = getMembershipStatus(g.id);
+          return (
+            <li key={g.id}>
+              <a href={`/groups/${g.id}`}>{g.name}</a>{" "}
+              {status === "approved" && <span>✅ Joined</span>}
+              {status === "pending" && <span>⏳ Pending</span>}
+              {!status && (
+                <button onClick={() => handleJoinRequest(g.id)}>Join</button>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
