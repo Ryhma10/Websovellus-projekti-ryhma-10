@@ -10,13 +10,14 @@ export const createFavorite = async (req, res, next) => {
       return res.status(400).json({ message: "tmdb_id is required" });
     }
 
-    const favorite = await favoritesModel.createFavorite({ user_id, tmdb_id });
-    const movie = await getMovieByIdFromTmdb(favorite.tmdb_id);
-
-    res.status(201).json(movie);
+    await favoritesModel.createFavorite({ user_id, tmdb_id });
+    res.status(201).json({ message: "Added to favorites" });
   } catch (err) {
-    console.error("addFavorite error:", err.message);
-    next(err);
+    if (err.code === '23505') { // Postgres duplicate key error
+      res.status(409).json({ error: "Already in favorites" });
+    } else {
+      res.status(500).json({ error: "Server error" });
+    }
   }
 };
 
