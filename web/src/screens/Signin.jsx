@@ -41,7 +41,7 @@ function SignIn({ isOpen, onClose, onSignUp, onLoginSuccess }) {
 
   return (
     <div className="modal-backdrop">
-      <div className="signin-modal">
+      <div className="modal signin-modal">
         <h2>Sign in</h2>
         <form onSubmit={handleLogin}>
           <input

@@ -1,42 +1,97 @@
+/* Yleinen lomake- ja fokus-tyyli */
 form {
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
 }
 
 input:focus {
-    border: 1 px solid var(--accent-color);
-    outline: 2px solid var(--accent-color);
+  border: 1px solid var(--accent-color);
+  outline: 2px solid var(--accent-color);
 }
 
+/* === Sama overlay-asettelu kuin MovieModal.css:ssä === */
 .modal-backdrop {
-     z-index: 9999999999999;
-     color: var(--text-color);
-     background-color: rgba(0, 0, 0, 0.8);
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;               /* riittää useimpiin, nosta tarvittaessa */
+  color: var(--text-color);
 }
 
+/* === Perusmodal, kuin .movie-modal === */
 .modal {
-    color: var(--text-color);
-    background-color: rgb(30, 30, 30);
-    border-radius: 16px;
+  position: relative;          /* close-btn ankkurointi */
+  background: var(--background-color, rgb(30,30,30));
+  color: var(--text-color);
+  border: 1px solid var(--accent-color);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 60vw;             /* sama fiilis kuin movie-modal */
+  padding: 1.5em;
+  top: 10vh;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
-.signin-modal, .signup-modal {
-    width: 100%;
-    max-width: 28rem;
-    box-sizing: border-box;
+/* Sign in / Sign up voivat olla kapeampia.
+   Käytä yhdessä .modal-luokan kanssa: class="modal signin-modal" */
+.signin-modal,
+.signup-modal {
+  max-width: 28rem;            /* kapeampi dialogi */
 }
 
+/* Virheilmoitus */
 .error-message {
-    color: var(--text-color);
-    background: rgba(177, 4, 4, 0.5);
-    padding: 0.5em 0.5em;
-    border-radius: 6px;
-    margin: 1em 0;
-    font-weight: bold;
-    text-align: center;
-    white-space : pre-wrap; /*rivittää ja säilyttää välilyönnin*/
-    overflow-wrap: anywhere; /*katkoo pitkät sanat*/
-    word-break: break-word; /*fallback*/
-    max-width: 100%;
+  color: var(--text-color);
+  background: rgba(177, 4, 4, 0.5);
+  padding: 0.5em 0.5em;
+  border-radius: 6px;
+  margin: 1em 0;
+  font-weight: bold;
+  text-align: center;
+  white-space: pre-wrap;        /* rivittää ja säilyttää \n */
+  overflow-wrap: anywhere;      /* katkoo pitkät tokenit */
+  word-break: break-word;       /* fallback */
+  max-width: 100%;
+}
+
+/* Close-nappi oikeaan yläkulmaan (sama käytös kuin MovieModal.css) */
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.2rem;
+  background: none;
+  border: none;
+  color: var(--accent-color);
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border-radius: 50%;
+  transition: color 0.2s, background 0.2s;
+}
+
+.close-btn:hover {
+  color: #fff;
+  background: var(--accent-color);
+}
+
+/* Vain GroupModal kapeammaksi */
+.modal--narrow {
+  /* noin puolet aiemmasta 60vw:stä */
+  max-width: clamp(18rem, 30vw, 32rem);
+}
+
+/* lisäsäätö hyvin pienille ruuduille */
+@media (max-width: 480px) {
+  .modal--narrow { max-width: min(92vw, 26rem); }
 }
