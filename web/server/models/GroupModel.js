@@ -8,8 +8,8 @@ export async function createGroup(name, userId) {
 
     // Luo ryhmä
     const groupRes = await client.query(
-      "INSERT INTO groups (name) VALUES ($1) RETURNING id, name",
-      [name]
+      "INSERT INTO groups (name, owner_id) VALUES ($1, $2) RETURNING id, name, owner_id",
+      [name, userId]
     );
     const group = groupRes.rows[0];
 
