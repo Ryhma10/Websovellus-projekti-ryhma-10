@@ -60,6 +60,11 @@ function MovieModal({ movie, onClose }) {
             if (res.ok) {
                 setIsFavorite(true);
             }
+            if (res.status === 409) {
+                // Voit näyttää ilmoituksen: "Elokuva on jo suosikeissa"
+                setIsFavorite(true);
+                return;
+            }
         } catch (error) {
             console.error("Error adding to favorites:", error);
         }
