@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import SignIn from "./Signin.jsx";
 import GroupModal from "./GroupModal";
+import "./Groups.css";
 
 function Groups() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -9,11 +10,14 @@ function Groups() {
   const [showSignInModal, setShowSignInModal] = useState(false)
   const token = localStorage.getItem("token");
     
- useEffect(() => {
+
+  const handleCreateGroupClick = () => {
     if (!token) {
       setShowSignInModal(true);
+    } else {
+      setIsModalOpen(true);
     }
-  }, [token]);
+  }
 
   // Haetaan omat ryhmät
   useEffect(() => {
@@ -102,43 +106,43 @@ function Groups() {
   }
 
   return (
-    <div>
+    <div className="groups-container">
       <h1>Groups</h1>
-
-      {token && (
-        <button onClick={() => setIsModalOpen(true)}>Create Group</button>
-      )}
+        <button onClick={handleCreateGroupClick}>Create Group</button>
       <GroupModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
-      {token && (
-        <>
-          <h2>My Groups</h2>
+      <div className="groups-lists-row">
+        {token && (
+          <div className="my-groups-list">
+            <h2>My Groups</h2>
+            <ul>
+              {myGroups.map((g) => (
+                <li key={g.id}>
+                  <a href={`/groups/${g.id}`}>{g.name}</a> – {g.role} ({g.status})
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <div className="all-groups-list">
+          <h2>All Groups</h2>
           <ul>
-            {myGroups.map((g) => (
-              <li key={g.id}>
-                <a href={`/groups/${g.id}`}>{g.name}</a> – {g.role} ({g.status})
-              </li>
-            ))}
+            {allGroups.map((g) => {
+              const status = getMembershipStatus(g.id);
+              return (
+                <li key={g.id}>
+                  <a href={`/groups/${g.id}`}>{g.name}</a>{" "}
+                  {status === "approved" && <span>✅ Joined</span>}
+                  {status === "pending" && <span>⏳ Pending</span>}
+                  {!status && (
+                    <button onClick={() => handleJoinRequest(g.id)}>Join</button>
+                  )}
+                </li>
+              );
+            })}
           </ul>
-        </>
-      )}
-
-      <h2>All Groups</h2>
-      <ul>
-        {allGroups.map((g) => {
-          const status = getMembershipStatus(g.id);
-          return (
-            <li key={g.id}>
-              <a href={`/groups/${g.id}`}>{g.name}</a>{" "}
-              {status === "approved" && <span>✅ Joined</span>}
-              {status === "pending" && <span>⏳ Pending</span>}
-              {!status && (
-                <button onClick={() => handleJoinRequest(g.id)}>Join</button>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+        </div>
+      </div>
     </div>
   );
 }
