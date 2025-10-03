@@ -20,7 +20,7 @@ router.post("/join", Authentication, requestToJoin);
 router.post("/approve", Authentication, approveMember);
 
 // Hae kaikki ryhmät
-router.get("/", Authentication, fetchAllGroups);
+router.get("/", fetchAllGroups);
 
 // Hae kirjautuneen käyttäjän omat ryhmät
 router.get("/my", Authentication, fetchMyGroups);
