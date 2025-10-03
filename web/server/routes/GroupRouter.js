@@ -5,7 +5,8 @@ import {
   requestToJoin,
   approveMember,
   fetchAllGroups,
-  fetchMyGroups
+  fetchMyGroups,
+  fetchPendingRequests
 } from "../controllers/GroupController.js";
 
 const router = express.Router();
@@ -25,4 +26,7 @@ router.get("/", fetchAllGroups);
 // Hae kirjautuneen käyttäjän omat ryhmät
 router.get("/my", Authentication, fetchMyGroups);
 
+
+// Hae liittymispyynnöt
+router.get("/requests", Authentication, fetchPendingRequests);
 export default router;

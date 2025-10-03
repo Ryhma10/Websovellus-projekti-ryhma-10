@@ -4,7 +4,8 @@ import {
   approveMembership,
   getAllGroups,
   getMyGroups,
-  isOwner
+  isOwner,
+  getPendingRequestsForOwner
 } from "../models/GroupModel.js";
 
 // Luo uusi ryhmä
@@ -38,6 +39,21 @@ export const requestToJoin = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+
+
+// Hae liittymispyynnöt ryhmän omistajalle
+export const fetchPendingRequests = async (req, res) => {
+  try {
+    const ownerId = req.user.userId;
+    const requests = await getPendingRequestsForOwner(ownerId);
+    res.json(requests);
+  } catch (err) {
+    console.error("fetchPendingRequests error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 
 // Owner hyväksyy jäsenen
 export const approveMember = async (req, res) => {
