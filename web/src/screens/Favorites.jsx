@@ -57,7 +57,10 @@ function Favorites() {
     return (
       <SignIn
         isOpen={true}
-        onClose={() => setShowSignInModal(false)}
+        onClose={() => {
+          setShowSignInModal(false);
+          navigate("/");
+        }}
         onLoginSuccess={() => {
           setShowSignInModal(false);
           window.location.reload(); // reload to fetch favorites after login

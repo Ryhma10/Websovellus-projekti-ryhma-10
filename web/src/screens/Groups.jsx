@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import SignIn from "./Signin.jsx";
 import GroupModal from "./GroupModal";
 import "./Groups.css";
@@ -9,15 +9,6 @@ function Groups() {
   const [allGroups, setAllGroups] = useState([]);
   const [showSignInModal, setShowSignInModal] = useState(false)
   const token = localStorage.getItem("token");
-    
-
-  const handleCreateGroupClick = () => {
-    if (!token) {
-      setShowSignInModal(true);
-    } else {
-      setIsModalOpen(true);
-    }
-  }
 
   // Haetaan omat ryhmät
   useEffect(() => {
@@ -35,7 +26,7 @@ function Groups() {
       }
     };
     fetchMyGroups();
-  }, [token]);
+  }, [token, myGroups]);
 
   // Haetaan kaikki ryhmät
   useEffect(() => {
@@ -52,8 +43,16 @@ function Groups() {
       }
     };
     fetchAllGroups();
-  }, [token]);
+  }, [token, allGroups]);
 
+    const handleCreateGroupClick = () => {
+      if (!token) {
+        setShowSignInModal(true);
+      } else {
+        setIsModalOpen(true);
+      }
+    };
+  
   // Lähetä liittymispyyntö
   const handleJoinRequest = async (groupId) => {
     if (!token) {
@@ -131,7 +130,7 @@ function Groups() {
               const status = getMembershipStatus(g.id);
               return (
                 <li key={g.id}>
-                  <a href={`/groups/${g.id}`}>{g.name}</a>{" "}
+                  <p>{g.name}</p>
                   {status === "approved" && <span>✅ Joined</span>}
                   {status === "pending" && <span>⏳ Pending</span>}
                   {!status && (
