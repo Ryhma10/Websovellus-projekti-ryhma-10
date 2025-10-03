@@ -83,3 +83,20 @@ export async function isOwner(groupId, userId) {
   );
   return res.rowCount > 0;
 }
+
+// Hae omistajan ryhmien liittymispyynnöt
+export async function getPendingRequestsForOwner(ownerId) {
+  const res = await pool.query(
+    `
+    SELECT gm.group_id, g.name AS group_name, gm.user_id, u.username, gm.status
+    FROM group_memberships gm
+    JOIN groups g ON g.id = gm.group_id
+    JOIN users u ON u.id = gm.user_id
+    WHERE g.owner_id = $1 AND gm.status = 'pending'
+    ORDER BY gm.group_id;
+    `,
+    [ownerId]
+  );
+  return res.rows;
+}
+

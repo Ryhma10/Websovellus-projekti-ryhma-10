@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import SignIn from "./Signin.jsx";
 import GroupModal from "./GroupModal";
 import "./Groups.css";
@@ -7,10 +7,11 @@ function Groups() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [myGroups, setMyGroups] = useState([]);
   const [allGroups, setAllGroups] = useState([]);
-  const [showSignInModal, setShowSignInModal] = useState(false)
+  const [pendingRequests, setPendingRequests] = useState([]); // 🆕 Omistajan pending-pyynnöt
+  const [showSignInModal, setShowSignInModal] = useState(false);
   const token = localStorage.getItem("token");
 
-  // Haetaan omat ryhmät
+  // 🔸 Haetaan omat ryhmät
   useEffect(() => {
     const fetchMyGroups = async () => {
       if (!token) return;
@@ -26,9 +27,9 @@ function Groups() {
       }
     };
     fetchMyGroups();
-  }, [token, myGroups]);
+  }, [token]);
 
-  // Haetaan kaikki ryhmät
+  // 🔸 Haetaan kaikki ryhmät
   useEffect(() => {
     const fetchAllGroups = async () => {
       try {
@@ -43,17 +44,36 @@ function Groups() {
       }
     };
     fetchAllGroups();
-  }, [token, allGroups]);
+  }, [token]);
 
-    const handleCreateGroupClick = () => {
-      if (!token) {
-        setShowSignInModal(true);
-      } else {
-        setIsModalOpen(true);
+  // 🆕 Haetaan pending liittymispyynnöt ryhmän omistajalle
+  useEffect(() => {
+    const fetchPending = async () => {
+      if (!token) return;
+      try {
+        const res = await fetch("http://localhost:3001/api/groups/requests", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Virhe haettaessa liittymispyyntöjä");
+        const data = await res.json();
+        setPendingRequests(data);
+      } catch (err) {
+        console.error("Error fetching pending requests:", err);
       }
     };
-  
-  // Lähetä liittymispyyntö
+    fetchPending();
+  }, [token]);
+
+  // 🔸 Luo ryhmä -napin toiminto
+  const handleCreateGroupClick = () => {
+    if (!token) {
+      setShowSignInModal(true);
+    } else {
+      setIsModalOpen(true);
+    }
+  };
+
+  // 🔸 Lähetä liittymispyyntö
   const handleJoinRequest = async (groupId) => {
     if (!token) {
       alert("Sinun täytyy kirjautua sisään tai luoda käyttäjä liittyäksesi ryhmään.");
@@ -85,12 +105,39 @@ function Groups() {
     }
   };
 
+  // 🆕 Hyväksy liittymispyyntö
+  const handleApprove = async (groupId, memberId) => {
+    try {
+      const res = await fetch("http://localhost:3001/api/groups/approve", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ groupId, memberId }),
+      });
+
+      const msg = await res.json();
+      if (!res.ok) throw new Error(msg.error || "Hyväksyntä epäonnistui");
+
+      alert("Member approved!");
+      // Poistetaan hyväksytty pyyntö listasta
+      setPendingRequests((prev) =>
+        prev.filter((r) => !(r.group_id === groupId && r.user_id === memberId))
+      );
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  };
+
   // Tarkistetaan onko ryhmässä jo jäsenyyttä (ja mikä status)
   const getMembershipStatus = (groupId) => {
     const membership = myGroups.find((g) => g.id === groupId);
     return membership ? membership.status : null;
   };
 
+  // 🔸 Näytetään kirjautumisikkuna jos ei ole tokenia
   if (showSignInModal) {
     return (
       <SignIn
@@ -98,7 +145,7 @@ function Groups() {
         onClose={() => setShowSignInModal(false)}
         onLoginSuccess={() => {
           setShowSignInModal(false);
-          window.location.reload(); // reload to fetch favorites after login
+          window.location.reload();
         }}
       />
     );
@@ -107,8 +154,29 @@ function Groups() {
   return (
     <div className="groups-container">
       <h1>Groups</h1>
-        <button onClick={handleCreateGroupClick}>Create Group</button>
+      <button onClick={handleCreateGroupClick}>Create Group</button>
       <GroupModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+      {/* 🆕 Omistajan pending liittymispyynnöt */}
+      {token && pendingRequests.length > 0 && (
+        <div className="pending-requests">
+          <h2>Pending Join Requests</h2>
+          <ul>
+            {pendingRequests.map((req) => (
+              <li key={`${req.group_id}-${req.user_id}`}>
+                <strong>{req.username}</strong> wants to join{" "}
+                <em>{req.group_name}</em>
+                <button
+                  onClick={() => handleApprove(req.group_id, req.user_id)}
+                  style={{ marginLeft: "10px" }}
+                >
+                  Approve
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="groups-lists-row">
         {token && (
@@ -123,6 +191,7 @@ function Groups() {
             </ul>
           </div>
         )}
+
         <div className="all-groups-list">
           <h2>All Groups</h2>
           <ul>
