@@ -4,6 +4,7 @@ import './Home.css';
 import SearchBar from '../components/SearchBar';
 import TheatresNowCarousel from '../components/TheatresNowCarousel';
 
+
 function Home() {
   return (
     <>

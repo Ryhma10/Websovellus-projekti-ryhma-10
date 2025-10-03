@@ -1,6 +1,6 @@
 import React from "react";
 import placeholder from '../assets/placeholder.png';
-import "./PopularCarousel.css";
+import styles from "./PopularCarousel.module.css";
 
 function PopularCarousel({ movies }) {
   const [current, setCurrent] = React.useState(0); //Karusellin keskimmäinen elokuva
@@ -15,14 +15,16 @@ function PopularCarousel({ movies }) {
   }
 
   return (
-    <div className="popular-carousel">
+    <div className={styles["popular-carousel"]}>
       <h2>Popular Now</h2>
-      <div className="carousel-content">
+      <div className={styles["carousel-content"]}>
         {/* Edellinen-nappi */}
         <button onClick={() => setCurrent((current - 1 + movies.length) % movies.length)}>{"<"}</button>
         {visibleMovies.map((movie, idx) => (
           <div
-            className={`movie-item${idx === 1 ? " movie-item-center" : " movie-item-side"}`} //Keskimmäiselle oma luokka
+            className={`${styles["movie-item"]} ${
+              idx === 1 ? styles["movie-item-center"] : styles["movie-item-side"]
+            }`}
             key={idx}
           >
             <img
@@ -30,9 +32,13 @@ function PopularCarousel({ movies }) {
                 ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
                 : placeholder} //Jos ei kuvaa, näytetään placeholder
               alt={movie.title}
-              className={idx === 1 ? "movie-poster movie-poster-center" : "movie-poster movie-poster-side"} //Keskimmäiselle oma tyyli
+              className={
+                idx === 1
+                  ? `${styles["movie-poster"]} ${styles["movie-poster-center"]}`
+                  : `${styles["movie-poster"]} ${styles["movie-poster-side"]}`
+              }
             />
-            <div className="movie-info">{movie.title}</div>
+            <div className={styles["movie-info"]}>{movie.title}</div>
           </div>
         ))}
         {/* Seuraava-nappi */}

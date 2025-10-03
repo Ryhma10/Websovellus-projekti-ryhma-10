@@ -1,0 +1,62 @@
+.popular-carousel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.carousel-content {
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.test {
+    background-color: red;
+}
+
+.movie-item {
+    flex-direction: column;
+    width: 16vw;
+    height: 32vw;
+    max-width: 220px;
+    max-height: 300px;
+    min-width: 160px;
+    min-height: 240px;
+    background: #111;
+    border: 2px solid #33ff99;
+    border-radius: 16px;
+    padding: 0.8em;
+    margin: 0 20px;
+    box-shadow: 0 2px 8px #000a;
+    display: flex;
+    flex-direction: column;
+}
+
+.movie-item-center {
+    transform: scale(1.1);
+}
+
+.movie-item-side {
+    opacity: 0.7;
+}
+
+.movie-poster {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.movie-poster-center {
+    border: 2px solid #33ff99;
+}
+
+.movie-poster-side {
+    border: 2px solid transparent;
+}
+
+.movie-info {
+    text-align: center;
+    margin-top: 0.5em;
+    color: #fff;
+}
