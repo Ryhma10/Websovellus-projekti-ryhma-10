@@ -9,6 +9,7 @@ import Favorites from './Favorites';
 import Home from './Home';
 import Profile from './Profile';
 import PublicFavorites from './PublicFavorites';
+import GroupPage from "./GroupPage";
 
 function App() {
   // Kirjautumistila App-tasolla, jotta NavBar ja Profile saavat saman tilan
@@ -31,6 +32,7 @@ function App() {
           {/* Profile saa setIsLoggedIn propin, jotta logout toimii */}
           <Route path="/profile" element={<Profile setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/public/:userId" element={<PublicFavorites />} />
+          <Route path="/groups/:groupId" element={<GroupPage />} />
         </Routes>
       </div>
     </>

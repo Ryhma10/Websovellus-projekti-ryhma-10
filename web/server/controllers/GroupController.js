@@ -96,3 +96,27 @@ export const fetchMyGroups = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+// Hae kaikki liittymispyynnöt ryhmälle (vain owner)
+export async function fetchJoinRequests(req, res) {
+  try {
+    const groupId = req.params.groupId;
+    const userId = req.user.userId;
+    // Tarkista että käyttäjä on owner
+    const isOwner = await req.app.locals.GroupModel.isOwner(groupId, userId);
+    if (!isOwner) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+    // Hae kaikki pending-jäsenyydet
+    const result = await req.app.locals.pool.query(
+      `SELECT m.user_id, u.username
+       FROM group_memberships m
+       JOIN users u ON m.user_id = u.id
+       WHERE m.group_id = $1 AND m.status = 'pending'`,
+      [groupId]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+}

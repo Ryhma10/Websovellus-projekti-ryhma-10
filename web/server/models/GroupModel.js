@@ -100,3 +100,14 @@ export async function getPendingRequestsForOwner(ownerId) {
   return res.rows;
 }
 
+// Hae kaikki liittymispyynnöt (pending) tietylle ryhmälle
+export async function getJoinRequests(groupId) {
+  const res = await pool.query(
+    `SELECT m.user_id, u.username
+     FROM group_memberships m
+     JOIN users u ON m.user_id = u.id
+     WHERE m.group_id = $1 AND m.status = 'pending'`,
+    [groupId]
+  );
+  return res.rows;
+}
