@@ -100,7 +100,7 @@ function MovieModal({ movie, onClose }) {
                     >
                         {isFavorite ? "Added to Favorites" : "Add to Favorites"}
                     </button>
-                    <button className="group-btn">Add to Group</button>
+                    {/*<button className="group-btn">Add to Group</button>*/}
                 </div>
                 {showReviews && (
                     <ul className="reviews-list">

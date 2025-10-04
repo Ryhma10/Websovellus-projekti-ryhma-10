@@ -1,5 +1,16 @@
 
-.favorites-title, p{
+.favorites-title, p {
     top: 20vh;
+    color: var(--text-color);
+}
+
+.favorites-list, a {
+    text-decoration: none;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    color: var(--accent-color);
+}
+
+h3 {
     color: var(--text-color);
 }
