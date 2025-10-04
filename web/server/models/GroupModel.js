@@ -8,12 +8,14 @@ export async function createGroup(name, userId) {
 
     // Luo ryhmä
     const groupRes = await client.query(
-      "INSERT INTO groups (name, owner_id) VALUES ($1, $2) RETURNING id, name, owner_id",
+      `INSERT INTO groups (name, owner_id) 
+      VALUES ($1, $2) 
+      RETURNING id, name, owner_id`,
       [name, userId]
     );
     const group = groupRes.rows[0];
 
-    // Lisää owner memberships-tauluun
+    // Lisää owner ja approved memberships-tauluun
     await client.query(
       `INSERT INTO group_memberships (group_id, user_id, status, role) 
        VALUES ($1, $2, 'approved', 'owner')`,
@@ -84,11 +86,26 @@ export async function isOwner(groupId, userId) {
   return res.rowCount > 0;
 }
 
+// Hae jäsenyys
+export async function getMembership(groupId, userId) {
+  const { rows } = await pool.query(
+    `SELECT role, status
+    FROM group_memberships
+    WHERE group_id = $1 AND user_id = $2`,
+    [groupId, userId]
+  )
+  return rows[0] || null
+}
+
 // Hae omistajan ryhmien liittymispyynnöt
 export async function getPendingRequestsForOwner(ownerId) {
   const res = await pool.query(
     `
-    SELECT gm.group_id, g.name AS group_name, gm.user_id, u.username, gm.status
+    SELECT gm.group_id, 
+    g.name AS group_name, 
+    gm.user_id, 
+    u.username, 
+    gm.status
     FROM group_memberships gm
     JOIN groups g ON g.id = gm.group_id
     JOIN users u ON u.id = gm.user_id
@@ -100,14 +117,123 @@ export async function getPendingRequestsForOwner(ownerId) {
   return res.rows;
 }
 
-// Hae kaikki liittymispyynnöt (pending) tietylle ryhmälle
-export async function getJoinRequests(groupId) {
-  const res = await pool.query(
-    `SELECT m.user_id, u.username
-     FROM group_memberships m
-     JOIN users u ON m.user_id = u.id
-     WHERE m.group_id = $1 AND m.status = 'pending'`,
+// Hae ryhmän tiedot näytettäväksi sivulla approved-jäsenille
+export async function getGroupDetails(groupId, userId) {
+  //vain hyväksytylle jäsenelle
+  const m = await getMembership(groupId, userId)
+
+  if (!m || m.status !== "approved")
+    return { forbidden: true }
+
+  const groupQ = await pool.query(
+    `SELECT id, name, owner_id
+    FROM groups
+    WHERE id = $1`,
     [groupId]
-  );
-  return res.rows;
+  )
+
+  if (!groupQ.rows[0]) return { notFound: true }
+
+  const membersQ = await pool.query(
+    `SELECT u.id, u.username, gm.role, gm.status
+    FROM group_memberships gm
+    JOIN users u ON u.id = gm.user_id
+    WHERE gm.group_id = $1
+    ORDER BY (gm.role='owner') DESC, u.username ASC`,
+    [groupId]
+  )
+
+  const moviesQ = await pool.query(
+    `SELECT id, tmdb_id, finnkino_id, user_id, note, stars, created_at
+    FROM group_movies
+    WHERE group_id = $1
+    ORDER BY created_at DESC`,
+    [groupId]
+  )
+
+  return {
+    group: groupQ.rows[0],
+    myMembership: m,
+    members: membersQ.rows,
+    movies: moviesQ.rows,
+  }
 }
+
+// Ryhmän poisto jos on owner
+export async function deleteGroupByOwner(groupId, ownerId) {
+  const { rowCount } = await pool.query(
+    `DELETE FROM groups
+    WHERE id = $1 and owner_id = $2`,
+    [groupId, ownerId]
+  )
+  return rowCount
+}
+
+// Owner saa poistaa jäsenen, ei itseään, silloin hän joutuu poistamaan ryhmän, kuten yllä
+export async function removeMemberAsOwner(groupId, removedUserId) {
+  // tarkista, ettei poistettava ole owner
+  const roleQ = await pool.query(
+    `SELECT role
+    FROM group_memberships
+    WHERE group_id = $1 AND user_id = $2`,
+    [groupId, removedUserId]
+  )
+
+  const role = roleQ.rows[0]?.role
+  if (!role) return { notFound: true }
+  if (role === "owner") return { isOwner: true } //owneria ei poisteta
+
+  await pool.query(
+    `DELETE FROM group_memberships
+    WHERE group_id= $1 AND user_id = $2`,
+    [groupId, removedUserId]
+  )
+  return { ok: true }
+}
+
+// Jäsen poistaa itsensä ryhmästä
+export async function leaveGroup(groupId, userId) {
+  const m = await getMembership(groupId, userId)
+  if (!m) return { notFound: true }
+  if (m.role === "owner") return { ownerCantLeave: true }
+
+  await pool.query(
+    `DELETE FROM group_memberships
+    WHERE group_id = $1 AND user_id = $2`,
+    [groupId, userId]
+  )
+  return { ok: true }
+}
+
+// Elokuvan lisääminen ryhmään
+export async function addMovieToGroup({ groupId, userId, tmdbId, finnkinoId, note = null, stars = null }) {
+  if (!tmdbId && !finnkinoId) {
+    throw Object.assign(new Error("tmdbId or finnkinoId required"), { status: 400 })
+  }
+
+  //varmista jäsenyys
+  const m = await getMembership(groupId, userId)
+  if (!m || m.status !=="approved") {
+    throw Object.assign(new Error("Group membership required"), { status: 403 })
+  }
+
+  // Tallennetaan tmdb elokuva tietokantaan
+  if (tmdbId) {
+    const q =
+      `INSERT INTO group_movies (group_id, user_id, tmdb_id, note, stars)
+      VALUES ($1, $2, $3, $4, $5)
+      ON CONFLICT (group_id, user_id, tmdb_id) DO NOTHING
+      RETURNING *`
+    const { rows } = await pool.query(q, [groupId, userId, tmdbId, note, stars])
+    return rows[0] || null
+  } else {
+    const q =
+      `INSERT INTO group_movies (group_id, user_id, finnkino_id, note, stars)
+      VALUES ($1, $2, $3, $4, $5)
+      ON CONFLICT (group_id, user_id, finnkino_id) DO NOTHING
+      RETURNING *`
+    const { rows } = await pool.query(q, [groupId, userId, finnkinoId, note, stars])
+    return rows[0] || null
+  }
+}
+
