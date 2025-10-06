@@ -91,7 +91,8 @@ export const fetchMyGroups = async (req, res) => {
 export const fetchPendingRequests = async (req, res) => {
   try {
     const ownerId = req.user.userId
-    const requests = await getPendingRequestsForOwner(ownerId)
+    const groupId = Number(req.params.groupId)
+    const requests = await getPendingRequestsForOwner(ownerId, groupId)
     res.json(requests)
   } catch (err) {
     console.error("fetchPendingRequests error:", err.message)

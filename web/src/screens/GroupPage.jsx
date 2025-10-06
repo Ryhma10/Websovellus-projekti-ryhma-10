@@ -81,7 +81,7 @@ function GroupPage() {
     if (!group || group.myMembership?.role !== "owner") return;
     (async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/groups/requests", {
+        const res = await fetch(`http://localhost:3001/api/groups/${groupId}/requests`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) return;
