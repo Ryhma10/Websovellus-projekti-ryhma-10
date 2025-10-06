@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import SignIn from "./Signin.jsx";
 import GroupModal from "./GroupModal";
 import "./Groups.css";
+import { Link } from "react-router-dom";
 
 function Groups() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,7 +53,7 @@ function Groups() {
       }
     };
     fetchAllGroups();
-  }, [token]);
+  }, [token, allGroups]);
 
   // Lähetä liittymispyyntö
   const handleJoinRequest = async (groupId) => {
@@ -118,7 +119,7 @@ function Groups() {
             <ul>
               {myGroups.map((g) => (
                 <li key={g.id}>
-                  <a href={`/groups/${g.id}`}>{g.name}</a> – {g.role} ({g.status})
+                  <Link to={`/groups/${g.id}`}>{g.name}</Link>
                 </li>
               ))}
             </ul>
@@ -131,7 +132,7 @@ function Groups() {
               const status = getMembershipStatus(g.id);
               return (
                 <li key={g.id}>
-                  <a href={`/groups/${g.id}`}>{g.name}</a>{" "}
+                  <Link to={`/api/groups/${g.id}`}>{g.name}</Link>
                   {status === "approved" && <span>✅ Joined</span>}
                   {status === "pending" && <span>⏳ Pending</span>}
                   {!status && (

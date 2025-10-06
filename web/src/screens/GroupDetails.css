@@ -1,0 +1,16 @@
+.groupDetails-container {
+    padding: 20px;
+    border: solid 1px var(--accent-color);
+    border-radius: 8px;
+    color: var(--accent-color);
+}
+
+.groupDetails-h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    
+}
+
+.groupDetails-ul {
+    display: flex;
+}

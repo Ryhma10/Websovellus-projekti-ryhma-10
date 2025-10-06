@@ -4,7 +4,8 @@ import {
   approveMembership,
   getAllGroups,
   getMyGroups,
-  isOwner
+  isOwner,
+  getPendingInvitesOfAGroup
 } from "../models/GroupModel.js";
 
 // Luo uusi ryhmä
@@ -80,3 +81,23 @@ export const fetchMyGroups = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+// Hae ryhmän jäsenyyttä odottavat käyttäjät
+export const fetchPendingInvites = async (req, res) => {
+  try {
+    const groupId = req.params.id;
+    const userId = req.user.userId;
+
+    const owner = await isOwner(groupId, userId);
+    if (!owner) {
+      return res.status(403).json({ error: "Only the owner can view pending invites" });
+    }
+
+    const pendingInvites = await getPendingInvitesOfAGroup(groupId);
+    console.log("Pending Invites:", pendingInvites);
+    res.json(pendingInvites);
+  } catch (err) {
+    console.error("fetchPendingInvites error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+}

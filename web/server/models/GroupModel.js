@@ -83,3 +83,12 @@ export async function isOwner(groupId, userId) {
   );
   return res.rowCount > 0;
 }
+
+export async function getPendingInvitesOfAGroup(groupId) {
+  const res = await pool.query(
+    'SELECT user_id FROM group_memberships WHERE group_id = $1 AND status = $2',
+    [groupId, 'pending']
+  )
+  console.log(res.rows);
+  return res.rows;
+}
