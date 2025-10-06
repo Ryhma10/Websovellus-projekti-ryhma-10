@@ -1,5 +1,10 @@
 import { pool } from '../helper/db.js';
 
+export async function getAllReviews() {
+  const result = await pool.query('SELECT * FROM reviews');
+  return result.rows;
+}
+
 export async function createReview({ user_id, tmdb_id, stars, body }) {
   const result = await pool.query(
     'INSERT INTO reviews (user_id, tmdb_id, stars, body) VALUES ($1, $2, $3, $4) RETURNING *',

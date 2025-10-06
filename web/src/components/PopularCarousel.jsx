@@ -21,6 +21,7 @@ function PopularCarousel({ movies }) {
   for (let i = 0; i < visibleCount; i++) {
     visibleMovies.push(movies[(current + i) % movies.length]);
   }
+  console.log("Selected movie:", selectedMovie);
 
   return (
     <div className="popular-carousel">
@@ -43,7 +44,11 @@ function PopularCarousel({ movies }) {
               //Keskimmäiselle elokuvalle oma tyyli
               className={idx === 1 ? "movie-poster movie-poster-center" : "movie-poster movie-poster-side"} //Keskimmäiselle oma tyyli
               //Klikkaus avaa modaalin
-              onClick={() => setSelectedMovie(movie)}
+              onClick={() => {
+                console.log("Clicked:", movie);
+                setSelectedMovie(movie)
+                console.log("Clicked:", movie);
+              }}
               style={{ cursor: "pointer" }}
             />
             <div className="movie-info">{movie.title}</div>

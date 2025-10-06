@@ -1,5 +1,14 @@
 import * as reviewModel from '../models/ReviewModel.js';
 
+export const getAllReviews = async (req, res, next) => {
+  try {
+    const reviews = await reviewModel.getAllReviews();
+    res.json(reviews);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export const createReview = async (req, res, next) => {
   try {
     const user_id = req.user.userId; // from JWT
