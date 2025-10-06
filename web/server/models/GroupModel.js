@@ -98,7 +98,7 @@ export async function getMembership(groupId, userId) {
 }
 
 // Hae omistajan ryhmien liittymispyynnöt
-export async function getPendingRequestsForOwner(ownerId) {
+export async function getPendingRequestsForOwner(ownerId, groupId) {
   const res = await pool.query(
     `
     SELECT gm.group_id, 
@@ -109,10 +109,10 @@ export async function getPendingRequestsForOwner(ownerId) {
     FROM group_memberships gm
     JOIN groups g ON g.id = gm.group_id
     JOIN users u ON u.id = gm.user_id
-    WHERE g.owner_id = $1 AND gm.status = 'pending'
+    WHERE g.owner_id = $1 AND gm.status = 'pending' AND gm.group_id =$2
     ORDER BY gm.group_id;
     `,
-    [ownerId]
+    [ownerId, groupId]
   );
   return res.rows;
 }
@@ -195,7 +195,7 @@ export async function removeMemberAsOwner(groupId, removedUserId) {
 export async function leaveGroup(groupId, userId) {
   const m = await getMembership(groupId, userId)
   if (!m) return { notFound: true }
-  if (m.role === "owner") return { ownerCantLeave: true }
+  if (m.role === "owner") return { ownerCannotLeave: true }
 
   await pool.query(
     `DELETE FROM group_memberships

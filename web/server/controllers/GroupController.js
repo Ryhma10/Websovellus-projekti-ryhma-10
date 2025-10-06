@@ -194,7 +194,7 @@ export async function leaveGroupController(req, res) {
     const userId = req.user.userId
     
     const r = await leaveGroup(groupId, userId)
-    if (r.ownerCantLeave) return res.status(409).json({ error: "Owner can not leave: delete the group instead"})
+    if (r.ownerCannotLeave) return res.status(409).json({ error: "Owner can not leave: delete the group instead"})
     if (r.notFound) return res.status(404).json({ error: "Membership not found"})
 
     return res.status(204).send()
