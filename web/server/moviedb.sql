@@ -17,8 +17,6 @@ CREATE TABLE IF NOT EXISTS users (
   email         citext      NOT NULL,
   password_hash text        NOT NULL,
   profile_picture_url text,
-  -- created_at timestamptz NOT NULL DEFAULT now(),  -- otetaan käyttöön ehkä myöhemmin
-
   -- Varmistetaan uniikit arvot kirjainkoosta riippumatta (citext hoitaa tässä), 
   -- saadaan APIssa ilmaistua 409 joko email tai username taken<<<
   CONSTRAINT users_username_uq UNIQUE (username),
@@ -68,8 +66,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_reviews_user_tmdb ON reviews (user_id, tmdb
 CREATE INDEX IF NOT EXISTS idx_reviews_user ON reviews (user_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_tmdb ON reviews (tmdb_id);
 
-SELECT * FROM reviews;
- 
 -- Käyttäjien suosikkielokuvien taulu
 CREATE TABLE user_favorites (
     user_id INT NOT NULL, -- Viittaa käyttäjään (users-taulun id)
@@ -121,15 +117,21 @@ CREATE TABLE IF NOT EXISTS group_movies (
   created_at  timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT chk_group_movies_ids   CHECK (tmdb_id IS NOT NULL OR finnkino_id IS NOT NULL),
   CONSTRAINT chk_group_movies_stars CHECK (stars IS NULL OR stars BETWEEN 1 AND 5)
+
+  -- Täsmälleen yksi lähde: TMDB TAI Finnkino
+  CONSTRAINT chk_group_movies_one_source CHECK (
+    (tmdb_id IS NOT NULL AND finnkino_id IS NULL) OR
+    (tmdb_id IS NULL AND finnkino_id IS NOT NULL)
+  ),
+
+  CONSTRAINT chk_group_movies_stars CHECK (stars IS NULL OR stars BETWEEN 1 AND 5),
+
+  -- Nimetyt UNIQUE-rajoitteet -> suora tuki ON CONFLICTille
+  CONSTRAINT uq_gm_tmdb UNIQUE (group_id, user_id, tmdb_id),
+  CONSTRAINT uq_gm_finn UNIQUE (group_id, user_id, finnkino_id)
 );
--- estä tupla (tmdb) samalle (group,user) -parille
-CREATE UNIQUE INDEX IF NOT EXISTS uq_group_movies_user_tmdb
-  ON group_movies (group_id, user_id, tmdb_id) 
-  WHERE tmdb_id IS NOT NULL;
--- estä tupla (finnkino) samalle (group,user) -parille
-CREATE UNIQUE INDEX IF NOT EXISTS uq_group_movies_user_finnkino
-  ON group_movies (group_id, user_id, finnkino_id) 
-  WHERE finnkino_id IS NOT NULL;
- 
-CREATE INDEX IF NOT EXISTS idx_group_movies_group ON group_movies (group_id);
-CREATE INDEX IF NOT EXISTS idx_group_movies_user  ON group_movies (user_id);
+
+-- Hyödylliset apuindeksit listauksille
+CREATE INDEX IF NOT EXISTS idx_group_movies_group          ON group_movies (group_id);
+CREATE INDEX IF NOT EXISTS idx_group_movies_user           ON group_movies (user_id);
+CREATE INDEX IF NOT EXISTS idx_group_movies_group_created  ON group_movies (group_id, created_at DESC);
