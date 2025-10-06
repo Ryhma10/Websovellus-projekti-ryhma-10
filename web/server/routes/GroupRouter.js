@@ -30,7 +30,7 @@ router.get("/", fetchAllGroups)
 // Hae kirjautuneen käyttäjän omat ryhmät
 router.get("/my", Authentication, fetchMyGroups)
 // Hae liittymispyynnöt
-router.get("/requests", Authentication, fetchPendingRequests)
+router.get("/:groupId/requests", Authentication, fetchPendingRequests)
 
 // Hae ryhmän tiedot
 router.get("/:groupId", Authentication, fetchGroupDetails)
