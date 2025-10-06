@@ -386,13 +386,17 @@ function GroupPage() {
               value={movieQuery}
               onChange={(e) => { setPage(1); setMovieQuery(e.target.value); }}
             />
-            <select value={genreQuery} onChange={(e) => setGenreQuery(e.target.value)}>
+            <select 
+              className="genre-select-tmdb"
+              value={genreQuery} onChange={(e) => setGenreQuery(e.target.value)}>
               <option value="">Genre</option>
               {externalGenres.map((g) => (
                 <option key={g.id} value={g.id}>{g.name}</option>
               ))}
             </select>
-            <select value={yearQuery} onChange={(e) => setYearQuery(e.target.value)}>
+            <select 
+              className="year-select-tmdb"
+              value={yearQuery} onChange={(e) => setYearQuery(e.target.value)}>
               <option value="">Year</option>
               {years.map((y) => <option key={y} value={y}>{y}</option>)}
             </select>
