@@ -325,7 +325,8 @@ function GroupPage() {
       {showFinnkino && (
         <section className="group-page-search">
           <h3>Finnkino</h3>
-          <SearchBar embedded onResults={handleFinnkinoResults} />
+          <SearchBar onResults={handleFinnkinoResults} />
+            
 
           <div className="results-grid">
             {fkResults.map((m) => (
