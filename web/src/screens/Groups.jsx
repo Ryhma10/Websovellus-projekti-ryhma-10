@@ -7,7 +7,6 @@ function Groups() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [myGroups, setMyGroups] = useState([]);
   const [allGroups, setAllGroups] = useState([]);
-  const [pendingRequests, setPendingRequests] = useState([]); // 🆕 Omistajan pending-pyynnöt
   const [showSignInModal, setShowSignInModal] = useState(false);
   const token = localStorage.getItem("token");
 
@@ -44,24 +43,6 @@ function Groups() {
       }
     };
     fetchAllGroups();
-  }, [token]);
-
-  // 🆕 Haetaan pending liittymispyynnöt ryhmän omistajalle
-  useEffect(() => {
-    const fetchPending = async () => {
-      if (!token) return;
-      try {
-        const res = await fetch("http://localhost:3001/api/groups/requests", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error("Virhe haettaessa liittymispyyntöjä");
-        const data = await res.json();
-        setPendingRequests(data);
-      } catch (err) {
-        console.error("Error fetching pending requests:", err);
-      }
-    };
-    fetchPending();
   }, [token]);
 
   // 🔸 Luo ryhmä -napin toiminto
@@ -156,27 +137,6 @@ function Groups() {
       <h1>Groups</h1>
       <button onClick={handleCreateGroupClick}>Create Group</button>
       <GroupModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-
-      {/* 🆕 Omistajan pending liittymispyynnöt */}
-      {token && pendingRequests.length > 0 && (
-        <div className="pending-requests">
-          <h2>Pending Join Requests</h2>
-          <ul>
-            {pendingRequests.map((req) => (
-              <li key={`${req.group_id}-${req.user_id}`}>
-                <strong>{req.username}</strong> wants to join{" "}
-                <em>{req.group_name}</em>
-                <button
-                  onClick={() => handleApprove(req.group_id, req.user_id)}
-                  style={{ marginLeft: "10px" }}
-                >
-                  Approve
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
 
       <div className="groups-lists-row">
         {token && (

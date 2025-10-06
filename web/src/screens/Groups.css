@@ -51,7 +51,7 @@
   margin: 0 auto;
 }
 
-.group-page__header {
+.group-page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -59,7 +59,7 @@
   margin-bottom: 1rem;
 }
 
-.group-page__title {
+.group-page-title {
   margin: 0;
   font-size: clamp(1.4rem, 2.5vw, 2rem);
   font-weight: 700;
@@ -192,7 +192,7 @@
   box-shadow: 0 6px 20px rgba(0,0,0,.25);
 }
 
-.card__poster-wrap {
+.card-poster-wrap {
   position: relative;
   aspect-ratio: 2 / 3;
   background: #111;
@@ -201,19 +201,19 @@
   overflow: hidden;
 }
 
-.card__poster {
+.card-poster {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-.card__poster-fallback {
+.card-poster-fallback {
   font-size: 2rem;
   opacity: .6;
 }
 
-.card__badge {
+.card-badge {
   position: absolute;
   top: .5rem;
   left: .5rem;
@@ -225,11 +225,11 @@
   backdrop-filter: blur(2px);
 }
 
-.card__badge--finnkino {
+.card-badge--finnkino {
   color: #f7d774; /* pehmeä keltainen */
 }
 
-.card__badge--tmdb {
+.card-badge--tmdb {
   color: #5ac8fa; /* sinertävä */
 }
 
