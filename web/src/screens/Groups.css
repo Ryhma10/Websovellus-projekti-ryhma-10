@@ -113,6 +113,25 @@
   color: var(--background-color);
 }
 
+/*TMDB*/
+.genre-select-tmdb, .year-select-tmdb {
+    background-color: rgb(30,30,30);
+    color: var(--text-color);
+    border-radius: 8px;
+    margin-left: 0.5em;
+    padding: 10px;
+    cursor: pointer;
+    outline: none;
+    font-size: 1em;
+    font-family: var(--font-family);
+}
+
+.genre-select-tmdb:focus, .year-select-tmdb:focus {
+    border-color: var(--accent-color);
+    outline: none;
+    transition: border-color 0.5s ease;
+}
+
 /* jäsenlista */
 .members {
   margin-top: 1rem;
