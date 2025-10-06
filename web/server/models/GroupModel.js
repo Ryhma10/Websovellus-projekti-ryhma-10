@@ -222,7 +222,7 @@ export async function addMovieToGroup({ groupId, userId, tmdbId, finnkinoId, not
     const q =
       `INSERT INTO group_movies (group_id, user_id, tmdb_id, note, stars)
       VALUES ($1, $2, $3, $4, $5)
-      ON CONFLICT (group_id, user_id, tmdb_id) DO NOTHING
+      ON CONFLICT ON CONSTRAINT uq_gm_tmdb DO NOTHING
       RETURNING *`
     const { rows } = await pool.query(q, [groupId, userId, tmdbId, note, stars])
     return rows[0] || null
@@ -230,7 +230,7 @@ export async function addMovieToGroup({ groupId, userId, tmdbId, finnkinoId, not
     const q =
       `INSERT INTO group_movies (group_id, user_id, finnkino_id, note, stars)
       VALUES ($1, $2, $3, $4, $5)
-      ON CONFLICT (group_id, user_id, finnkino_id) DO NOTHING
+      ON CONFLICT uq_gm_finn DO NOTHING
       RETURNING *`
     const { rows } = await pool.query(q, [groupId, userId, finnkinoId, note, stars])
     return rows[0] || null
