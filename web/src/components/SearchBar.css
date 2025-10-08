@@ -47,9 +47,12 @@ body {
 .results {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    justify-items: center;
+    align-items: center;
     max-width: 90vw;
     column-gap: 8px;
     row-gap: 10px;
+    margin: 0 auto;
 }
 
 .movie-result-item {
@@ -71,3 +74,36 @@ body {
     margin-top: 10px;
     text-align: center;
 }
+
+@media (max-width: 700px) {
+    .results {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+    .movie-result-item {
+        max-width: 90vw;
+        width: 100%;
+        padding: 6px;
+        box-sizing: border-box;
+    }
+    .show-poster {
+        width: 100%;
+    }
+}
+
+@media (max-width: 500px) {
+    .search {
+        flex-direction: column;
+        gap: 1em;
+        justify-content: center;
+        align-items: flex-start;
+    }
+    .results {
+        margin-right: 3em;
+    }
+
+    .theatres-dropdown, .times-dropdown, .movie-search {
+        width: 90vw;
+        max-width: 300px;
+    }
+}
+

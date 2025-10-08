@@ -24,7 +24,7 @@ function PopularCarousel({ movies }) {
 
   return (
     <div className="popular-carousel">
-      <h2>Popular Now</h2>
+      <h2 className="carousel-title">Popular Now</h2>
       <div className="carousel-content">
         {/* Edellinen-nappi */}
         <button onClick={() => setCurrent((current - 1 + movies.length) % movies.length)}>{"<"}</button>

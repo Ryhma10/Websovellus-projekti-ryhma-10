@@ -72,7 +72,7 @@ function GroupPage() {
           return;
         }
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+        let data = await res.json();
         setGroup(data);
 
         // rakenna setit valmiiksi UI:lle
@@ -94,8 +94,9 @@ function GroupPage() {
       }
     })();
     return () => ctrl.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [groupId, token, navigate]);
+
+  }, [groupId, token, navigate, pendingRequests]);
+
 
   // --- Owner: pending join -pyynnöt (haetaan kun ryhmä ladattu ja käyttäjä on owner) ---
   useEffect(() => {
@@ -494,7 +495,8 @@ function GroupPage() {
       <section className="members">
         <h3>Members</h3>
         <ul className="members-list">
-          {group.members?.map((m) => (
+          {group.members?.filter(m => m.status !== "pending")
+          .map((m) => (
             <li key={m.id} className="members-item">
               <span>
                 {m.username} {m.role === "owner" ? "👑" : ""}

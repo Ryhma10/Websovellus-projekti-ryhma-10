@@ -8,6 +8,11 @@ import { useState, useEffect } from "react";
 
 function NavBar({ isLoggedIn, setIsLoggedIn }) {
   const [modalType, setModalType] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Mobile menu handlers
+  const toggleMenu = () => setMenuOpen(!menuOpen);
+  const closeSidebar = () => setMenuOpen(false);
 
   // On mount, check localStorage for token
   useEffect(() => {
@@ -19,8 +24,17 @@ function NavBar({ isLoggedIn, setIsLoggedIn }) {
     <>
       <img src={tempLogo} alt="Temporary Logo" className="temp-logo" />
       <nav className="nav">
-        <ul>
-          <li><img src={logo} alt="Mad Moose Movies Logo" className="logo" /></li>
+        <img src={logo} alt="Mad Moose Movies Logo" className="logo" />
+
+        {/* Mobile burger menu */}
+        <div className="burger" onClick={toggleMenu}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+
+          {/* Desktop nav links */}
+        <ul className="nav-links">
           <li><Link to="/">Home</Link></li>
           <li><Link to="/movies">All Movies</Link></li>
           <li><Link to="/groups">Groups</Link></li>
@@ -61,9 +75,63 @@ function NavBar({ isLoggedIn, setIsLoggedIn }) {
             )}
           </li>
         </ul>
-      </nav>
-    </>
-  );
+
+        {/* Sidebar for mobile*/}
+        <div className={`sidebar${menuOpen ? " open" : ""}`}>
+          <ul className="mobile-nav">
+            <li><Link to="/" onClick={closeSidebar} className="mobile-nav-link">Home</Link></li>
+            <li><Link to="/movies" onClick={closeSidebar} className="mobile-nav-link">All Movies</Link></li>
+            <li><Link to="/groups" onClick={closeSidebar} className="mobile-nav-link">Groups</Link></li>
+            <li><Link to="/favorites" onClick={closeSidebar} className="mobile-nav-link">Favorites</Link></li>
+            <li className="profile-link">
+            {isLoggedIn ? (
+              <Link to="/profile" onClick={closeSidebar} className="mobile-nav-link">Profile</Link>
+            ) : (
+              <a
+                href="#"
+                onClick={e => {
+                  e.preventDefault();
+                  setModalType("signin");
+                  closeSidebar();
+                }}
+                className="mobile-nav-link"
+              >
+                Sign In
+              </a>
+            )}
+          </li>
+        </ul>
+      </div>
+      {/* Overlay to close sidebar */}
+      {menuOpen && (
+        <div 
+        className="sidebar-overlay" 
+        onClick={closeSidebar}
+        />
+      )}
+
+      {/* Render modals OUTSIDE sidebar */}
+      {modalType === "signin" && (
+        <SignIn
+          isOpen={true}
+          onClose={() => setModalType(null)}
+          onSignUp={() => setModalType("signup")}
+          onLoginSuccess={userData => {
+            setIsLoggedIn(true);
+            setModalType(null);
+          }}
+        />
+      )}
+      {modalType === "signup" && (
+        <SignUp
+          isOpen={true}
+          onClose={() => setModalType(null)}
+          onSignIn={() => setModalType("signin")}
+        />
+      )}
+    </nav>
+  </>
+);
 }
 
 export default NavBar;

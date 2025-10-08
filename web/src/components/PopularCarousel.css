@@ -2,6 +2,7 @@
   margin: 32px auto;
   max-width: 400px;
   text-align: center;
+  z-index: 3000;
 }
 
 .carousel-content {
@@ -34,7 +35,7 @@
 
 .movie-item-center {
   width: 272px;
-  height: 392px;
+  height: 440px;
 }
 
 .movie-item-center .movie-poster {
@@ -69,4 +70,67 @@
 .popular-carousel h2 {
   text-align: center;
   color: white;
+} 
+
+@media (max-width: 870px) {
+  body {
+    overflow-x: hidden;
+  }
+  .popular-carousel {
+    padding: 10px;
+  }
+  .carousel-content {
+    flex-direction: row;
+    align-items: center;
+  }
+  .movie-item,
+  .movie-item-center {
+    margin: 10px 0;
+    padding: 8px;
+  }
+  .movie-poster,
+  .movie-item-center .movie-poster {
+    max-width: 220px;
+    height: auto;
+  }
+}
+
+@media (max-width: 500px) {
+  .carousel-title {
+    font-size: 1.2em;
+    margin-right: 1em;
+  }
+  .carousel-content {
+    margin-left: -1.5em;
+    justify-content: flex-start;
+  }
+  .movie-item-center {
+    width: 110px;
+    height: auto;
+  }
+  .movie-item-center .movie-poster {
+    width: 100px;
+    height: auto;
+  }
+  .movie-item-side {
+    width: 60px;
+    height: auto;
+  }
+  .movie-item-side .movie-poster {
+    width: 50px;
+    height: auto;
+    opacity: 0.7;
+  }
+
+  .movie-info {
+    font-size: 0.8em;
+  }
+  
+  .carousel-content button {
+  width: 28px;
+  height: 28px;
+  font-size: 0.9em;
+  padding: 0.1em 0.3em;
+  border-radius: 6px;
+}
 }

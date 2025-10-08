@@ -1,10 +1,9 @@
-
 .nav {
     position: fixed;
     left: 0;
     top: 0;
     background-color: rgb(30, 30, 30);
-    width: 100vw;
+    width: 100%;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -25,7 +24,7 @@
 
 .nav ul {
     position: relative;
-    left: -10vw;
+    left: -5vw;
     top: 0;
     display: flex;
     justify-content: center;
@@ -45,7 +44,7 @@
 }
 
 .nav a {
-    font-size: 1.5em;
+    font-size: clamp(1em, 2vw, 1.5em);
     text-decoration: none;
     color: var(--text-color);
     margin: 0.5em;
@@ -63,13 +62,41 @@
     text-shadow: 2px 2px 5px rgb(120, 255, 181, 0.3);
 }
 
+.burger {
+    display: none;
+    position: absolute;
+    top: 2.5em;
+    right: 2em;
+    width: 2em;
+    height: 2em;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    z-index: 3100;
+    animation: fadeIn 1.5s ease-in 3s;
+    animation-fill-mode: forwards;
+    opacity: 0;
+}
+
+.burger span {
+    display: block;
+    height: 0.3em;
+    width: 100%;
+    background: var(--accent-color);
+    border-radius: 2px;
+    transition: all 0.3s ease-in-out;
+}
+
 .logo {
     position: fixed;
-    left: 20px;
+    left: 10px;
     top: -50px;
     width: 13em;
     height: auto;
-    align-self: center;
+    align-self: flex-start;
+    animation: fadeIn 1.5s ease-in 3s;
+    animation-fill-mode: forwards;
+    opacity: 0;
 }
 
 .temp-logo {
@@ -119,3 +146,115 @@
   min-width: 300px;
 }
 
+.sidebar-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; 
+    height: 100vh;
+    background: rgba(0,0,0,0.3);
+    z-index: 3199;
+}
+
+
+@media (max-width: 1024px) {
+    .logo {
+        width: 10em;
+        top: -20px;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+    }
+    .nav {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .nav-links {
+        display: none !important;
+    }
+
+    .logo {
+        position: absolute;
+        top: -0.5em;
+        left: 1em;
+        width: 8em;
+        z-index: 3000;
+        margin: 0;
+    }
+    .burger {
+        display: flex;
+        position: absolute;
+        top: 2.5em;
+        right: 2em;
+        z-index: 3200;
+    }
+    .sidebar {
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100%;
+        width: 70vw;
+        max-width: 350px;
+        background: rgb(30, 30, 30);
+        box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
+        z-index: 3200;
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    .mobile-nav{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        padding: 0;
+        margin-top: 5em;
+        list-style: none;
+        align-items: stretch;
+        justify-content: flex-start;
+        display: flex;
+        z-index: 3201;
+    }
+    .mobile-nav-link {
+        display: block;
+        font-size: 2em;
+        margin: 0;
+        color: var(--text-color) !important;
+        text-decoration: none;
+        font-weight: bold;
+        text-align: flex-start;
+        width: 100%;
+        z-index: 3202;
+    }
+    .mobile-nav .profile-link {
+        position: static;
+        width: 100%;
+        text-align: center;
+        z-index: 3202;
+    }
+    .mobile-nav .profile-link a {
+        display: block;
+        margin-right: 2em;
+        color: var(--text-color) !important;
+        font-size: 2em;
+        font-weight: bold;
+        text-decoration: none;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (min-width: 769px) {
+    .sidebar {
+        display: none !important;
+    }
+}
