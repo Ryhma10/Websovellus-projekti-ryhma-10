@@ -30,3 +30,12 @@ export const getReviewsByUser = async (req, res, next) => {
     next(err);
   }
 };
+
+export const getAllReviews = async (req, res, next) => {
+  try {
+    const reviews = await reviewModel.getAllReviews();
+    res.json(reviews);
+  } catch (err) {
+    next(err);
+  }
+}
