@@ -33,6 +33,7 @@
     max-width: 90vw;
     column-gap: 8px;
     row-gap: 10px;
+    margin: 0 auto;
 }
 
 .movie-item {
@@ -74,4 +75,17 @@
     border-color: var(--accent-color);
     outline: none;
     transition: border-color 0.5s ease;
+}
+
+@media (max-width: 500px) {
+    .all-movies-search {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5em;
+    }
+
+    .all-movies-search > * {
+        width: 100%;
+        margin: 0;
+    }
 }
