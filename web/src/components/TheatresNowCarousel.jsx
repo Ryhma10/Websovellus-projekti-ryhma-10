@@ -48,7 +48,7 @@ const TheatresNowCarousel = () => {
 
     return (
         <div className="popular-carousel">
-            <h2>In Theatres Now</h2>
+            <h2 className="carousel-title">In Theatres Now</h2>
             <div className="carousel-content">
                 <button onClick={() => setCurrent((current - 1 + movies.length) % movies.length)}>{"<"}</button>
                 {visibleMovies.map((movie, idx) => (
