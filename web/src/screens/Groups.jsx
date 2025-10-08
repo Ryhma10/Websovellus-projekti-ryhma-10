@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import SignIn from "./Signin.jsx";
 import GroupModal from "./GroupModal";
 import "./Groups.css";
+import { Link } from "react-router-dom";
 
 function Groups() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,7 +27,7 @@ function Groups() {
       }
     };
     fetchMyGroups();
-  }, [token]);
+  }, [token, myGroups]);
 
   // 🔸 Haetaan kaikki ryhmät
   useEffect(() => {
@@ -43,7 +44,7 @@ function Groups() {
       }
     };
     fetchAllGroups();
-  }, [token]);
+  }, [token, allGroups]);
 
   // 🔸 Luo ryhmä -napin toiminto
   const handleCreateGroupClick = () => {
@@ -143,9 +144,14 @@ function Groups() {
           <div className="my-groups-list">
             <h2>My Groups</h2>
             <ul>
+            <li className="groups-invidual-group-li">
+              <p>Group name</p>
+              Role (Status)
+            </li>
               {myGroups.map((g) => (
-                <li key={g.id}>
-                  <a href={`/groups/${g.id}`}>{g.name}</a> – {g.role} ({g.status})
+                <li className="groups-invidual-group-li" key={g.id}>
+                  <Link className="groups-link" to={`/groups/${g.id}`}>{g.name}</Link>
+                  {g.role} ({g.status})
                 </li>
               ))}
             </ul>
@@ -155,10 +161,14 @@ function Groups() {
         <div className="all-groups-list">
           <h2>All Groups</h2>
           <ul>
+          <li className="groups-invidual-group-li">
+              <p>Group name</p>
+              Status
+            </li>
             {allGroups.map((g) => {
               const status = getMembershipStatus(g.id);
               return (
-                <li key={g.id}>
+                <li className="groups-invidual-group-li groups-all-groups-li" key={g.id}>
                   <p>{g.name}</p>
                   {status === "approved" && <span>✅ Joined</span>}
                   {status === "pending" && <span>⏳ Pending</span>}

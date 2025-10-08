@@ -12,6 +12,28 @@
   list-style: none;
 }
 
+.groups-invidual-group-li {
+  border-bottom: solid 1px var(--accent-color);
+  display: flex;
+  align-items: center;
+  text-align: left;
+  justify-content: space-between;
+}
+
+.groups-link {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  height: 52px;
+  margin: 0;
+  padding: 0;
+}
+
+.groups-link:hover {
+  text-shadow: 2px 2px 5px rgb(120, 255, 181, 0.3);
+  color: var(--secondary-accent-color);
+}
+
 .groups-lists-row {
   display: flex;
   gap: 2rem;
@@ -114,22 +136,24 @@
 }
 
 /*TMDB*/
-.genre-select-tmdb, .year-select-tmdb {
-    background-color: rgb(30,30,30);
-    color: var(--text-color);
-    border-radius: 8px;
-    margin-left: 0.5em;
-    padding: 10px;
-    cursor: pointer;
-    outline: none;
-    font-size: 1em;
-    font-family: var(--font-family);
+.genre-select-tmdb,
+.year-select-tmdb {
+  background-color: rgb(30, 30, 30);
+  color: var(--text-color);
+  border-radius: 8px;
+  margin-left: 0.5em;
+  padding: 10px;
+  cursor: pointer;
+  outline: none;
+  font-size: 1em;
+  font-family: var(--font-family);
 }
 
-.genre-select-tmdb:focus, .year-select-tmdb:focus {
-    border-color: var(--accent-color);
-    outline: none;
-    transition: border-color 0.5s ease;
+.genre-select-tmdb:focus,
+.year-select-tmdb:focus {
+  border-color: var(--accent-color);
+  outline: none;
+  transition: border-color 0.5s ease;
 }
 
 /* jäsenlista */
@@ -208,7 +232,7 @@
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,.25);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .25);
 }
 
 .card-poster-wrap {
@@ -240,19 +264,21 @@
   border-radius: 999px;
   font-size: .75rem;
   border: 1px solid currentColor;
-  background: rgba(0,0,0,.35);
+  background: rgba(0, 0, 0, .35);
   backdrop-filter: blur(2px);
 }
 
 .card-badge--finnkino {
-  color: #f7d774; /* pehmeä keltainen */
+  color: #f7d774;
+  /* pehmeä keltainen */
 }
 
 .card-badge--tmdb {
-  color: #5ac8fa; /* sinertävä */
+  color: #5ac8fa;
+  /* sinertävä */
 }
 
-.card > div {
+.card>div {
   padding: .75rem .75rem 1rem;
   display: grid;
   align-content: start;
@@ -272,7 +298,8 @@
   line-height: 1.2;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 2;      /* 2 riviä */
+  -webkit-line-clamp: 2;
+  /* 2 riviä */
   -webkit-box-orient: vertical;
 }
 
@@ -298,6 +325,7 @@
   .groups-lists-row {
     flex-direction: column;
   }
+
   .group-page-header {
     flex-direction: column;
     align-items: flex-start;
