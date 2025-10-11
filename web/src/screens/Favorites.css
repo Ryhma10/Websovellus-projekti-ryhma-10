@@ -12,6 +12,7 @@
 .favorite-movie {
   display: flex;
   flex-direction: column;  /* pystysuunta */
+  max-width: 25vw;
   border-radius: 16px;
   border: 1px solid var(--accent-color);
   padding: 0.5rem;
@@ -35,9 +36,11 @@
 
 .favorite-movie img {
   width: 100%;
+  max-width: 200px;
   height: auto;
   border-radius: 12px;
   margin-bottom: 0.5rem;
+  margin: 0 auto; /* keskitetään kuva vaakasuunnassa */
 }
 
 .favorite-movie p {
