@@ -1,3 +1,4 @@
+/* ------ Yleisrakenne ------ */
 .modal-backdrop {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -22,34 +23,6 @@
   overflow-y: auto;
 }
 
-.modal-title {
-    text-align: center;
-    margin-bottom: 0.5em;
-    font-size: 2em;
-}
-
-.modal-content {
-    display: flex;
-    flex-direction: row;
-    gap: 1em;
-    margin-left: 10%;
-    padding: 0;
-}
-
-.modal-content p {
-    margin-left: 10%;
-    margin-top: 20%;
-}
-
-.reviews-list {
-    list-style-type: none;
-    padding: 0;
-    max-height: 200px;
-    overflow-y: auto;
-    border-top: 1px solid var(--accent-color);
-    margin-top: 1em;
-}
-
 .close-btn {
   position: absolute;
   top: 1rem;
@@ -60,102 +33,158 @@
   color: var(--accent-color);
   cursor: pointer;
   max-width: 50px;
-  min-width: unset;      /* Estää min-widthin periytymisen */
-  border-radius: 50%;    /* Pyöreä, mutta ilman reunusta */
-  border: none;          /* Ei vihreää reunaa */
+  min-width: unset;
+  border-radius: 50%;
   padding: 0;
-  transition: color 0.2s;
+  transition: color 0.2s, background 0.2s;
 }
-
 .close-btn:hover {
   color: #fff;
   background: var(--accent-color);
 }
 
-.review-textarea {
-    margin: 1em auto;
-    width: 80%;
-    min-height: 80px;
-    max-width: 600px;
-    font-size: 1.1em;
-    font-family: var(--font-family, inherit);
-    color: var(--text-color);
-    background: var(--background-color);
-    border: 2px solid var(--accent-color);
-    border-radius: 16px;
-    padding: 1em;
-    box-sizing: border-box;
-    resize: vertical; /* tai 'none' jos et halua muokattavuutta */
-    transition: border 0.2s;
+/* ------ Otsikko ------ */
+.modal-title {
+  text-align: center;
+  margin-bottom: 0.5em;
+  font-size: 2em;
+}
+.badge {
+  display: inline-block;
+  margin-left: .4rem;
+  padding: .1rem .5rem;
+  border-radius: 999px;
+  font-size: .55em;
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
 }
 
-.review-textarea:focus {
-    outline: none;
-    border-color: #fff;
-    background: var(--background-color, #222);
+/* ------ Sisältöalue (kuva + teksti) ------ */
+.modal-content {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 16px;
+  align-items: start;
 }
 
-.movie-overview {
-    margin-top: 1em;
-    font-size: 1.1em;
-    line-height: 1.4;
-    text-align: left;
-    max-width: 60vh;
-}
+/* TÄRKEÄ: poistetaan aiempi globaali marginaali p-elementeille modalin sisällä */
+.modal-content p { margin: 0; }
 
+/* Juliste ei veny, keskitetään pystysuunnassa */
+.poster-wrap {
+  display: flex;
+  justify-content: center;
+}
 .modal-poster {
-    border-radius: 16px;
-    width: 30%;
-    height: auto;
-    display: block;
-    margin: 0;
-    align-items: flex-start;
+  width: 100%;
+  max-width: 200px;    /* kiinteä maksimi, estää venymisen */
+  height: auto;
+  object-fit: contain; /* älä venytä kuvaa */
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0,0,0,.15);
+  display: block;
 }
 
-.movie-modal h2,
-.movie-modal h3,
-.movie-modal p,
-.movie-modal label,
-.movie-modal ul {
+/* Overview-teksti (TMDB) */
+.movie-overview {
+  margin-top: 0.25em;
+  font-size: 1.05em;
+  line-height: 1.5;
+  text-align: left;
+  max-width: 60ch;
+}
+
+/* ------ Arvostelukentät ------ */
+.stars-label {
+  display: block;
+  text-align: center;
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
 
+.review-textarea {
+  margin: 1em auto;
+  width: 80%;
+  min-height: 80px;
+  max-width: 600px;
+  font-size: 1.1em;
+  font-family: var(--font-family, inherit);
+  color: var(--text-color);
+  background: var(--background-color);
+  border: 2px solid var(--accent-color);
+  border-radius: 16px;
+  padding: 1em;
+  box-sizing: border-box;
+  resize: vertical;
+  transition: border 0.2s;
+}
+.review-textarea:focus {
+  outline: none;
+  border-color: #fff;
+  background: var(--background-color, #222);
+}
+
+/* ------ Finnkino showtimes ------ */
+.fk-showtimes { margin-top: 12px; }
+.fk-showtimes__list { margin-top: 8px; }
+
+.fk-theatre {
+  margin-bottom: 14px;
+  text-align: center; /* teatteri keskelle */
+}
+.fk-theatre-name {
+  font-weight: 600;
+  margin-bottom: 6px; /* näytösajat suoraan alle */
+}
+
+/* “Chips” näytösajoille */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center; /* keskitetään riville */
+}
+.chip {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #d0d5dd;
+  background-color: rgb(30, 30, 30);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: transform .05s ease, background .15s ease, color .15s ease, border-color .15s ease;
+}
+.chip:hover {
+  transform: translateY(-1px);
+}
+.chip--selected {
+  background: var(--accent-color);
+  color: rgb(30,30,30);
+  border-color: #0f8a3b;
+}
+
+/* ------ Napit ------ */
 .modal-buttons {
   display: flex;
   gap: 1rem;
   justify-content: center;
   margin: 1rem 0;
 }
-
 .modal-buttons button {
-  min-width: 160px; 
+  min-width: 160px;
   font-size: 1rem;
   padding: 0.5em 1em;
   border-radius: 50px;
   border: 2px solid var(--accent-color);
-  background: none;
+  background: var(--background-color);
   color: var(--accent-color);
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
-  white-space: nowrap; 
+  white-space: nowrap;
 }
-
-.modal-buttons button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
+.modal-buttons button:disabled { opacity: 0.6; cursor: not-allowed; }
 .modal-buttons button:hover:not(:disabled) {
   background: var(--accent-color);
   color: var(--background-color);
-}
-
-.stars-label {
-  display: block;
-  text-align: center;
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
 }
 
 .modal-btn {
@@ -164,7 +193,7 @@
   padding: 0.5em 1em;
   border-radius: 50px;
   border: 2px solid var(--accent-color);
-  background: none;
+  background: var(--background-color);
   color: var(--accent-color);
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
@@ -173,96 +202,89 @@
   display: block;
   text-align: center;
 }
-
-.modal-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
+.modal-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .modal-btn:hover:not(:disabled) {
   background: var(--accent-color);
   color: var(--background-color);
 }
 
-@media (max-width: 1000px) {
-  .modal-title {
-    padding-top: 1em;
-  }
-  .movie-modal {
-    max-width: 70vw;
-    padding: 1em;
-  }
+/* ------ Listat (esim. reviews) ------ */
+.reviews-list {
+  list-style-type: none;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  border-top: 1px solid var(--accent-color);
+  margin-top: 1em;
+}
 
+/* ------ Responsiivisuus ------ */
+@media (max-width: 1000px) {
+  .modal-title { padding-top: 1em; }
+  .movie-modal { max-width: 70vw; padding: 1em; }
   .modal-content {
     align-items: center;
     text-align: center;
     gap: 0.5em;
     margin-left: 0;
+    grid-template-columns: 1fr; /* pinotaan */
   }
-
-  .movie-overview {
-    max-width: 90vw;
-  }
-
+  .poster-wrap { justify-content: center; }
   .modal-poster {
-    width: 60vw;
-    max-width: 90vw;
-    min-width: unset;
-    max-height: 30vh;
+    max-width: 260px;
+    width: 100%;
     height: auto;
-    margin-bottom: 1em;
+    margin: 0 auto 1em auto;
   }
+  .movie-overview { max-width: 90vw; text-align: left; margin: 0 auto; }
 }
 
 @media (max-width: 768px) {
-  .modal-content {
-    font-size: 0.7em;
-  }
+  .modal-content { font-size: 0.9em; grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
-  .movie-modal {
-    max-width: 90vw;
-    padding: 1em;
-    top: 5vh;
-  }
-
+  .movie-modal { max-width: 90vw; padding: 1em; top: 5vh; }
   .modal-content {
     align-items: center;
     text-align: center;
     gap: 0.5em;
     margin-left: 0;
   }
-
-  .movie-overview {
-    max-width: 90vw;
-  }
-
+  .poster-wrap { display: flex; justify-content: center; }
   .modal-poster {
-    width: 60vw;
-    max-width: 90vw;
-    min-width: unset;
-    max-height: 30vh;
+    max-width: 70vw;
     height: auto;
     margin-bottom: 1em;
   }
+  .movie-overview { max-width: 90vw; }
 }
 
 @media (max-width: 375px) {
-
-  .movie-modal {
-    max-width: 90vw;
-    padding: 1em;
-    top: 5vh;
-  }
-  .modal-poster {
-    width: 25vw;
-    max-width: 90vw;
-  }
-  .modal-content {
-    font-size: 0.6em;
-  }
-  .modal-buttons {
-    flex-direction: column;
-  }
+  .movie-modal { max-width: 90vw; padding: 1em; top: 5vh; }
+  .modal-content { font-size: 0.85em; }
+  .modal-buttons { flex-direction: column; }
 }
+
+/* --- Fix: modalin nappeihin taas tausta --- */
+.movie-modal .btn,
+.movie-modal .modal-buttons button,
+.movie-modal .modal-btn {
+  background: var(--accent-color);
+  color: var(--background-color);
+  border-color: var(--accent-color);
+}
+
+.movie-modal .btn:hover:not(:disabled),
+.movie-modal .modal-buttons button:hover:not(:disabled),
+.movie-modal .modal-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.movie-modal .btn:disabled,
+.movie-modal .modal-buttons button:disabled,
+.movie-modal .modal-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
