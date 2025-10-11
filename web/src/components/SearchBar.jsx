@@ -17,14 +17,26 @@ export default function SearchBar({ embedded = false, onResults }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const areasData = await getTheatresFromFinnkino()
-      setAreas(areasData)
-      const areaIds = areasData.map(area => area.id)
-      const datesData = await getDatesFromFinnkino(areaIds)
-      setDates(datesData)
-    }
-    fetchData()
-  }, [])
+      try {
+        const areasData = await getTheatresFromFinnkino();
+        console.log('[FK] areasData len:', areasData?.length, 'sample:', areasData?.[0]);
+        setAreas(areasData);
+
+        // Hae näytökset KAIKILLE alueil­le – ei mitään firstAreaId:ia
+        const areaIds = (areasData || []).map(a => a.id).filter(Boolean);
+        console.log('[FK] areaIds count:', areaIds.length, areaIds.slice(0,5));
+
+        const datesData = await getDatesFromFinnkino(areaIds);
+        console.log('[FK] datesData len:', datesData?.length, datesData?.[0]);
+        setDates(datesData);
+      } catch (err) {
+        console.error('Finnkino fetch failed:', err);
+        setAreas([]);
+        setDates([]);
+      }
+    };
+    fetchData();
+  }, []);
 
   // suodatus
   useEffect(() => {
@@ -37,9 +49,19 @@ export default function SearchBar({ embedded = false, onResults }) {
     }
 
     if (selectedArea.trim() !== '') {
-      filtered = filtered.filter(show =>
-        String(show.theatreId) === String(selectedArea)
-      )
+      filtered = filtered.filter(show => {
+        //String(show.theatreId) === String(selectedArea)
+        const sid = 
+          show.theatreId ??
+          show.TheatreID ??
+          show.theatre_id ??
+          show.theatreID ??
+          null
+
+          //jos riviltä puuttuu teatteri-id kokonaan, älä tiputa sitä pois
+          if (!sid) return true
+          return String(sid) === String(selectedArea)
+    })
     }
 
     if (selectedTime.trim() !== '') {
@@ -49,27 +71,41 @@ export default function SearchBar({ embedded = false, onResults }) {
     }
 
     setFilteredMovies(filtered)
+
+    console.log("[FK] after filters len:", filtered.length, filtered[0]);
+
   }, [movieQuery, selectedArea, selectedTime, dates])
 
-  // Normalisoi ja lähetä tulokset ylöspäin, jos callback annettu
-  useEffect(() => {
-    if (typeof onResults !== 'function') return
+  // Lähetä tulokset GroupPagelle "flat"-muodossa
+  // Lähetä tulokset GroupPagelle "flat"-muodossa
+useEffect(() => {
+  if (typeof onResults !== 'function') return;
+  if (!Array.isArray(filteredMovies)) { onResults([]); return; }
 
-    const normalized = (filteredMovies || [])
-      .map(show => ({
-        id: Number(show.eventId ?? show.EventID ?? show.ID ?? show.id), // sinulla on eventId → ok
-        title: show.title,
+  const normalized = filteredMovies
+    .map(show => {
+      const id = Number(
+        show.eventId ?? show.EventID ?? show.eventID ?? show.ID ?? show.id
+      );
+      if (!Number.isFinite(id)) return null;
+
+      return {
+        id,
+        title: show.title || '',
         posterUrl: show.image ?? null,
-        theatre: show.theatre,
-        theatreId: show.theatreId,
+        theatre: show.theatre ?? show.Theatre ?? '',
+        theatreId: String(show.theatreId ?? show.TheatreID ?? ''),
         start: show.start,
         year: show.start ? new Date(show.start).getFullYear() : null,
         raw: show
-      }))
-      .filter(m => Number.isFinite(m.id))
+      };
+    })
+    .filter(Boolean);
 
-    onResults(normalized)
-  }, [filteredMovies, onResults])
+  console.log('[FK] normalized len:', normalized.length, normalized[0]);
+  onResults(normalized);
+}, [filteredMovies, onResults]);
+
 
   const uniqueTimes = [...new Set(dates.map(show => show.start))]
   const uniqueTheatres = areas
