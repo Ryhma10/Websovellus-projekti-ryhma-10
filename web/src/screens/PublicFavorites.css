@@ -22,6 +22,7 @@
 .public-card {
   display: flex;
   flex-direction: column;
+  max-width: 25vw;
   border-radius: 16px;
   border: 1px solid var(--accent-color);
   padding: 0.5rem;
@@ -44,9 +45,11 @@
 
 .public-card img {
   width: 100%;
+  max-width: 20vw;
   height: auto;
   border-radius: 12px;
   margin-bottom: 0.5rem;
+  margin: 0 auto; /* keskitetään kuva vaakasuunnassa */
 }
 
 .public-card p {
