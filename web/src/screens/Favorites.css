@@ -1,16 +1,72 @@
-
-.favorites-title, p {
-    top: 20vh;
+.favorites-title {
     color: var(--text-color);
 }
 
-.favorites-list, a {
-    text-decoration: none;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    color: var(--accent-color);
+.favorites-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 2–3 korttia vierekkäin */
+  gap: 1rem;
+  padding: 1rem;
 }
 
-h3 {
-    color: var(--text-color);
+.favorite-movie {
+  display: flex;
+  flex-direction: column;  /* pystysuunta */
+  border-radius: 16px;
+  border: 1px solid var(--accent-color);
+  padding: 0.5rem;
+  color: var(--text-color);
+  background-color: rgba(20, 20, 20, 0.3);
+  text-align: center;  /* keskitetään sisältö kortissa */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.favorite-movie:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.favorite-movie h3 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color: var(--text-color);
+}
+
+.favorite-movie img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+}
+
+.favorite-movie p {
+  text-align: left;        /* kuvauksen tekstille vasen tasaus */
+  font-size: 0.9rem;
+  line-height: 1.3;
+  color: var(--text-color);
+}
+
+.share-link-box {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.share-link-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.share-link {
+  color: var(--accent-color);
+  word-break: break-all;
+  text-decoration: none;
+}
+
+.copy-button:hover {
+  color: var(--bg-color);
 }
