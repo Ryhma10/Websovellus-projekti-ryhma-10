@@ -40,20 +40,20 @@ function PublicFavorites() {
       ) : tmdbIds.length === 0 ? (
         <p className="public-info">No public favorites found.</p>
       ) : (
-        <ul>
-          {tmdbIds.map(id => (
-            <li className="public-items" key={id}>
-                <img
-                src={id.poster_path
-                  ? `https://image.tmdb.org/t/p/w200${id.poster_path}`
+       <div className="public-grid">
+          {tmdbIds.map(movie => (
+            <div className="public-card" key={movie.id}>
+              <h3>{movie.title}</h3>
+              <img
+                src={movie.poster_path
+                  ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
                   : "/placeholder.png"}
-                alt={id.title}
+                alt={movie.title}
               />
-              <h3>{id.title}</h3>
-              <p>{id.overview}</p>
-                </li>
+              <p>{movie.overview}</p>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

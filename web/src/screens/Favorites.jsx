@@ -19,6 +19,7 @@ function Favorites() {
   const [shareLink, setShareLink] = useState("");
   const navigate = useNavigate();
   const [showSignInModal, setShowSignInModal] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -50,6 +51,17 @@ function Favorites() {
     if (userId) {
       const url = `${window.location.origin}/public/${userId}`;
       setShareLink(url);
+      setCopied(false)
+    }
+  };
+
+    const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
     }
   };
 
@@ -69,16 +81,29 @@ function Favorites() {
     );
   }
 
-  return (
+   return (
     <div>
       <h2 className="favorites-title">Your Favorites</h2>
       <button onClick={handleShareClick} disabled={!userId}>
         Share Favorites
       </button>
+
       {shareLink && (
-        <div>
+        <div className="share-link-box">
           <p>Share this link:</p>
-          <a href={shareLink} target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>{shareLink}</a>
+          <div className="share-link-row">
+            <a
+              href={shareLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="share-link"
+            >
+              {shareLink}
+            </a>
+            <button onClick={handleCopyLink} className="copy-button">
+              {copied ? "Copied!" : "Copy Link"}
+            </button>
+          </div>
         </div>
       )}
       <div className="favorites-list">
@@ -86,16 +111,16 @@ function Favorites() {
           <p>No favorites yet.</p>
         ) : (
           movies.map(movie => (
-            <div key={movie.id} className="favorite-movie">
-              <img
-                src={movie.poster_path
-                  ? `https://image.tmdb.org/t/p/w200${movie.poster_path}`
-                  : "/placeholder.png"}
-                alt={movie.title}
-              />
-              <h3>{movie.title}</h3>
-              <p>{movie.overview}</p>
-            </div>
+          <div key={movie.id} className="favorite-movie">
+            <h3>{movie.title}</h3>
+            <img
+              src={movie.poster_path
+                ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
+                : "/placeholder.png"}
+              alt={movie.title}
+            />
+            <p>{movie.overview}</p>
+          </div>
           ))
         )}
       </div>
