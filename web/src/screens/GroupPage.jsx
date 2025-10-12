@@ -1,33 +1,31 @@
 // pages/GroupPage.jsx
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./Groups.css";
 import SearchBar from "../components/SearchBar.jsx";
 import placeholder from "../assets/placeholder.png";
+import GroupAddModal from "../components/GroupAddModal.jsx";
 
 function GroupPage() {
   const { groupId } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  // --- State (kaikki ylhäällä) ---
-  const [group, setGroup] = useState(null);
+  // Modal
+  const [addModal, setAddModal] = useState({ open: false, source: null, movie: null });
 
+  // Perustila
+  const [group, setGroup] = useState(null);
   const [showFinnkino, setShowFinnkino] = useState(false);
   const [showTmdb, setShowTmdb] = useState(false);
-
   const [pendingRequests, setPendingRequests] = useState([]);
-
-  // jo lisätyt (duplikaattien esto UI:ssa)
-  const [existing, setExisting] = useState({ finnkino: new Set(), tmdb: new Set() });
-  const [adding, setAdding] = useState(new Set());
-
-  // ---- UUTTA: ryhmän feed (postaukset) ----
   const [feed, setFeed] = useState([]);
+
+  // Duplikaattien esto
+  const [existing, setExisting] = useState({ finnkino: new Set(), tmdb: new Set() });
 
   // Finnkino
   const [fkResults, setFkResults] = useState([]);
-  const [fkNotes, setFkNotes] = useState({}); // { [id]: note }
 
   // TMDB
   const [movieQuery, setMovieQuery] = useState("");
@@ -38,12 +36,11 @@ function GroupPage() {
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [tmdbNotes, setTmdbNotes] = useState({}); // { [id]: note }
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => currentYear - i);
 
-  // ---- apu: hae feed ----
+  // Feed
   async function reloadFeed() {
     try {
       const res = await fetch(`http://localhost:3001/api/group_movies/${groupId}/feed`, {
@@ -57,7 +54,7 @@ function GroupPage() {
     }
   }
 
-  // --- Lataa ryhmän tiedot ---
+  // Lataa ryhmä
   useEffect(() => {
     const ctrl = new AbortController();
     (async () => {
@@ -72,10 +69,10 @@ function GroupPage() {
           return;
         }
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        let data = await res.json();
+        const data = await res.json();
         setGroup(data);
 
-        // rakenna setit valmiiksi UI:lle
+        // jo lisätyt
         const fk = new Set();
         const tm = new Set();
         (data.movies || []).forEach((m) => {
@@ -84,8 +81,7 @@ function GroupPage() {
         });
         setExisting({ finnkino: fk, tmdb: tm });
 
-        // hae feed
-        reloadFeed();
+        await reloadFeed();
       } catch (err) {
         if (err.name === "AbortError") return;
         console.error(err);
@@ -94,11 +90,17 @@ function GroupPage() {
       }
     })();
     return () => ctrl.abort();
-
   }, [groupId, token, navigate, pendingRequests]);
 
+  // Modal open/close
+  function openAddModal(source, movie) {
+    setAddModal({ open: true, source, movie });
+  }
+  function closeAddModal() {
+    setAddModal({ open: false, source: null, movie: null });
+  }
 
-  // --- Owner: pending join -pyynnöt (haetaan kun ryhmä ladattu ja käyttäjä on owner) ---
+  // Owner: pending-join listaus
   useEffect(() => {
     if (!group || group.myMembership?.role !== "owner") return;
     (async () => {
@@ -115,7 +117,7 @@ function GroupPage() {
     })();
   }, [group, token, groupId]);
 
-  // --- TMDB: genret (kun TMDB-välilehti on avattu) ---
+  // TMDB genret
   useEffect(() => {
     if (!showTmdb) return;
     (async () => {
@@ -131,7 +133,7 @@ function GroupPage() {
     })();
   }, [showTmdb, token]);
 
-  // --- TMDB: haku ---
+  // TMDB haku
   useEffect(() => {
     if (!showTmdb) return;
     const timeout = setTimeout(async () => {
@@ -162,20 +164,51 @@ function GroupPage() {
     return () => clearTimeout(timeout);
   }, [showTmdb, movieQuery, genreQuery, yearQuery, page, token]);
 
-  // --- Stable callback Finnkino-tuloksille (estä turhat re-renderit) ---
+  // Finnkino: lapselta tulokset
   const handleFinnkinoResults = useCallback((results) => {
     setFkResults(results || []);
   }, []);
 
-  // --- apufunktiot ---
+  // Ryhmittele Finnkino (1 kortti / elokuva)
+  const groupedFkResults = useMemo(() => {
+    const byId = new Map();
+    for (const s of fkResults || []) {
+      const id = Number(s.id ?? s.eventId ?? s.EventID ?? s.eventID ?? s.ID);
+      if (!Number.isFinite(id)) continue;
+
+      const title = s.title || s.Title || "";
+      const posterUrl = s.posterUrl || s.image || placeholder;
+      const startsAt = s.start ?? s.raw?.start;
+
+      const theatreId   = String(s.theatreId ?? s.raw?.TheatreID ?? s.raw?.theatreId ?? "");
+      const theatreName = s.theatre ?? s.raw?.theatre ?? s.raw?.Theatre ?? "";
+      const city        = s.raw?.TheatreArea ?? s.raw?.city ?? "";
+      const auditorium  = s.raw?.Auditorium ?? s.raw?.auditorium ?? null;
+
+      let rec = byId.get(id);
+      if (!rec) {
+        rec = { id, title, posterUrl, theatres: [] };
+        byId.set(id, rec);
+      } else if (!rec.posterUrl && posterUrl) {
+        rec.posterUrl = posterUrl;
+      }
+
+      let th = rec.theatres.find(t => t.theatreId === theatreId);
+      if (!th) {
+        th = { theatreId, theatreName, city, showtimes: [] };
+        rec.theatres.push(th);
+      }
+      if (startsAt) th.showtimes.push({ startsAt, auditorium });
+    }
+    return Array.from(byId.values());
+  }, [fkResults]);
+
+  // Apurit
   const isOwner = group?.myMembership?.role === "owner";
-
   const isAddedFinnkino = (id) => existing.finnkino.has(String(id));
-  const isAddingFinnkino = (id) => adding.has(`finnkino:${id}`);
   const isAddedTmdb = (id) => existing.tmdb.has(String(id));
-  const isAddingTmdb = (id) => adding.has(`tmdb:${id}`);
 
-  // --- owner: hyväksy jäsen ---
+  // Owner-toiminnot
   async function handleApprove(groupIdArg, memberId) {
     try {
       const res = await fetch("http://localhost:3001/api/groups/approve", {
@@ -193,8 +226,6 @@ function GroupPage() {
       alert(e.message);
     }
   }
-
-  // --- owner: poista ryhmä ---
   async function onDeleteGroup() {
     if (!window.confirm(`Delete the group "${group.name}"?`)) return;
     const res = await fetch(`http://localhost:3001/api/groups/${groupId}`, {
@@ -209,8 +240,6 @@ function GroupPage() {
       alert(msg.error || "Error deleting the group");
     }
   }
-
-  // --- owner: poista jäsen ---
   async function onRemoveMember(userId) {
     if (!window.confirm("Remove member from the group?")) return;
     const res = await fetch(`http://localhost:3001/api/groups/${groupId}/members/${userId}`, {
@@ -224,8 +253,6 @@ function GroupPage() {
       alert(msg.error || "Operation failed");
     }
   }
-
-  // --- jäsen: poistu ryhmästä itse ---
   async function onLeaveGroup() {
     if (!window.confirm("Do you want to leave the group?")) return;
     const res = await fetch(`http://localhost:3001/api/groups/${groupId}/members/me`, {
@@ -241,183 +268,30 @@ function GroupPage() {
     }
   }
 
-  // ---- apu: TMDB snapshot ----
-  function tmdbSnapshot(movie) {
-    const poster = movie.poster_path
-      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-      : placeholder;
-    return {
-      title: movie.title || movie.name || "",
-      overview: movie.overview || "",
-      poster_url: poster
-    };
-  }
-
-  // ---- apu: rakenna Finnkino-showtimes JSON ----
-  // Hyväksyy useita muotoja:
-  //  - movie.showtimes = [{startsAt, auditorium, theatreId, theatreName, city}, ...]
-  //  - movie.theatres = [{theatreId, theatreName, city, showtimes:[...]}]
-  //  - movie.schedules tms. -> pyritään normalisoimaan
-  function buildFinnkinoShowtimes(movie) {
-    // 1) jos on jo teattereittain ryhmitelty
-    if (Array.isArray(movie.theatres)) {
-      return movie.theatres.map(th => ({
-        theatreId: String(th.theatreId ?? th.id ?? ""),
-        theatreName: th.theatreName ?? th.name ?? "",
-        city: th.city ?? "",
-        showtimes: Array.isArray(th.showtimes) ? th.showtimes.map(s => ({
-          startsAt: s.startsAt || s.time || s.starts_at,
-          auditorium: s.auditorium || s.screen || null
-        })) : []
-      })).filter(x => x.theatreName || (x.showtimes && x.showtimes.length));
-    }
-
-    // 2) jos on litteä showtimes-lista
-    if (Array.isArray(movie.showtimes)) {
-      const byTheatre = {};
-      movie.showtimes.forEach(s => {
-        const tid = String(s.theatreId ?? s.theatre_id ?? s.theatre ?? "unknown");
-        if (!byTheatre[tid]) {
-          byTheatre[tid] = {
-            theatreId: tid,
-            theatreName: s.theatreName ?? s.theatre_name ?? "",
-            city: s.city ?? "",
-            showtimes: []
-          };
-        }
-        byTheatre[tid].showtimes.push({
-          startsAt: s.startsAt || s.time || s.starts_at,
-          auditorium: s.auditorium || s.screen || null
-        });
-      });
-      return Object.values(byTheatre);
-    }
-
-    // 3) fallback: ei näytöksiä
-    return [];
-  }
-
-  // --- lisää Finnkino (UUSI: käyttää /api/group-movies) ---
-  async function addFinnkinoToGroup(movie) {
-    const key = `finnkino:${movie.id}`;
-    setAdding((prev) => new Set(prev).add(key));
-    try {
-      const note = fkNotes[movie.id]?.trim() || null;
-      const snapshot = {
-        title: movie.title || "",
-        overview: movie.synopsis || movie.shortSynopsis || "",
-        poster_url: movie.posterUrl || placeholder
-      };
-      const showtimes = buildFinnkinoShowtimes(movie);
-
-      const body = {
-        finnkino_id: movie.id,
-        note,
-        stars: null, // jos haluat tähdet UI:sta, välitä arvo tähän
-        snap_title: snapshot.title,
-        snap_overview: snapshot.overview,
-        snap_poster_url: snapshot.poster_url,
-        finnkino_showtimes: JSON.stringify(showtimes) // kontrolleri hyväksyy myös objektin
-      };
-
-      const res = await fetch(`http://localhost:3001/api/group_movies/${groupId}/finnkino`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(body)
-      });
-
-      const data = await res.json().catch(() => ({}));
-      if (res.ok) {
-        // merkitse duplikaattiestoon
-        setExisting((prev) => ({ ...prev, finnkino: new Set(prev.finnkino).add(String(movie.id)) }));
-        // päivitä feed
-        await reloadFeed();
-      } else {
-        alert(data.error || "Adding failed");
-      }
-    } catch (e) {
-      console.error(e);
-      alert("Adding failed");
-    } finally {
-      setAdding((prev) => { const n = new Set(prev); n.delete(key); return n; });
-    }
-  }
-
-  // --- lisää TMDB (UUSI: käyttää /api/group-movies) ---
-  async function addTmdbToGroup(movie) {
-    const key = `tmdb:${movie.id}`;
-    setAdding((prev) => new Set(prev).add(key));
-    try {
-      const note = tmdbNotes[movie.id]?.trim() || null;
-      const snap = tmdbSnapshot(movie);
-
-      const body = {
-        tmdb_id: movie.id,
-        note,
-        stars: null, // jos lisäät tähdet UI:sta, välitä tähän
-        snap_title: snap.title,
-        snap_overview: snap.overview,
-        snap_poster_url: snap.poster_url
-      };
-
-      const res = await fetch(`http://localhost:3001/api/group_movies/${groupId}/tmdb`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(body)
-      });
-
-      const data = await res.json().catch(() => ({}));
-      if (res.ok) {
-        // merkitse duplikaattiestoon
-        setExisting((prev) => ({ ...prev, tmdb: new Set(prev.tmdb).add(String(movie.id)) }));
-        // päivitä feed
-        await reloadFeed();
-      } else {
-        alert(data.error || "Adding failed");
-      }
-    } catch (e) {
-      console.error(e);
-      alert("Adding failed");
-    } finally {
-      setAdding((prev) => { const n = new Set(prev); n.delete(key); return n; });
-    }
-  }
-
-  // --- varhainen näyttö vasta hookkien jälkeen ---
+  // Varhainen näyttö
   if (!group) return <div className="group-page">Ladataan…</div>;
 
-  // ---- apu: renderöi yksi post-kortti feediin ----
+  // Feed-kortti
   function PostCard({ p }) {
     const source = p.tmdb_id ? "TMDB" : (p.finnkino_id ? "Finnkino" : "");
     const poster = p.snap_poster_url || placeholder;
     const stars = Number.isInteger(p.stars) ? p.stars : null;
-
     return (
       <div className="card">
         <div className="card__poster-wrap">
           {poster
             ? <img src={poster} alt={p.snap_title} className="card__poster" />
             : <div className="card__poster-fallback">{p.snap_title?.[0] || "?"}</div>}
-          {source && (
-            <span className={`card__badge card__badge--${source.toLowerCase()}`}>
-              {source}
-            </span>
-          )}
+          {source && <span className={`card__badge card__badge--${source.toLowerCase()}`}>{source}</span>}
         </div>
         <div>
           <div className="card__title-row">
             <h3 className="card__title">{p.snap_title}</h3>
             <span className="card__year">{new Date(p.created_at).toLocaleString()}</span>
           </div>
-
-          {stars != null && (
-            <div className="stars">{"★".repeat(stars)}{"☆".repeat(5 - stars)}</div>
-          )}
-
+          {stars != null && <div className="stars">{"★".repeat(stars)}{"☆".repeat(5 - stars)}</div>}
           {p.snap_overview && <p className="overview">{p.snap_overview}</p>}
           {p.note && <p className="note"><em>{p.note}</em></p>}
-
-          {/* Finnkino-näytösajat */}
           {Array.isArray(p.finnkino_showtimes) && p.finnkino_showtimes.length > 0 && (
             <div className="showtimes">
               <h4>Näytösajat</h4>
@@ -462,7 +336,7 @@ function GroupPage() {
         </div>
       </div>
 
-      {/* FEED: ryhmän postaukset */}
+      {/* FEED */}
       <section className="group-feed">
         <h3>Posts</h3>
         {feed.length === 0 ? (
@@ -491,34 +365,14 @@ function GroupPage() {
         </section>
       )}
 
-      {/* Jäsenet */}
-      <section className="members">
-        <h3>Members</h3>
-        <ul className="members-list">
-          {group.members?.filter(m => m.status !== "pending")
-          .map((m) => (
-            <li key={m.id} className="members-item">
-              <span>
-                {m.username} {m.role === "owner" ? "👑" : ""}
-              </span>
-              {isOwner && m.role !== "owner" && (
-                <button className="small-btn" onClick={() => onRemoveMember(m.id)}>
-                  Remove
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-      </section>
-
       {/* FINNKINO */}
       {showFinnkino && (
         <section className="group-page-search">
           <h3>Finnkino</h3>
-          <SearchBar onResults={handleFinnkinoResults} />
+          <SearchBar embedded onResults={handleFinnkinoResults} />
 
           <div className="results-grid">
-            {fkResults.map((m) => (
+            {groupedFkResults.map((m) => (
               <div key={`finnkino:${m.id}`} className="card">
                 <div className="card__poster-wrap">
                   {m.posterUrl
@@ -529,30 +383,18 @@ function GroupPage() {
                 <div>
                   <div className="card__title-row">
                     <h3 className="card__title">{m.title}</h3>
-                    {m.year ? <span className="card__year">{m.year}</span> : null}
+                    {m.theatres?.[0]?.showtimes?.[0]?.startsAt && (
+                      <span className="card__year">
+                        {new Date(m.theatres[0].showtimes[0].startsAt).getFullYear()}
+                      </span>
+                    )}
                   </div>
-
-                  {!isAddedFinnkino(m.id) && (
-                    <input
-                      className="card__note"
-                      placeholder="Optional note…"
-                      value={fkNotes[m.id] || ""}
-                      onChange={(e) =>
-                        setFkNotes((prev) => ({ ...prev, [m.id]: e.target.value }))
-                      }
-                    />
-                  )}
-
                   <div className="card__actions">
                     {isAddedFinnkino(m.id) ? (
                       <button className="btn" disabled>✓ Added</button>
                     ) : (
-                      <button
-                        className="btn"
-                        disabled={isAddingFinnkino(m.id)}
-                        onClick={() => addFinnkinoToGroup(m)}
-                      >
-                        {isAddingFinnkino(m.id) ? "Adding…" : "Add to group"}
+                      <button className="btn" onClick={() => openAddModal("finnkino", m)}>
+                        Add to Group
                       </button>
                     )}
                   </div>
@@ -575,7 +417,7 @@ function GroupPage() {
               value={movieQuery}
               onChange={(e) => { setPage(1); setMovieQuery(e.target.value); }}
             />
-            <select 
+            <select
               className="genre-select-tmdb"
               value={genreQuery} onChange={(e) => setGenreQuery(e.target.value)}>
               <option value="">Genre</option>
@@ -583,7 +425,7 @@ function GroupPage() {
                 <option key={g.id} value={g.id}>{g.name}</option>
               ))}
             </select>
-            <select 
+            <select
               className="year-select-tmdb"
               value={yearQuery} onChange={(e) => setYearQuery(e.target.value)}>
               <option value="">Year</option>
@@ -617,28 +459,12 @@ function GroupPage() {
                       <h3 className="card__title">{m.title}</h3>
                       {m.release_date ? <span className="card__year">{m.release_date.slice(0,4)}</span> : null}
                     </div>
-
-                    {!isAddedTmdb(m.id) && (
-                      <input
-                        className="card__note"
-                        placeholder="Optional note…"
-                        value={tmdbNotes[m.id] || ""}
-                        onChange={(e) =>
-                          setTmdbNotes((prev) => ({ ...prev, [m.id]: e.target.value }))
-                        }
-                      />
-                    )}
-
                     <div className="card__actions">
                       {isAddedTmdb(m.id) ? (
                         <button className="btn" disabled>✓ Added</button>
                       ) : (
-                        <button
-                          className="btn"
-                          disabled={isAddingTmdb(m.id)}
-                          onClick={() => addTmdbToGroup(m)}
-                        >
-                          {isAddingTmdb(m.id) ? "Adding…" : "Add to group"}
+                        <button className="btn" onClick={() => openAddModal("tmdb", m)}>
+                          Add to Group
                         </button>
                       )}
                     </div>
@@ -648,6 +474,25 @@ function GroupPage() {
             })}
           </div>
         </section>
+      )}
+
+      {addModal.open && (
+        <GroupAddModal
+          open={addModal.open}
+          onClose={closeAddModal}
+          source={addModal.source}
+          movie={addModal.movie}
+          groupId={groupId}
+          token={token}
+          onSuccess={({ source, id }) => {
+            if (source === "tmdb") {
+              setExisting(prev => ({ ...prev, tmdb: new Set(prev.tmdb).add(String(id)) }));
+            } else if (source === "finnkino") {
+              setExisting(prev => ({ ...prev, finnkino: new Set(prev.finnkino).add(String(id)) }));
+            }
+            reloadFeed();
+          }}
+        />
       )}
     </div>
   );
