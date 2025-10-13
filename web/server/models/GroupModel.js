@@ -191,6 +191,24 @@ export async function removeMemberAsOwner(groupId, removedUserId) {
   return { ok: true }
 }
 
+// Owner poistaa jäsenyyttä hakevan (pending) hakemuksen (reject)
+export async function rejectPendingMembership(groupId, memberId) {
+  const del = await pool.query(
+    `DELETE FROM group_memberships
+    WHERE group_id = $1 AND user_id = $2 AND status = 'pending'`,[groupId, memberId]
+  )
+
+  if (del.rowCount === 0) {
+    const chk = await pool.query(
+      `SELECT status FROM group_memberships WHERE group_id = $1 AND user_id = $2`, [groupId, memberId]
+    )
+    if (chk.rowCount === 0) return { notFound: true}
+    if (chk.rows[0].status !== 'pending') return { already: true }
+  }
+  return { ok: true }
+}
+
+
 // Jäsen poistaa itsensä ryhmästä
 export async function leaveGroup(groupId, userId) {
   const m = await getMembership(groupId, userId)

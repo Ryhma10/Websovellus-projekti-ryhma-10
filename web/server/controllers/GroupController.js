@@ -10,7 +10,8 @@ import {
   deleteGroupByOwner,
   removeMemberAsOwner,
   leaveGroup,
-  addMovieToGroup 
+  addMovieToGroup,
+  rejectPendingMembership,
 } from "../models/GroupModel.js"
 
 // Luo uusi ryhmä
@@ -64,6 +65,32 @@ export const approveMember = async (req, res) => {
   }
 }
 
+// Owner ei hyväksy jäsentä
+export const rejectJoinRequest = async (req, res) => {
+  try {
+    const { groupId, memberId } = req.body
+    const actingUserId = req.user.userId
+
+    if (!groupId || !memberId) {
+      return res.status(400).json({ error: "Missing groupId or memberId"})
+    }
+
+    // vain owner saa hylätä!
+    const owner = await isOwnerModel(Number(groupId), actingUserId)
+    if (!owner) {
+      return res.status(403).json({ error: "Only the owner can reject requests"})
+    }
+
+    const r = await rejectPendingMembership(Number(groupId), Number(memberId))
+    if (r.notFound) return res.status(404).json({ error: "Pending request error"})
+
+    return res.json({ message: "Request rejected"})
+  } catch (err) {
+    console.error("rejectJoinRequest error: , err")
+    return res.status(500).json({ error: "Server error" })
+  }
+}
+
 // Hae kaikki ryhmät
 export const fetchAllGroups = async (req, res) => {
   try {
@@ -99,30 +126,6 @@ export const fetchPendingRequests = async (req, res) => {
     res.status(500).json({ error: "Server error" })
   }
 }
-
-// Hae kaikki liittymispyynnöt ryhmälle (vain owner)
-/*export async function fetchJoinRequests(req, res) {
-  try {
-    const groupId = req.params.groupId
-    const userId = req.user.userId
-    // Tarkista että käyttäjä on owner
-    const isOwner = await req.app.locals.GroupModel.isOwner(groupId, userId)
-    if (!isOwner) {
-      return res.status(403).json({ error: "Forbidden" })
-    }
-    // Hae kaikki pending-jäsenyydet
-    const result = await req.app.locals.pool.query(
-      `SELECT m.user_id, u.username
-       FROM group_memberships m
-       JOIN users u ON m.user_id = u.id
-       WHERE m.group_id = $1 AND m.status = 'pending'`,
-      [groupId]
-    )
-    res.json(result.rows)
-  } catch (err) {
-    res.status(500).json({ error: "Server error" })
-  }
-}*/
 
 // Hae ryhmän tiedot
 export async function fetchGroupDetails(req, res) {

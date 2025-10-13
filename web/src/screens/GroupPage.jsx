@@ -153,7 +153,7 @@ function GroupPage() {
         setPageCount(data.total_pages || 1);
 
         if (genreQuery) results = results.filter((m) => m.genre_ids?.includes(Number(genreQuery)));
-        if (yearQuery)  results = results.filter((m) => m.release_date?.startsWith(yearQuery));
+        if (yearQuery) results = results.filter((m) => m.release_date?.startsWith(yearQuery));
         setExternalMovies(results);
       } catch (err) {
         console.error("TMDB fetch error:", err);
@@ -180,10 +180,10 @@ function GroupPage() {
       const posterUrl = s.posterUrl || s.image || placeholder;
       const startsAt = s.start ?? s.raw?.start;
 
-      const theatreId   = String(s.theatreId ?? s.raw?.TheatreID ?? s.raw?.theatreId ?? "");
+      const theatreId = String(s.theatreId ?? s.raw?.TheatreID ?? s.raw?.theatreId ?? "");
       const theatreName = s.theatre ?? s.raw?.theatre ?? s.raw?.Theatre ?? "";
-      const city        = s.raw?.TheatreArea ?? s.raw?.city ?? "";
-      const auditorium  = s.raw?.Auditorium ?? s.raw?.auditorium ?? null;
+      const city = s.raw?.TheatreArea ?? s.raw?.city ?? "";
+      const auditorium = s.raw?.Auditorium ?? s.raw?.auditorium ?? null;
 
       let rec = byId.get(id);
       if (!rec) {
@@ -226,6 +226,26 @@ function GroupPage() {
       alert(e.message);
     }
   }
+
+  async function handleReject(groupIdArg, memberId) {
+    try {
+      const res = await fetch("http://localhost:3001/api/groups/reject", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ groupId: groupIdArg, memberId }),
+      });
+      const msg = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(msg.error || `Reject failed (${res.status})`);
+
+      setPendingRequests((prev) =>
+        prev.filter((r) => !(r.group_id === groupIdArg && r.user_id === memberId))
+      );
+      alert("Join request rejected");
+    } catch (e) {
+      alert(e.message);
+    }
+  }
+
   async function onDeleteGroup() {
     if (!window.confirm(`Delete the group "${group.name}"?`)) return;
     const res = await fetch(`http://localhost:3001/api/groups/${groupId}`, {
@@ -240,6 +260,7 @@ function GroupPage() {
       alert(msg.error || "Error deleting the group");
     }
   }
+
   async function onRemoveMember(userId) {
     if (!window.confirm("Remove member from the group?")) return;
     const res = await fetch(`http://localhost:3001/api/groups/${groupId}/members/${userId}`, {
@@ -253,6 +274,7 @@ function GroupPage() {
       alert(msg.error || "Operation failed");
     }
   }
+
   async function onLeaveGroup() {
     if (!window.confirm("Do you want to leave the group?")) return;
     const res = await fetch(`http://localhost:3001/api/groups/${groupId}/members/me`, {
@@ -272,258 +294,289 @@ function GroupPage() {
   if (!group) return <div className="group-page">Ladataan…</div>;
 
   // Postaus-kortti (vaakasuuntainen)
-function PostCard({ p }) {
-  const title =
-    (p.snap_title && p.snap_title.trim()) ||
-    (p.tmdb_id ? `TMDB #${p.tmdb_id}` : p.finnkino_id ? `Finnkino #${p.finnkino_id}` : "Untitled");
+  function PostCard({ p }) {
+    const title =
+      (p.snap_title && p.snap_title.trim()) ||
+      (p.tmdb_id ? `TMDB #${p.tmdb_id}` : p.finnkino_id ? `Finnkino #${p.finnkino_id}` : "Untitled");
 
-  const poster = p.snap_poster_url || placeholder;
-  const stars = Number.isInteger(p.stars) ? p.stars : null;
+    const poster = p.snap_poster_url || placeholder;
+    const stars = Number.isInteger(p.stars) ? p.stars : null;
 
-  // dd.mm.yyyy HH:MM
-  function fmtDateTime(iso) {
-    const d = new Date(iso);
-    const dd = String(d.getDate()).padStart(2, "0");
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const yyyy = d.getFullYear();
-    const hh = String(d.getHours()).padStart(2, "0");
-    const mi = String(d.getMinutes()).padStart(2, "0");
-    return `${dd}.${mm}.${yyyy} ${hh}:${mi}`;
+    // dd.mm.yyyy HH:MM
+    function fmtDateTime(iso) {
+      const d = new Date(iso);
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const yyyy = d.getFullYear();
+      const hh = String(d.getHours()).padStart(2, "0");
+      const mi = String(d.getMinutes()).padStart(2, "0");
+      return `${dd}.${mm}.${yyyy} ${hh}:${mi}`;
+    }
+
+    const username = (p.username || `user#${p.user_id}`).replace(/^@/, "");
+
+    return (
+      <article className="post-card">
+        <div className="post-card__poster">
+          {poster ? <img src={poster} alt={title} /> : null}
+        </div>
+
+        <div className="post-card__body">
+          {/* Otsikko + tähdet */}
+          <div className="post-card__title-row">
+            <h3 className="post-card__title">{title}</h3>
+            {stars != null && (
+              <div className="post-card__stars" aria-label={`${stars} / 5`}>
+                <span className="stars--filled">{"★".repeat(stars)}</span>
+                <span className="stars--empty">{"☆".repeat(5 - stars)}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Meta: näkyvä tekijä + aikaleima */}
+          <div className="post-card__meta">
+            <span className="author__name">@{username}</span>
+            <span className="post-card__timestamp">{fmtDateTime(p.created_at)}</span>
+          </div>
+
+          {/* Teksti + näytösajat */}
+          <div className="post-card__content">
+            {p.note ? <p className="post-card__note">{p.note}</p> : null}
+
+            {Array.isArray(p.finnkino_showtimes) && p.finnkino_showtimes.length > 0 && (
+              <div className="post-card__showtimes">
+                {p.finnkino_showtimes.map((th, i) => (
+                  <div className="showtime-row" key={`${th.theatreId || i}-${i}`}>
+                    <div className="showtime-row__left">
+                      {th.theatreName ? <strong>{th.theatreName}</strong> : null}
+                      {th.city ? <span>• {th.city}</span> : null}
+                      {th.auditorium ? <span>• {th.auditorium}</span> : null}
+                    </div>
+                    <div className="showtime-row__right">
+                      {Array.isArray(th.showtimes) && th.showtimes.length > 0
+                        ? fmtDateTime(th.showtimes[0].startsAt)
+                        : null}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </article>
+    )
   }
 
-  const username = (p.username || `user#${p.user_id}`).replace(/^@/, "");
-
   return (
-    <article className="post-card">
-      <div className="post-card__poster">
-        {poster ? <img src={poster} alt={title} /> : null}
-      </div>
-
-      <div className="post-card__body">
-        {/* Otsikko + tähdet */}
-        <div className="post-card__title-row">
-          <h3 className="post-card__title">{title}</h3>
-          {stars != null && (
-        <div className="post-card__stars" aria-label={`${stars} / 5`}>
-          <span className="stars--filled">{"★".repeat(stars)}</span>
-          <span className="stars--empty">{"☆".repeat(5 - stars)}</span>
-        </div>
-        )}
-      </div>
-
-        {/* Meta: näkyvä tekijä + aikaleima */}
-        <div className="post-card__meta">
-          <span className="author__name">@{username}</span>
-          <span className="post-card__timestamp">{fmtDateTime(p.created_at)}</span>
-        </div>
-
-        {/* Teksti + näytösajat */}
-        <div className="post-card__content">
-          {p.note ? <p className="post-card__note">{p.note}</p> : null}
-
-          {Array.isArray(p.finnkino_showtimes) && p.finnkino_showtimes.length > 0 && (
-            <div className="post-card__showtimes">
-              {p.finnkino_showtimes.map((th, i) => (
-                <div className="showtime-row" key={`${th.theatreId || i}-${i}`}>
-                  <div className="showtime-row__left">
-                    {th.theatreName ? <strong>{th.theatreName}</strong> : null}
-                    {th.city ? <span>• {th.city}</span> : null}
-                    {th.auditorium ? <span>• {th.auditorium}</span> : null}
-                  </div>
-                  <div className="showtime-row__right">
-                    {Array.isArray(th.showtimes) && th.showtimes.length > 0
-                      ? fmtDateTime(th.showtimes[0].startsAt)
-                      : null}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </article>
-  )
-}
-
-  return (
-    <div className="group-page">
-      <div className="group-page__header">
-        <h2 className="group-page__title">{group.name}</h2>
-        <div className="group-page__actions">
-          <button className="btn" onClick={() => setShowFinnkino(v => !v)}>
-            {showFinnkino ? "Hide Finnkino search" : "Search from Finnkino"}
-          </button>
-          <button className="btn" onClick={() => setShowTmdb(v => !v)}>
-            {showTmdb ? "Hide TMDB search" : "Search from TMDB"}
-          </button>
-          {isOwner ? (
-            <button className="btn deleting-btn" onClick={onDeleteGroup}>Delete this group</button>
-          ) : (
-            <button className="btn leavegroup-btn" onClick={onLeaveGroup}>Leave this group</button>
-          )}
-        </div>
-      </div>
-
-      {/* FEED */}
-      <section className="group-feed">
-        <h3>Posts</h3>
-        {feed.length === 0 ? (
-          <p>No posts yet</p>
-        ) : (
-          <div className="posts-list">
-            {feed.map((p) => <PostCard key={p.id} p={p} />)}
-          </div>
-        )}
-      </section>
-
-      {/* Odottavat pyynnöt */}
-      {isOwner && pendingRequests.length > 0 && (
-        <section className="pending-requests">
-          <h3>Pending Join Requests</h3>
-          <ul>
-            {pendingRequests.map((req) => (
-              <li key={`${req.group_id}-${req.user_id}`}>
-                <strong>{req.username}</strong> → <em>{req.group_name}</em>
-                <button className="small-btn" onClick={() => handleApprove(req.group_id, req.user_id)}>
-                  Approve
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {/* FINNKINO */}
-      {showFinnkino && (
-        <section className="group-page-search">
-          <h3>Finnkino</h3>
-          <SearchBar embedded onResults={handleFinnkinoResults} />
-
-          <div className="results-grid">
-            {groupedFkResults.map((m) => (
-              <div key={`finnkino:${m.id}`} className="card">
-                <div className="card__poster-wrap">
-                  {m.posterUrl
-                    ? <img src={m.posterUrl} alt={m.title} className="card__poster" />
-                    : <div className="card__poster-fallback">{m.title?.[0] || "?"}</div>}
-                  <span className="card__badge card__badge--finnkino">Finnkino</span>
-                </div>
-                <div>
-                  <div className="card__title-row">
-                    <h3 className="card__title">{m.title}</h3>
-                    {m.theatres?.[0]?.showtimes?.[0]?.startsAt && (
-                      <span className="card__year">
-                        {new Date(m.theatres[0].showtimes[0].startsAt).getFullYear()}
-                      </span>
-                    )}
-                  </div>
-                  <div className="card__actions">
-                    {isAddedFinnkino(m.id) ? (
-                      <button className="btn" disabled>✓ Added</button>
-                    ) : (
-                      <button className="btn" onClick={() => openAddModal("finnkino", m)}>
-                        Add to Group
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* TMDB */}
-      {showTmdb && (
-        <section className="group-page-search">
-          <h3>TMDB</h3>
-
-          <div className="tmdb-search-controls">
-            <input
-              type="text"
-              placeholder="Search movies…"
-              value={movieQuery}
-              onChange={(e) => { setPage(1); setMovieQuery(e.target.value); }}
-            />
-            <select
-              className="genre-select-tmdb"
-              value={genreQuery} onChange={(e) => setGenreQuery(e.target.value)}>
-              <option value="">Genre</option>
-              {externalGenres.map((g) => (
-                <option key={g.id} value={g.id}>{g.name}</option>
-              ))}
-            </select>
-            <select
-              className="year-select-tmdb"
-              value={yearQuery} onChange={(e) => setYearQuery(e.target.value)}>
-              <option value="">Year</option>
-              {years.map((y) => <option key={y} value={y}>{y}</option>)}
-            </select>
-          </div>
-
-          {loading && <p>Haetaan elokuvia…</p>}
-
-          {pageCount > 1 && (
-            <div className="pager">
-              <button className="btn" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1}>‹ Prev</button>
-              <span className="pager__info">{page} / {pageCount}</span>
-              <button className="btn" onClick={() => setPage((p) => Math.min(pageCount, p + 1))} disabled={page >= pageCount}>Next ›</button>
-            </div>
-          )}
-
-          <div className="results-grid">
-            {externalMovies.map((m) => {
-              const poster = m.poster_path
-                ? `https://image.tmdb.org/t/p/w200${m.poster_path}`
-                : placeholder;
-              return (
-                <div key={`tmdb:${m.id}`} className="card">
-                  <div className="card__poster-wrap">
-                    <img src={poster} alt={m.title} className="card__poster" />
-                    <span className="card__badge card__badge--tmdb">TMDB</span>
-                  </div>
-                  <div>
-                    <div className="card__title-row">
-                      <h3 className="card__title">{m.title}</h3>
-                      {m.release_date ? <span className="card__year">{m.release_date.slice(0,4)}</span> : null}
-                    </div>
-                    <div className="card__actions">
-                      {isAddedTmdb(m.id) ? (
-                        <button className="btn" disabled>✓ Added</button>
-                      ) : (
-                        <button className="btn" onClick={() => openAddModal("tmdb", m)}>
-                          Add to Group
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {addModal.open && (
-        <GroupAddModal
-          open={addModal.open}
-          onClose={closeAddModal}
-          source={addModal.source}
-          movie={addModal.movie}
-          groupId={groupId}
-          token={token}
-          onSuccess={({ source, id }) => {
-            if (source === "tmdb") {
-              setExisting(prev => ({ ...prev, tmdb: new Set(prev.tmdb).add(String(id)) }));
-            } else if (source === "finnkino") {
-              setExisting(prev => ({ ...prev, finnkino: new Set(prev.finnkino).add(String(id)) }));
-            }
-            reloadFeed();
-          }}
-        />
+  <div className="group-page">
+    {/* Yläpalkki: otsikko vas., Delete/Leave oikealle */}
+    <div className="group-topbar">
+      <h2 className="group-page-title">{group.name}</h2>
+      {isOwner ? (
+        <button className="btn deleting-btn" onClick={onDeleteGroup}>Delete this group</button>
+      ) : (
+        <button className="btn leavegroup-btn" onClick={onLeaveGroup}>Leave this group</button>
       )}
     </div>
-  );
+
+    {/* Hakunapit rinnakkain */}
+    <div className="group-searchbar">
+      <button className="btn" onClick={() => setShowFinnkino(v => !v)}>
+        {showFinnkino ? "Hide Finnkino search" : "Search from Finnkino"}
+      </button>
+      <button className="btn" onClick={() => setShowTmdb(v => !v)}>
+        {showTmdb ? "Hide TMDB search" : "Search from TMDB"}
+      </button>
+    </div>
+
+    {/* FINNKINO – tulokset nappien alle */}
+    {showFinnkino && (
+      <section className="group-page-search">
+        <h3>Finnkino</h3>
+        <SearchBar embedded onResults={handleFinnkinoResults} />
+
+        <ul className="movie-results">
+          {groupedFkResults.map((m) => (
+            <li
+              className="movie-item"
+              key={`finnkino:${m.id}`}
+              onClick={() => openAddModal("finnkino", m)}
+            >
+              <div className="poster-box">
+                <img
+                  className={m.posterUrl ? "movie-poster" : "placeholder-image"}
+                  src={m.posterUrl || placeholder}
+                  alt={m.title}
+                />
+              </div>
+              <div className="movie-info">{m.title}</div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {/* TMDB – tulokset nappien alle */}
+    {showTmdb && (
+      <section className="group-page-search">
+        <h3>TMDB</h3>
+
+        <div className="tmdb-search-controls">
+          <input
+            type="text"
+            placeholder="Search movies…"
+            value={movieQuery}
+            onChange={(e) => { setPage(1); setMovieQuery(e.target.value); }}
+          />
+          <select
+            className="genre-select-tmdb"
+            value={genreQuery}
+            onChange={(e) => setGenreQuery(e.target.value)}
+          >
+            <option value="">Genre</option>
+            {externalGenres.map((g) => (
+              <option key={g.id} value={g.id}>{g.name}</option>
+            ))}
+          </select>
+          <select
+            className="year-select-tmdb"
+            value={yearQuery}
+            onChange={(e) => setYearQuery(e.target.value)}
+          >
+            <option value="">Year</option>
+            {years.map((y) => <option key={y} value={y}>{y}</option>)}
+          </select>
+        </div>
+
+        {loading && <p>Haetaan elokuvia…</p>}
+
+        {pageCount > 1 && (
+          <div className="pager">
+            <button className="btn" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1}>‹ Prev</button>
+            <span className="pager__info">{page} / {pageCount}</span>
+            <button className="btn" onClick={() => setPage((p) => Math.min(pageCount, p + 1))} disabled={page >= pageCount}>Next ›</button>
+          </div>
+        )}
+
+        <ul className="movie-results">
+          {externalMovies.map((m) => {
+            const poster = m.poster_path
+              ? `https://image.tmdb.org/t/p/w200${m.poster_path}`
+              : placeholder;
+            const cls = m.poster_path ? "movie-poster" : "placeholder-image";
+            return (
+              <li
+                className="movie-item"
+                key={`tmdb:${m.id}`}
+                onClick={() => openAddModal("tmdb", m)}
+              >
+                <div className="poster-box">
+                  <img className={cls} src={poster} alt={m.title} />
+                </div>
+                <div className="movie-info">{m.title}</div>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    )}
+
+    {/* Members – owner näkee Remove-napin */}
+    <section className="members">
+      <h3>Members</h3>
+      <ul className="members-list">
+        {Array.isArray(group.members) && group.members.length > 0 ? (
+          group.members.map((m) => (
+            <li className="members-item" key={m.id}>
+              <div>
+                <strong>{m.username}</strong>
+                {m.role ? <span className="members-role">({m.role})</span> : null}
+              </div>
+              {isOwner && m.role !== "owner" && (
+                <button
+                  className="small-btn"
+                  onClick={() => onRemoveMember(m.id)}
+                  title="Remove member"
+                >
+                  Remove
+                </button>
+              )}
+            </li>
+          ))
+        ) : (
+          <li className="members-item"><em>No members yet</em></li>
+        )}
+      </ul>
+    </section>
+
+    {/* Pending Join Requests – vain ownerille */}
+    {isOwner && (
+      <section className="members pending-requests">
+        <h3>Pending Join Requests</h3>
+        <ul className="members-list">
+          {pendingRequests.length === 0 ? (
+            <li className="members-item"><em>No pending requests.</em></li>
+          ) : (
+            pendingRequests.map((req) => (
+              <li className="members-item" key={`${req.group_id}-${req.user_id}`}>
+                <div>
+                  <strong>{req.username}</strong>
+                </div>
+                <div className="request-actions">
+                  <button
+                    className="small-btn"
+                    onClick={() => handleApprove(req.group_id, req.user_id)}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    className="small-btn reject"
+                    onClick={() => handleReject(req.group_id, req.user_id)}
+                    title="Reject request"
+                  >
+                    Reject
+                  </button>
+                </div>
+              </li>
+            ))
+          )}
+        </ul>
+      </section>
+    )}
+
+    {/* Posts */}
+    <section className="group-feed" style={{ marginTop: "1rem" }}>
+      <h3>Posts</h3>
+      {feed.length === 0 ? (
+        <p>No posts yet</p>
+      ) : (
+        <div className="posts-list">
+          {feed.map((p) => <PostCard key={p.id} p={p} />)}
+        </div>
+      )}
+    </section>
+
+    {/* Add-to-group modal */}
+    {addModal.open && (
+      <GroupAddModal
+        open={addModal.open}
+        onClose={closeAddModal}
+        source={addModal.source}
+        movie={addModal.movie}
+        groupId={groupId}
+        token={token}
+        onSuccess={({ source, id }) => {
+          if (source === "tmdb") {
+            setExisting(prev => ({ ...prev, tmdb: new Set(prev.tmdb).add(String(id)) }));
+          } else if (source === "finnkino") {
+            setExisting(prev => ({ ...prev, finnkino: new Set(prev.finnkino).add(String(id)) }));
+          }
+          reloadFeed();
+          }}
+      />
+      )}
+  </div>
+)
 }
 
 export default GroupPage;

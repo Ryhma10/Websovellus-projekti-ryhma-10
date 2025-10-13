@@ -12,6 +12,7 @@ import {
   deleteGroup,
   removeMember,
   leaveGroupController,
+  rejectJoinRequest,
 } from "../controllers/GroupController.js"
 
 const router = express.Router();
@@ -22,8 +23,10 @@ router.post("/create", Authentication, createGroup)
 router.post("/join", Authentication, requestToJoin)
 // Owner hyväksyy jäsenen
 router.post("/approve", Authentication, approveMember)
-// Rymään lisätään elokuva
+// Ryhmään lisätään elokuva
 router.post("/:groupId/movies", Authentication, addMovie)
+// Ryhmään hakija hylätään
+router.post("/reject", Authentication, rejectJoinRequest)
 
 // Hae kaikki ryhmät
 router.get("/", fetchAllGroups)
