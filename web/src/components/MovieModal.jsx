@@ -155,4 +155,5 @@ function MovieModal({ movie, onClose }) {
     )
 }
 
+
 export default MovieModal;

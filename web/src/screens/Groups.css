@@ -12,26 +12,62 @@
   list-style: none;
 }
 
-.groups-invidual-group-li {
-  border-bottom: solid 1px var(--accent-color);
-  display: flex;
+/* UUSI: otsakerivi kahdella sarakkeella (Group name | Role) */
+.groups-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto; /* nimi venyy, rooli tiivis */
   align-items: center;
-  text-align: left;
-  justify-content: space-between;
+  gap: .75rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--accent-color);
+  padding: .25rem 0;
 }
 
-.groups-link {
-  display: flex;
+/* huom! rivit gridille flexin sijaan → pysyy vierekkäin myös pienessä ruudussa */
+.groups-individual-group-li {
+  border-bottom: solid 1px var(--accent-color);
+  display: grid;                                /* oli: flex */
+  grid-template-columns: minmax(0, 1fr) auto;   /* Nimi | Rooli */
+  align-items: center;
+  gap: .75rem;
+  text-align: left;
+}
+
+/* Nimikolumni ja roolikolumni */
+.groups-name-col {
+  text-align: left;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+  padding: 0.25rem;
+}
+
+.groups-role-col {
+  white-space: nowrap;
+}
+
+/* Linkki nimikolumnissa */
+.groups-link,
+.groups-link:link,
+.groups-link:visited {
+  text-decoration: none;
+  color: var(--text-color);
+  display: block;              /* venyy koko nimikolumniin */
   align-items: center;
   text-align: left;
-  height: 52px;
+  height: auto;
+  min-height: 52px;            /* kosketuspinta */
   margin: 0;
-  padding: 0;
+  padding: 0.25rem;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .groups-link:hover {
   text-shadow: 2px 2px 5px rgb(120, 255, 181, 0.3);
   color: var(--secondary-accent-color);
+  text-decoration: none;
 }
 
 .groups-lists-row {
@@ -87,7 +123,7 @@
   font-weight: 700;
 }
 
-/* napit (scopetut GroupPageen ettei vuoda muualle) */
+/* napit (scopetettu GroupPageen, ettei vuoda muualle) */
 .group-page .btn {
   appearance: none;
   border: 2px solid var(--accent-color);
@@ -269,13 +305,11 @@
 }
 
 .card-badge--finnkino {
-  color: #f7d774;
-  /* pehmeä keltainen */
+  color: #f7d774; /* pehmeä keltainen */
 }
 
 .card-badge--tmdb {
-  color: #5ac8fa;
-  /* sinertävä */
+  color: #5ac8fa; /* sinertävä */
 }
 
 .card>div {
@@ -298,8 +332,7 @@
   line-height: 1.2;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  /* 2 riviä */
+  -webkit-line-clamp: 2; /* 2 riviä */
   -webkit-box-orient: vertical;
 }
 
@@ -319,6 +352,142 @@
   width: 100%;
 }
 
+/* ========== Postaukset (horisontaalinen kortti) ========== */
+
+.post-card {
+  display: grid;
+  grid-template-columns: 120px 1fr;   /* posterin ja sisällön väli */
+  gap: 1rem;
+  border: 1px solid var(--accent-color);
+  border-radius: 16px;
+  background: var(--background-color);
+  overflow: hidden;
+  padding: .75rem;
+  text-align: left;
+}
+
+.post-card + .post-card { margin-top: 1rem; }
+
+.post-card__poster {
+  width: 100%;
+  aspect-ratio: 2/3;
+  background: #111;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.post-card__poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.post-card__body {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto; 
+  gap: .5rem;
+  min-width: 0; 
+}
+
+/* Otsikkorivi */
+.post-card__title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .75rem;
+}
+
+.post-card__title {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+/* Meta: käyttäjänimi + päiväys + tähdet */
+.post-card__meta {
+  display: flex;
+  align-items: center;
+  font-size: .9rem;
+  opacity: .85;
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+
+/* Tähtien muotoilu */
+/* Tähtiarvio kortissa */
+.post-card__stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;              /* ei välejä tähtien väliin */
+  line-height: 1;
+  font-size: 1rem; 
+}
+
+.post-card__stars .stars--filled { color: #FFD700; } /* kulta */
+.post-card__stars .stars--empty  { color: #777; opacity: .6; } /* himmeä harmaa */
+
+/* Tekijä */
+.author {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.author__name {
+  font-weight: 700; /* korostetaan usernamea */
+}
+
+/* kevennetään timestamppia */
+.post-card__timestamp {
+  opacity: 0.75;
+  font-size: 0.9rem;
+}
+
+/* Teksti + näytösajat */
+.post-card__content {
+  display: grid;
+  gap: .5rem;
+}
+
+.post-card__note {
+  margin: 0;
+  line-height: 1.5;
+  white-space: pre-wrap;     /* rivinvaihdot säilyvät */
+  word-break: break-word;
+  text-align: left;
+}
+
+.post-card__showtimes {
+  border: 1px solid color-mix(in srgb, var(--accent-color) 25%, transparent);
+  border-radius: 10px;
+  padding: .5rem .75rem;
+  display: grid;
+  gap: .35rem;
+}
+
+.showtime-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .5rem;
+  font-size: .92rem;
+}
+
+.showtime-row__left {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+  opacity: .95;
+}
+
+.showtime-row__right {
+  white-space: nowrap;
+  opacity: .9;
+}
+
 /* ========== responsiivisuus ========== */
 
 @media (max-width: 900px) {
@@ -332,8 +501,32 @@
   }
 }
 
+/* Pienempi “turvakaista”: pidetään roolikolumni kompaktina myös erittäin kapealla */
+@media (max-width: 380px) {
+  .groups-header,
+  .groups-individual-group-li {
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+}
+
+@media (max-width: 640px) {
+  .post-card {
+    grid-template-columns: 90px 1fr;
+  }
+}
+
 @media (max-width: 520px) {
   .results-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
+
+@media (max-width: 460px) {
+  .post-card {
+    grid-template-columns: 1fr; /* pino: posteri ylös */
+  }
+  .post-card__poster {
+    width: 120px;
+    margin: 0 auto;
   }
 }

@@ -29,7 +29,7 @@ RETURNS trigger
 LANGUAGE plpgsql
 AS $$
 DECLARE
-  acting_user_id bigint;
+  acting_user_id int;
 BEGIN
   -- Tehdään acting_user_id, johon tallentuu nykyisen transaktion käyttäjä-ID, jos tyhjä = NULL
   acting_user_id := NULLIF(current_setting('app.user_id', true), '')::int;
@@ -119,12 +119,12 @@ CREATE TABLE IF NOT EXISTS group_movies (
   stars       int,
   created_at  timestamptz NOT NULL DEFAULT now(),
 
-  -- UUTTA: snapshot-kentät kortin renderöintiä varten
+  -- snapshot-kentät kortin renderöintiä varten
   snap_title       text,
   snap_overview    text,
   snap_poster_url  text,
 
-  -- UUTTA: Finnkino-näytösajat JSONB:nä (teatteri + ajat)
+  -- Finnkino-näytösajat JSONB:nä (teatteri + ajat)
   -- Muoto: [
   --   { "theatreId":"1029","theatreName":"Tennispalatsi","city":"Helsinki",
   --     "showtimes":[{"startsAt":"2025-10-08T18:30:00+03:00","auditorium":"Sali 3"}]
