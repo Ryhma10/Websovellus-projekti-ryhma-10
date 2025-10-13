@@ -4,8 +4,8 @@ body {
 
 .searchbar {
     gap: 2em;
-    position: relative;
-    z-index: 1001;
+    position: static;
+    z-index: auto;
     align-items: center;
 }
 

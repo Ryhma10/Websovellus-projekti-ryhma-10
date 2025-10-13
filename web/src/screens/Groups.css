@@ -202,7 +202,7 @@
   gap: .5rem;
 }
 
-/* --- Pieni punainen "Reject" -nappi --- */
+/* --- punainen "Reject" -nappi --- */
 .group-page .small-btn.reject {
   border-color: var(--danger-color, #d9534f);
   color: var(--danger-color, #d9534f);
