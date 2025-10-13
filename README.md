@@ -46,7 +46,7 @@ web/
 
 ---
 
-**Ryhmä 10**  
+**Group 10**  
 Jesse Hirvonen, Merja Sotkasiira, Salla-Mari Rokkonen, Tommy Näsänen, Anna Seppänen
 
 Oulu University of Applied Sciences  
