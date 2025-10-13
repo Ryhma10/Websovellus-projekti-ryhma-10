@@ -157,20 +157,22 @@ function Movies() {
         <ul className="movie-results">
           {filteredMovies.map(movie => (
             <li className="movie-item" key={movie.id}>
-              <img
-                className={movie.poster_path ? "movie-poster" : "placeholder-image"}
-                src={
-                  movie.poster_path
-                    ? `https://image.tmdb.org/t/p/w200${movie.poster_path}`
-                    : placeholder
-                }
-                alt={movie.title}
-                onClick={() => {
-                  setSelectedMovie(movie);
-                  setShowModal(true);
-                }}
-              />
-              <div className="movie-info">{movie.title}</div>
+              <div className="poster-box">
+                <img
+                  className={movie.poster_path ? "movie-poster" : "placeholder-image"}
+                  src={
+                    movie.poster_path
+                      ? `https://image.tmdb.org/t/p/w200${movie.poster_path}`
+                      : placeholder
+                  }
+                  alt={movie.title}
+                  onClick={() => {
+                    setSelectedMovie(movie);
+                    setShowModal(true);
+                  }}
+                />
+                <div className="movie-info">{movie.title}</div>
+              </div>
             </li>
           ))}
         </ul>

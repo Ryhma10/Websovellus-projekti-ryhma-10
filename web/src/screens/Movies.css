@@ -42,15 +42,31 @@
     cursor: pointer;
 }
 
-.movie-poster {
-    border-radius: 16px;
+.poster-box {
     width: 100%;
+    aspect-ratio: 2/3;
+    background: #111;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 16px;
 }
-.placeholder-image {
-    border-radius: 16px;
+
+.movie-poster {
     width: 100%;
-    height: 300px;
-    object-fit:contain;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0; /* reunan pyöristys tulee poster-boxista */
+    display: block;
+}
+
+.placeholder-image {
+    width: auto;
+    height: auto;
+    max-width: 80%;
+    max-height: 80%;
+    border-radius: 0;
+    display: block;
 }
 
 .movie-info {

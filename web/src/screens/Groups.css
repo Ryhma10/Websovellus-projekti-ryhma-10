@@ -123,6 +123,20 @@
   font-weight: 700;
 }
 
+/* Hakunapit rinnakkain */
+.group-searchbar {
+  display: flex;
+  align-items: center;
+  gap: .5rem;         /* väli nappien väliin */
+  margin-bottom: 1rem;
+  flex-wrap: nowrap;  /* pidä vierekkäin, ei rivitystä normaalisti */
+}
+
+/* Estä nappeja venymästä leveiksi */
+.group-searchbar .btn {
+  flex: 0 0 auto;
+}
+
 /* napit (scopetettu GroupPageen, ettei vuoda muualle) */
 .group-page .btn {
   appearance: none;
@@ -170,6 +184,35 @@
   background: var(--danger-color, #d9534f);
   color: var(--background-color);
 }
+
+/* --- Jäsenlistan rooliteksti (owner/member tms.) --- */
+.members-role {
+  opacity: .7;
+  margin-left: 8px;
+}
+
+/* --- Pending Join Requests -osion marginaali --- */
+.pending-requests {
+  margin-top: 1rem;
+}
+
+/* --- Approve/Reject -nappien vaakarivi --- */
+.request-actions {
+  display: flex;
+  gap: .5rem;
+}
+
+/* --- Pieni punainen "Reject" -nappi --- */
+.group-page .small-btn.reject {
+  border-color: var(--danger-color, #d9534f);
+  color: var(--danger-color, #d9534f);
+}
+
+.group-page .small-btn.reject:hover {
+  background: var(--danger-color, #d9534f);
+  color: var(--background-color);
+}
+
 
 /*TMDB*/
 .genre-select-tmdb,
@@ -405,6 +448,13 @@
   font-weight: 600;
 }
 
+.post-card__actions {
+  margin-top: 0.25rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
 /* Meta: käyttäjänimi + päiväys + tähdet */
 .post-card__meta {
   display: flex;
@@ -416,8 +466,7 @@
   flex-wrap: wrap;
 }
 
-/* Tähtien muotoilu */
-/* Tähtiarvio kortissa */
+/* Tähtien muotoilu postauksessa */
 .post-card__stars {
   display: inline-flex;
   align-items: center;
@@ -506,6 +555,12 @@
   .groups-header,
   .groups-individual-group-li {
     grid-template-columns: minmax(0, 1fr) max-content;
+  }
+  .group-searchbar {
+    flex-wrap: wrap;
+  }
+  .group-searchbar .btn {
+    width: 100%;
   }
 }
 
