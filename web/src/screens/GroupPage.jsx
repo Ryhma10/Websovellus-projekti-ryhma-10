@@ -164,7 +164,7 @@ function GroupPage() {
     return () => clearTimeout(timeout);
   }, [showTmdb, movieQuery, genreQuery, yearQuery, page, token]);
 
-  // Finnkino: lapselta tulokset
+  // Finnkino: haetaaan callbackilla lapselta tulokset
   const handleFinnkinoResults = useCallback((results) => {
     setFkResults(results || []);
   }, []);
@@ -271,51 +271,79 @@ function GroupPage() {
   // Varhainen näyttö
   if (!group) return <div className="group-page">Ladataan…</div>;
 
-  // Feed-kortti
-  function PostCard({ p }) {
-    const source = p.tmdb_id ? "TMDB" : (p.finnkino_id ? "Finnkino" : "");
-    const poster = p.snap_poster_url || placeholder;
-    const stars = Number.isInteger(p.stars) ? p.stars : null;
-    return (
-      <div className="card">
-        <div className="card__poster-wrap">
-          {poster
-            ? <img src={poster} alt={p.snap_title} className="card__poster" />
-            : <div className="card__poster-fallback">{p.snap_title?.[0] || "?"}</div>}
-          {source && <span className={`card__badge card__badge--${source.toLowerCase()}`}>{source}</span>}
+  // Postaus-kortti (vaakasuuntainen)
+function PostCard({ p }) {
+  const title =
+    (p.snap_title && p.snap_title.trim()) ||
+    (p.tmdb_id ? `TMDB #${p.tmdb_id}` : p.finnkino_id ? `Finnkino #${p.finnkino_id}` : "Untitled");
+
+  const poster = p.snap_poster_url || placeholder;
+  const stars = Number.isInteger(p.stars) ? p.stars : null;
+
+  // dd.mm.yyyy HH:MM
+  function fmtDateTime(iso) {
+    const d = new Date(iso);
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yyyy = d.getFullYear();
+    const hh = String(d.getHours()).padStart(2, "0");
+    const mi = String(d.getMinutes()).padStart(2, "0");
+    return `${dd}.${mm}.${yyyy} ${hh}:${mi}`;
+  }
+
+  const username = (p.username || `user#${p.user_id}`).replace(/^@/, "");
+
+  return (
+    <article className="post-card">
+      <div className="post-card__poster">
+        {poster ? <img src={poster} alt={title} /> : null}
+      </div>
+
+      <div className="post-card__body">
+        {/* Otsikko + tähdet */}
+        <div className="post-card__title-row">
+          <h3 className="post-card__title">{title}</h3>
+          {stars != null && (
+        <div className="post-card__stars" aria-label={`${stars} / 5`}>
+          <span className="stars--filled">{"★".repeat(stars)}</span>
+          <span className="stars--empty">{"☆".repeat(5 - stars)}</span>
         </div>
-        <div>
-          <div className="card__title-row">
-            <h3 className="card__title">{p.snap_title}</h3>
-            <span className="card__year">{new Date(p.created_at).toLocaleString()}</span>
-          </div>
-          {stars != null && <div className="stars">{"★".repeat(stars)}{"☆".repeat(5 - stars)}</div>}
-          {p.snap_overview && <p className="overview">{p.snap_overview}</p>}
-          {p.note && <p className="note"><em>{p.note}</em></p>}
+        )}
+      </div>
+
+        {/* Meta: näkyvä tekijä + aikaleima */}
+        <div className="post-card__meta">
+          <span className="author__name">@{username}</span>
+          <span className="post-card__timestamp">{fmtDateTime(p.created_at)}</span>
+        </div>
+
+        {/* Teksti + näytösajat */}
+        <div className="post-card__content">
+          {p.note ? <p className="post-card__note">{p.note}</p> : null}
+
           {Array.isArray(p.finnkino_showtimes) && p.finnkino_showtimes.length > 0 && (
-            <div className="showtimes">
-              <h4>Näytösajat</h4>
-              <ul>
-                {p.finnkino_showtimes.map((th, i) => (
-                  <li key={i}>
-                    <strong>{th.theatreName}</strong>{th.city ? `, ${th.city}` : ""}
-                    <ul>
-                      {(th.showtimes || []).map((s, j) => (
-                        <li key={j}>
-                          {new Date(s.startsAt).toLocaleString()}
-                          {s.auditorium ? ` — ${s.auditorium}` : ""}
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-                ))}
-              </ul>
+            <div className="post-card__showtimes">
+              {p.finnkino_showtimes.map((th, i) => (
+                <div className="showtime-row" key={`${th.theatreId || i}-${i}`}>
+                  <div className="showtime-row__left">
+                    {th.theatreName ? <strong>{th.theatreName}</strong> : null}
+                    {th.city ? <span>• {th.city}</span> : null}
+                    {th.auditorium ? <span>• {th.auditorium}</span> : null}
+                  </div>
+                  <div className="showtime-row__right">
+                    {Array.isArray(th.showtimes) && th.showtimes.length > 0
+                      ? fmtDateTime(th.showtimes[0].startsAt)
+                      : null}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
       </div>
-    );
-  }
+    </article>
+  )
+}
 
   return (
     <div className="group-page">
@@ -340,15 +368,15 @@ function GroupPage() {
       <section className="group-feed">
         <h3>Posts</h3>
         {feed.length === 0 ? (
-          <p>No posts yet.</p>
+          <p>No posts yet</p>
         ) : (
-          <div className="results-grid">
+          <div className="posts-list">
             {feed.map((p) => <PostCard key={p.id} p={p} />)}
           </div>
         )}
       </section>
 
-      {/* Owner pending requests */}
+      {/* Odottavat pyynnöt */}
       {isOwner && pendingRequests.length > 0 && (
         <section className="pending-requests">
           <h3>Pending Join Requests</h3>

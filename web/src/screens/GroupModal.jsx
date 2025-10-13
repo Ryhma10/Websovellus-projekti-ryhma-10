@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import "./Modal.css";
+import React, { useState } from "react"
+import "./Modal.css"
 
 function GroupModal({ isOpen, onClose }) {
-  const [name, setName] = useState("");
-  const [error, setError] = useState(null);
+  const [name, setName] = useState("")
+  const [error, setError] = useState(null)
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
+    e.preventDefault()
+    setError(null)
 
     try {
-      const token = localStorage.getItem("token"); // oletan että token tallennetaan signup/signin jälkeen
+      const token = localStorage.getItem("token")
       const res = await fetch("http://localhost:3001/api/groups/create", {
         method: "POST",
         headers: {
@@ -18,23 +18,23 @@ function GroupModal({ isOpen, onClose }) {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ name }),
-      });
+      })
 
-      const data = await res.json();
+      const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error || "Failed to create group");
+        setError(data.error || "Failed to create group")
         return;
       }
 
-      alert(`Group "${data.name}" created!`);
-      onClose();
+      alert(`Group "${data.name}" created!`)
+      onClose()
     } catch (err) {
-      setError("Server connection failed");
+      setError("Server connection failed")
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <div className="modal-backdrop">
