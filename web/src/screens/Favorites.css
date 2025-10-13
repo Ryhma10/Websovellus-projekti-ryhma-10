@@ -4,7 +4,7 @@
 
 .favorites-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 2–3 korttia vierekkäin */
+  grid-template-columns: repeat(3, 250px [col-start]);
   gap: 1rem;
   padding: 1rem;
 }
