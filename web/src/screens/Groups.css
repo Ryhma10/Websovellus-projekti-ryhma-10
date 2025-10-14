@@ -8,67 +8,9 @@
   align-items: center;
 }
 
-.groups-container li {
-  list-style: none;
-}
+.groups-container li { list-style: none; }
 
-/* UUSI: otsakerivi kahdella sarakkeella (Group name | Role) */
-.groups-header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto; /* nimi venyy, rooli tiivis */
-  align-items: center;
-  gap: .75rem;
-  font-weight: 600;
-  border-bottom: 1px solid var(--accent-color);
-  padding: .25rem 0;
-}
-
-/* huom! rivit gridille flexin sijaan → pysyy vierekkäin myös pienessä ruudussa */
-.groups-individual-group-li {
-  border-bottom: solid 1px var(--accent-color);
-  display: grid;                                /* oli: flex */
-  grid-template-columns: minmax(0, 1fr) auto;   /* Nimi | Rooli */
-  align-items: center;
-  gap: .75rem;
-  text-align: left;
-}
-
-/* Nimikolumni ja roolikolumni */
-.groups-name-col {
-  text-align: left;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
-  overflow-wrap: anywhere;
-  padding: 0.25rem;
-}
-
-.groups-role-col {
-  white-space: nowrap;
-}
-
-/* Linkki nimikolumnissa */
-.groups-link,
-.groups-link:link,
-.groups-link:visited {
-  text-decoration: none;
-  color: var(--text-color);
-  display: block;              /* venyy koko nimikolumniin */
-  align-items: center;
-  text-align: left;
-  height: auto;
-  min-height: 52px;            /* kosketuspinta */
-  margin: 0;
-  padding: 0.25rem;
-  overflow-wrap: anywhere;
-  white-space: normal;
-}
-
-.groups-link:hover {
-  text-shadow: 2px 2px 5px rgb(120, 255, 181, 0.3);
-  color: var(--secondary-accent-color);
-  text-decoration: none;
-}
+.groups-container h1 { margin-bottom: 1rem; }
 
 .groups-lists-row {
   display: flex;
@@ -95,493 +37,59 @@
   margin: 0;
 }
 
-.groups-container h1 {
-  margin-bottom: 1rem;
-}
-
-/* ========== GroupPage (yksittäinen ryhmä) ========== */
-
-.group-page {
-  color: var(--text-color);
-  padding: 1rem;
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.group-page-header {
-  display: flex;
+/* Otsakerivi: Group name | Role/Status */
+.groups-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.group-page-title {
-  margin: 0;
-  font-size: clamp(1.4rem, 2.5vw, 2rem);
-  font-weight: 700;
-}
-
-/* Hakunapit rinnakkain */
-.group-searchbar {
-  display: flex;
-  align-items: center;
-  gap: .5rem;         /* väli nappien väliin */
-  margin-bottom: 1rem;
-  flex-wrap: nowrap;  /* pidä vierekkäin, ei rivitystä normaalisti */
-}
-
-/* Estä nappeja venymästä leveiksi */
-.group-searchbar .btn {
-  flex: 0 0 auto;
-}
-
-/* napit (scopetettu GroupPageen, ettei vuoda muualle) */
-.group-page .btn {
-  appearance: none;
-  border: 2px solid var(--accent-color);
-  background: transparent;
-  color: var(--accent-color);
-  padding: 0.5rem 1rem;
-  border-radius: 999px;
-  cursor: pointer;
-  font: inherit;
-  transition: background .15s ease, color .15s ease, transform .06s ease;
-  line-height: 1;
-}
-
-.group-page .btn:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 2px;
-}
-
-.group-page .btn:hover {
-  background: var(--accent-color);
-  color: var(--background-color);
-}
-
-.group-page .btn:active {
-  transform: translateY(1px);
-}
-
-.group-page .btn[disabled] {
-  opacity: .6;
-  cursor: not-allowed;
-}
-
-.group-page .leavegroup-btn {
-  border-color: color-mix(in srgb, var(--accent-color) 60%, white);
-  color: color-mix(in srgb, var(--accent-color) 80%, white);
-}
-
-.group-page .deleting-btn {
-  border-color: var(--danger-color, #d9534f);
-  color: var(--danger-color, #d9534f);
-}
-
-.group-page .deleting-btn:hover {
-  background: var(--danger-color, #d9534f);
-  color: var(--background-color);
-}
-
-/* --- Jäsenlistan rooliteksti (owner/member tms.) --- */
-.members-role {
-  opacity: .7;
-  margin-left: 8px;
-}
-
-/* --- Pending Join Requests -osion marginaali --- */
-.pending-requests {
-  margin-top: 1rem;
-}
-
-/* --- Approve/Reject -nappien vaakarivi --- */
-.request-actions {
-  display: flex;
-  gap: .5rem;
-}
-
-/* --- punainen "Reject" -nappi --- */
-.group-page .small-btn.reject {
-  border-color: var(--danger-color, #d9534f);
-  color: var(--danger-color, #d9534f);
-}
-
-.group-page .small-btn.reject:hover {
-  background: var(--danger-color, #d9534f);
-  color: var(--background-color);
-}
-
-
-/*TMDB*/
-.genre-select-tmdb,
-.year-select-tmdb {
-  background-color: rgb(30, 30, 30);
-  color: var(--text-color);
-  border-radius: 8px;
-  margin-left: 0.5em;
-  padding: 10px;
-  cursor: pointer;
-  outline: none;
-  font-size: 1em;
-  font-family: var(--font-family);
-}
-
-.genre-select-tmdb:focus,
-.year-select-tmdb:focus {
-  border-color: var(--accent-color);
-  outline: none;
-  transition: border-color 0.5s ease;
-}
-
-/* jäsenlista */
-.members {
-  margin-top: 1rem;
-}
-
-.members h3 {
-  margin: .25rem 0 .5rem;
-  font-size: 1.1rem;
-}
-
-.members-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  border: 1px solid var(--accent-color);
-  border-radius: 16px;
-  overflow: clip;
-}
-
-.members-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: .75rem;
-  padding: .75rem 1rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--accent-color) 30%, transparent);
-}
-
-.members-item:last-child {
-  border-bottom: none;
-}
-
-.group-page .small-btn {
-  appearance: none;
-  border: 1px solid var(--accent-color);
-  background: transparent;
-  color: var(--accent-color);
-  padding: .35rem .7rem;
-  border-radius: 10px;
-  cursor: pointer;
-  font: inherit;
-  font-size: .9rem;
-  transition: background .15s ease, color .15s ease;
-}
-
-.group-page .small-btn:hover {
-  background: var(--accent-color);
-  color: var(--background-color);
-}
-
-/* haku-osio kontti */
-.group-page-search {
-  margin-top: 1.25rem;
-}
-
-/* ========== tuloskortit (Finnkino/TMDB) ========== */
-
-.results-grid {
-  margin-top: 1rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 1rem;
-}
-
-.card {
-  background: var(--background-color);
-  border: 1px solid var(--accent-color);
-  border-radius: 16px;
-  overflow: hidden;
-  display: grid;
-  grid-template-rows: auto 1fr;
-  transition: transform .08s ease, box-shadow .15s ease;
-}
-
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, .25);
-}
-
-.card-poster-wrap {
-  position: relative;
-  aspect-ratio: 2 / 3;
-  background: #111;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-}
-
-.card-poster {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.card-poster-fallback {
-  font-size: 2rem;
-  opacity: .6;
-}
-
-.card-badge {
-  position: absolute;
-  top: .5rem;
-  left: .5rem;
-  padding: .25rem .5rem;
-  border-radius: 999px;
-  font-size: .75rem;
-  border: 1px solid currentColor;
-  background: rgba(0, 0, 0, .35);
-  backdrop-filter: blur(2px);
-}
-
-.card-badge--finnkino {
-  color: #f7d774; /* pehmeä keltainen */
-}
-
-.card-badge--tmdb {
-  color: #5ac8fa; /* sinertävä */
-}
-
-.card>div {
-  padding: .75rem .75rem 1rem;
-  display: grid;
-  align-content: start;
-  gap: .5rem;
-}
-
-.card__title-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: .5rem;
-}
-
-.card__title {
-  margin: 0;
-  font-size: 1rem;
-  line-height: 1.2;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2; /* 2 riviä */
-  -webkit-box-orient: vertical;
-}
-
-.card__year {
-  opacity: .8;
-  font-size: .9rem;
-  white-space: nowrap;
-}
-
-.card__actions {
-  margin-top: .25rem;
-  display: flex;
-  gap: .5rem;
-}
-
-.card .btn {
-  width: 100%;
-}
-
-/* ========== Postaukset (horisontaalinen kortti) ========== */
-
-.post-card {
-  display: grid;
-  grid-template-columns: 120px 1fr;   /* posterin ja sisällön väli */
-  gap: 1rem;
-  border: 1px solid var(--accent-color);
-  border-radius: 16px;
-  background: var(--background-color);
-  overflow: hidden;
-  padding: .75rem;
-  text-align: left;
-}
-
-.post-card + .post-card { margin-top: 1rem; }
-
-.post-card__poster {
-  width: 100%;
-  aspect-ratio: 2/3;
-  background: #111;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.post-card__poster img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.post-card__body {
-  display: grid;
-  grid-template-rows: auto auto 1fr auto; 
-  gap: .5rem;
-  min-width: 0; 
-}
-
-/* Otsikkorivi */
-.post-card__title-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: .75rem;
-}
-
-.post-card__title {
-  margin: 0;
-  font-size: 1.05rem;
-  line-height: 1.25;
   font-weight: 600;
+  border-bottom: 1px solid var(--accent-color);
+  padding: .25rem 0;
 }
 
-.post-card__actions {
-  margin-top: 0.25rem;
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
-}
-
-/* Meta: käyttäjänimi + päiväys + tähdet */
-.post-card__meta {
-  display: flex;
-  align-items: center;
-  font-size: .9rem;
-  opacity: .85;
-  display: flex;
-  gap: .75rem;
-  flex-wrap: wrap;
-}
-
-/* Tähtien muotoilu postauksessa */
-.post-card__stars {
-  display: inline-flex;
-  align-items: center;
-  gap: 0;              /* ei välejä tähtien väliin */
-  line-height: 1;
-  font-size: 1rem; 
-}
-
-.post-card__stars .stars--filled { color: #FFD700; } /* kulta */
-.post-card__stars .stars--empty  { color: #777; opacity: .6; } /* himmeä harmaa */
-
-/* Tekijä */
-.author {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.author__name {
-  font-weight: 700; /* korostetaan usernamea */
-}
-
-/* kevennetään timestamppia */
-.post-card__timestamp {
-  opacity: 0.75;
-  font-size: 0.9rem;
-}
-
-/* Teksti + näytösajat */
-.post-card__content {
+/* Rivistö */
+.groups-individual-group-li {
+  border-bottom: 1px solid var(--accent-color);
   display: grid;
-  gap: .5rem;
-}
-
-.post-card__note {
-  margin: 0;
-  line-height: 1.5;
-  white-space: pre-wrap;     /* rivinvaihdot säilyvät */
-  word-break: break-word;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .75rem;
   text-align: left;
 }
 
-.post-card__showtimes {
-  border: 1px solid color-mix(in srgb, var(--accent-color) 25%, transparent);
-  border-radius: 10px;
-  padding: .5rem .75rem;
-  display: grid;
-  gap: .35rem;
+.groups-name-col {
+  text-align: left;
+  overflow-wrap: anywhere;
+  padding: 0.25rem;
+}
+.groups-role-col { white-space: nowrap; }
+
+.groups-link,
+.groups-link:link,
+.groups-link:visited {
+  text-decoration: none;
+  color: var(--text-color);
+  display: block;
+  min-height: 52px;
+  margin: 0;
+  padding: 0.25rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.groups-link:hover {
+  text-shadow: 2px 2px 5px rgb(120 255 181 / .3);
+  color: var(--secondary-accent-color);
+  text-decoration: none;
 }
 
-.showtime-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: .5rem;
-  font-size: .92rem;
-}
-
-.showtime-row__left {
-  display: flex;
-  gap: .5rem;
-  flex-wrap: wrap;
-  opacity: .95;
-}
-
-.showtime-row__right {
-  white-space: nowrap;
-  opacity: .9;
-}
-
-/* ========== responsiivisuus ========== */
-
+/* Responsiivisuus */
 @media (max-width: 900px) {
-  .groups-lists-row {
-    flex-direction: column;
-  }
-
-  .group-page-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+  .groups-lists-row { flex-direction: column; }
 }
-
-/* Pienempi “turvakaista”: pidetään roolikolumni kompaktina myös erittäin kapealla */
 @media (max-width: 380px) {
   .groups-header,
   .groups-individual-group-li {
     grid-template-columns: minmax(0, 1fr) max-content;
-  }
-  .group-searchbar {
-    flex-wrap: wrap;
-  }
-  .group-searchbar .btn {
-    width: 100%;
-  }
-}
-
-@media (max-width: 640px) {
-  .post-card {
-    grid-template-columns: 90px 1fr;
-  }
-}
-
-@media (max-width: 520px) {
-  .results-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  }
-}
-
-@media (max-width: 460px) {
-  .post-card {
-    grid-template-columns: 1fr; /* pino: posteri ylös */
-  }
-  .post-card__poster {
-    width: 120px;
-    margin: 0 auto;
   }
 }

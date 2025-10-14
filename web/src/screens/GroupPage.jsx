@@ -1,7 +1,7 @@
 // pages/GroupPage.jsx
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import "./Groups.css";
+import "./GroupPage.css"
 import SearchBar from "../components/SearchBar.jsx";
 import placeholder from "../assets/placeholder.png";
 import GroupAddModal from "../components/GroupAddModal.jsx";
@@ -369,24 +369,29 @@ function GroupPage() {
 
   return (
   <div className="group-page">
-    {/* Yläpalkki: otsikko vas., Delete/Leave oikealle */}
-    <div className="group-topbar">
+   {/* Otsikko erikseen, isona */}
+    <header className="group-topbar">
       <h2 className="group-page-title">{group.name}</h2>
-      {isOwner ? (
-        <button className="btn deleting-btn" onClick={onDeleteGroup}>Delete this group</button>
-      ) : (
-        <button className="btn leavegroup-btn" onClick={onLeaveGroup}>Leave this group</button>
-      )}
-    </div>
+    </header>
 
-    {/* Hakunapit rinnakkain */}
-    <div className="group-searchbar">
-      <button className="btn" onClick={() => setShowFinnkino(v => !v)}>
-        {showFinnkino ? "Hide Finnkino search" : "Search from Finnkino"}
-      </button>
-      <button className="btn" onClick={() => setShowTmdb(v => !v)}>
-        {showTmdb ? "Hide TMDB search" : "Search from TMDB"}
-      </button>
+    {/* Keskitetty työkalurivi: Search + Delete/Leave samalle riville */}
+    <div className="group-actions">
+      <div className="group-searchbar">
+        <button className="btn" onClick={() => setShowFinnkino(v => !v)}>
+          {showFinnkino ? "Hide Finnkino search" : "Search from Finnkino"}
+        </button>
+        <button className="btn" onClick={() => setShowTmdb(v => !v)}>
+          {showTmdb ? "Hide TMDB search" : "Search from TMDB"}
+        </button>
+      </div>
+
+      <div className="group-danger">
+        {isOwner ? (
+          <button className="btn deleting-btn" onClick={onDeleteGroup}>Delete this group</button>
+        ) : (
+          <button className="btn leavegroup-btn" onClick={onLeaveGroup}>Leave this group</button>
+        )}
+      </div>
     </div>
 
     {/* FINNKINO – tulokset nappien alle */}
