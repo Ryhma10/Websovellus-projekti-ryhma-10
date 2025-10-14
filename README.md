@@ -44,6 +44,7 @@ web/
 - **group_memberships:** Group membership and roles.
 - **group_movies:** Movies added to groups.
 
+![Databasediagram](web/src/assets/tietokantakaavio.png)
 ---
 
 **Group 10**  
