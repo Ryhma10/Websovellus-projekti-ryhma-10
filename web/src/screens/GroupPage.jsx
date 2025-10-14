@@ -208,6 +208,19 @@ function GroupPage() {
   const isAddedFinnkino = (id) => existing.finnkino.has(String(id));
   const isAddedTmdb = (id) => existing.tmdb.has(String(id));
 
+  const approvedMembers = React.useMemo(() => {
+  const list = Array.isArray(group?.members) ? group.members : [];
+  return list.filter((m) => {
+    // yritetään lukea mahdollisia status-kenttiä; fallback roolin perusteella
+    const raw = (m.status ?? m.membership_status ?? m.state ?? "").toString().toLowerCase();
+    if (raw) return raw === "approved" || raw === "active";
+    if (typeof m.approved === "boolean") return m.approved === true;
+    // jos backendi ei lähetä statusta lainkaan, jäsenellä on rooli vasta hyväksynnän jälkeen
+    return m.role === "owner" || m.role === "member";
+  });
+}, [group?.members]);
+
+
   // Owner-toiminnot
   async function handleApprove(groupIdArg, memberId) {
     try {
@@ -490,8 +503,8 @@ function GroupPage() {
     <section className="members">
       <h3>Members</h3>
       <ul className="members-list">
-        {Array.isArray(group.members) && group.members.length > 0 ? (
-          group.members.map((m) => (
+        {approvedMembers.length > 0 ? (
+          approvedMembers.map((m) => (
             <li className="members-item" key={m.id}>
               <div>
                 <strong>{m.username}</strong>
