@@ -21,7 +21,6 @@ function MovieModal({ movie, onClose }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem("token");
-        console.log("JWT token:", token);
         await fetch("http://localhost:3001/api/reviews", {
             method: "POST",
             headers: {

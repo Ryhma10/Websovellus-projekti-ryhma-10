@@ -83,7 +83,7 @@ function Favorites() {
 
    return (
     <div>
-      <h2 className="favorites-title">Your Favorites</h2>
+      <h1 className="favorites-title">Your Favorites</h1>
       <button onClick={handleShareClick} disabled={!userId}>
         Share Favorites
       </button>

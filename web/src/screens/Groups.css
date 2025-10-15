@@ -3,6 +3,7 @@
 .groups-container {
   color: var(--text-color);
   padding: 1rem;
+  padding-top: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
