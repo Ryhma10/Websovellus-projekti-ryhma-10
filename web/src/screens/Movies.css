@@ -18,7 +18,6 @@
 
 .movie-table-container  {
     position: relative;
-    margin-top: 10vh;
     color: var(--text-color);
     align-items: center;
 }
