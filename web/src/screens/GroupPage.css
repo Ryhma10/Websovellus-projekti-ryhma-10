@@ -1,47 +1,36 @@
 /* GroupPage */
 .group-page {
   color: var(--text-color);
+  contain: layout style;
   padding: 1rem;
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
 }
 
-/* Otsikko isommaksi ja yhtenäiseksi */
+/* Otsikko */
 .group-page .group-topbar { 
-    margin-bottom: .5rem; 
+  margin-bottom: .5rem; 
 }
 
 .group-page .group-page-title {
   margin: 0;
   font-weight: 800;
   text-align: center;
-  /* Isompi kuin korttiotsikot mutta linjassa muun typografian kanssa */
   font-size: clamp(1.8rem, 3.2vw, 2.6rem);
 }
 
-/* Keskitetty työkalurivi: Search + Delete/Leave samalla rivillä */
-.group-page .group-actions {
+/* Toolbar: Search + Delete/Leave napit samalla rivillä */
+.group-page .group-toolbar {
   display: flex;
+  gap: 0.75rem;
   align-items: center;
-  justify-content: center;   /* KESKITYS */
-  gap: .75rem;               /* Yhtenäinen väli */
-  flex-wrap: wrap;           /* kapealla rivittyy paremmin */
-  margin: .5rem 0 1rem;
+  justify-content: center;
+  margin: .75rem auto 1rem;
+  width: max-content; /* keskitys ilman että venyy täyteen leveyteen */
 }
 
-/* Search-nappiryhmä */
-.group-page .group-searchbar {
-  display: inline-flex;
-  gap: .5rem;
-}
-
-/* Delete/Leave-napit */
-.group-page .group-danger {
-  display: inline-flex;
-}
-
-/* Yhtenäinen nappityyli ryhmäsivulla */
+/* Yhtenäinen nappityyli */
 .group-page .btn {
   appearance: none;
   border: 2px solid var(--accent-color);
@@ -49,26 +38,30 @@
   color: var(--accent-color);
   padding: .5rem 1rem;
   border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   font: inherit;
   line-height: 1;
-  transition: background .15s ease, color .15s ease, transform .06s ease;
+  min-width: 190px;          /* tasaleveät napit */
+  min-height: 44px;
+  white-space: nowrap;
+  text-align: center;
+  transition: background .15s ease, color .15s ease;
 }
 
-.group-page .btn:hover { 
-    background: var(--accent-color); 
-    color: var(--background-color); 
+.group-page .btn:hover {
+  background: var(--accent-color);
+  color: var(--background-color);
 }
 
-.group-page .btn:active { 
-    transform: translateY(1px); 
+.group-page .btn[disabled] {
+  opacity: .6;
+  cursor: not-allowed;
 }
 
-.group-page .btn[disabled] { 
-    opacity: .6; cursor: not-allowed; 
-}
-
-/* Delete/Leave korostukset */
+/* Leave & Delete napit */
 .group-page .leavegroup-btn {
   border-color: color-mix(in srgb, var(--accent-color) 60%, white);
   color: color-mix(in srgb, var(--accent-color) 80%, white);
@@ -84,30 +77,43 @@
   color: var(--background-color);
 }
 
-/* Osioiden otsikot yhtenäisiksi korttien kanssa */
+.group-page .btn:hover,
+.group-page .btn:active {
+  transform: none !important;
+}
+
+/* Otsikot */
 .group-page section > h3 {
   margin: 0 0 .5rem 0;
   font-weight: 700;
-  font-size: 1.1rem; 
+  font-size: 1.1rem;
 }
 
-/* TMDB/Finnkino haut */
+/* Hakuosiot (Finnkino/TMDB) */
+.group-page .group-page-search { 
+  margin-top: 1rem; 
+}
+
+/* TMDB haut */
 .group-page .tmdb-search-controls {
   display: flex;
   align-items: center;
   gap: .5rem;
   margin-bottom: .5rem;
-  flex-wrap: wrap;
+  flex-wrap: wrap;  
+  max-width: 100%;           
 }
 
 .group-page .tmdb-search-controls input {
   flex: 1 1 320px;
   min-width: 220px;
+  max-width: 480px;
 }
 
 .group-page .genre-select-tmdb,
 .group-page .year-select-tmdb {
   background: rgb(30, 30, 30);
+  flex: 0 0 auto;
   color: var(--text-color);
   border-radius: 8px;
   padding: 10px;
@@ -122,10 +128,10 @@
   transition: border-color .5s ease;
 }
 
-/* Tuloskortit */
+/* Tuloskortit (TMDB/Finnkino) */
 .group-page .movie-results {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   width: 100%;
   gap: 10px 8px;
   margin: 0;
@@ -138,14 +144,14 @@
   background: var(--background-color);
   overflow: hidden;
   display: grid;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto; /* posteri + otsikko */
   cursor: pointer;
   transition: transform .08s ease, box-shadow .15s ease;
 }
 
-.group-page .movie-item:hover { 
-    transform: translateY(-2px); 
-    box-shadow: 0 6px 20px rgba(0,0,0,.25); 
+.group-page .movie-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,.25);
 }
 
 .group-page .poster-box {
@@ -156,18 +162,18 @@
   overflow: hidden;
 }
 
-.group-page .movie-poster { 
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; 
-    display: block; 
+.group-page .movie-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .group-page .placeholder-image {
-  width: auto; 
-  height: auto; 
-  max-width: 80%; 
-  max-height: 80%; 
+  width: auto;
+  height: auto;
+  max-width: 80%;
+  max-height: 80%;
   display: block;
 }
 
@@ -176,7 +182,7 @@
   text-align: center;
   line-height: 1.2;
   font-size: 1rem;
-  min-height: calc(1.2em * 3);
+  min-height: calc(1.2em * 3);   /* 3 riviä tilaa */
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -185,210 +191,206 @@
 }
 
 /* Sivutus */
-.group-page .pager { 
-    margin: .5rem 0; 
-    display: flex; 
-    align-items: center; 
-    gap: .75rem;
-    justify-content: center;
-    width: 100%;
+.group-page .pager {
+  margin: .5rem 0;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  justify-content: center;
+  width: 100%;
 }
+.group-page .pager__info { opacity: .85; }
 
-.group-page .pager__info { 
-    opacity: .85; 
-}
-
-/* Members */
-.group-page .members { 
-    margin-top: 1rem; 
-}
-
+/* Members ja Pending */
+.group-page .members { margin-top: 1rem; }
 .group-page .members-list {
   list-style: none;
-  padding: 0; margin: 0;
+  padding: 0;
+  margin: 0;
   border: 1px solid var(--accent-color);
   border-radius: 16px;
   overflow: clip;
 }
 
 .group-page .members-item {
-  display: flex; 
-  align-items: center; 
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  gap: .75rem; 
+  gap: .75rem;
   padding: .75rem 1rem;
   border-bottom: 1px solid color-mix(in srgb, var(--accent-color) 30%, transparent);
 }
 
-.group-page .members-item:last-child { 
-    border-bottom: none; 
-}
+.group-page .members-item:last-child { border-bottom: none; }
 
-.group-page .members-role { 
-    opacity: .7; 
-    margin-left: 8px; 
-}
+.group-page .members-role { opacity: .7; margin-left: 8px; }
 
 .group-page .small-btn {
   appearance: none;
   border: 1px solid var(--accent-color);
-  background: transparent; color: var(--accent-color);
-  padding: .35rem .7rem; border-radius: 10px; cursor: pointer;
-  font: inherit; font-size: .9rem;
+  background: transparent;
+  color: var(--accent-color);
+  padding: .35rem .7rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font: inherit;
+  font-size: .9rem;
   transition: background .15s ease, color .15s ease;
 }
 
-.group-page .small-btn:hover { 
-    background: var(--accent-color); 
-    color: var(--background-color); 
+.group-page .small-btn:hover {
+  background: var(--accent-color);
+  color: var(--background-color);
 }
 
-.group-page .request-actions { 
-    display: flex; 
-    gap: .5rem; 
+/* Approve/Reject rivinä */
+.group-page .request-actions { display: flex; gap: .5rem; }
+
+/* Punainen Reject */
+.group-page .small-btn.reject {
+  border-color: var(--danger-color, #d9534f);
+  color: var(--danger-color, #d9534f);
 }
 
-.group-page .small-btn.reject { 
-    border-color: var(--danger-color, #d9534f); 
-    color: var(--danger-color, #d9534f); 
-}
-
-.group-page .small-btn.reject:hover { 
-    background: var(--danger-color, #d9534f); 
-    color: var(--background-color); 
+.group-page .small-btn.reject:hover {
+  background: var(--danger-color, #d9534f);
+  color: var(--background-color);
 }
 
 /* Postaus-kortit */
-.posts-list { 
-    display: grid; gap: 1rem; 
-}
+.posts-list { display: grid; gap: 1rem; }
 
 .post-card {
-  display: grid; 
-  grid-template-columns: 120px 1fr; 
+  display: grid;
+  grid-template-columns: 120px 1fr;
   gap: 1rem;
-  border: 1px solid var(--accent-color); 
+  border: 1px solid var(--accent-color);
   border-radius: 16px;
-  background: var(--background-color); 
-  overflow: hidden; padding: .75rem; 
+  background: var(--background-color);
+  overflow: hidden;
+  padding: .75rem;
   text-align: left;
 }
 
 .post-card__poster {
-    width: 100%; 
-    aspect-ratio: 2/3; 
-    background: #111; 
-    border-radius: 8px; 
-    overflow: hidden; 
+  width: 100%;
+  aspect-ratio: 2/3;
+  background: #111;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.post-card__poster img { 
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; 
-    display: block; 
+.post-card__poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.post-card__body { 
-    display: grid; 
-    grid-template-rows: auto auto 1fr auto; 
-    gap: .5rem; min-width: 0; 
+.post-card__body {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: .5rem;
+  min-width: 0;
 }
 
-.post-card__title-row { 
-    display: flex; 
-    align-items: baseline; 
-    justify-content: space-between; 
-    gap: .75rem; 
+.post-card__title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .75rem;
 }
 
-.post-card__title { 
-    margin: 0; 
-    font-size: 1.05rem; 
-    line-height: 1.25; 
-    font-weight: 600; 
+.post-card__title {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.25;
+  font-weight: 600;
 }
 
-.post-card__meta { 
-    display: flex; 
-    align-items: center; 
-    gap: .75rem; 
-    flex-wrap: wrap; 
-    font-size: .9rem; 
-    opacity: .85; 
+.post-card__meta {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+  font-size: .9rem;
+  opacity: .85;
 }
 
-.post-card__stars { 
-    display: inline-flex; 
-    line-height: 1; 
-    font-size: 1rem; 
-}
+.post-card__stars { display: inline-flex; line-height: 1; font-size: 1rem; }
 
-.post-card__stars .stars--filled { 
-    color: #FFD700; 
-}
+.post-card__stars .stars--filled { color: #FFD700; }
 
-.post-card__stars .stars--empty { 
-    color: #777; 
-    opacity: .6; 
-}
+.post-card__stars .stars--empty { color: #777; opacity: .6; }
 
-.author__name { 
-    font-weight: 700; 
-}
+.author__name { font-weight: 700; }
 
-.post-card__timestamp { 
-    opacity: .75; 
-    font-size: .9rem; 
-}
+.post-card__timestamp { opacity: .75; font-size: .9rem; }
 
-.post-card__content { 
-    display: grid; 
-    gap: .5rem; 
-}
+.post-card__content { display: grid; gap: .5rem; }
 
-.post-card__note { 
-    margin: 0; 
-    line-height: 1.5; 
-    white-space: pre-wrap; 
-    word-break: break-word; 
+.post-card__note {
+  margin: 0;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .post-card__showtimes {
   border: 1px solid color-mix(in srgb, var(--accent-color) 25%, transparent);
-  border-radius: 10px; 
-  padding: .5rem .75rem; 
-  display: grid; 
+  border-radius: 10px;
+  padding: .5rem .75rem;
+  display: grid;
   gap: .35rem;
 }
 
-.showtime-row { 
-    display: flex; 
-    align-items: baseline; 
-    justify-content: space-between; 
-    gap: .5rem; font-size: .92rem; 
+.showtime-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .5rem;
+  font-size: .92rem;
 }
 
-.showtime-row__left { 
-    display: flex; 
-    gap: .5rem; 
-    flex-wrap: wrap; 
-    opacity: .95; 
-}
+.showtime-row__left { display: flex; gap: .5rem; flex-wrap: wrap; opacity: .95; }
 
-.showtime-row__right { 
-    white-space: nowrap; 
-    opacity: .9; 
-}
+.showtime-row__right { white-space: nowrap; opacity: .9; }
 
 /* Responsiivisuus */
-@media (max-width: 640px) {
+
+@media (max-width: 1199px) and (min-width: 900px) {
+  .group-page .movie-results {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 899px) and (min-width: 700px) {
+  .group-page .movie-results {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 699px) {
   .post-card { grid-template-columns: 90px 1fr; }
 }
+
 @media (max-width: 520px) {
-  .movie-results { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .group-page .movie-results {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
 }
+
 @media (max-width: 460px) {
   .post-card { grid-template-columns: 1fr; }
   .post-card__poster { width: 120px; margin: 0 auto; }
+}
+
+@media (max-width: 420px) {
+  .group-page .group-toolbar {
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: .5rem;
+    width: 100%;
+    max-width: 320px;
+  }
 }

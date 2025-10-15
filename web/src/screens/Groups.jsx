@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import SignIn from "./Signin.jsx";
-import GroupModal from "./GroupModal";
-import "./Groups.css";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react"
+import SignIn from "./Signin.jsx"
+import GroupModal from "./GroupModal"
+import "./Groups.css"
+import { Link } from "react-router-dom"
 
 function Groups() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [myGroups, setMyGroups] = useState([]);
-  const [allGroups, setAllGroups] = useState([]);
-  const [showSignInModal, setShowSignInModal] = useState(false);
-  const token = localStorage.getItem("token");
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [myGroups, setMyGroups] = useState([])
+  const [allGroups, setAllGroups] = useState([])
+  const [showSignInModal, setShowSignInModal] = useState(false)
+  const token = localStorage.getItem("token")
 
   // Haetaan omat ryhmät (kerran kun token on saatavilla)
   useEffect(() => {
@@ -18,16 +18,16 @@ function Groups() {
       try {
         const res = await fetch("http://localhost:3001/api/groups/my", {
           headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error("Virhe haettaessa omia ryhmiä");
-        const data = await res.json();
-        setMyGroups(data);
+        })
+        if (!res.ok) throw new Error("Virhe haettaessa omia ryhmiä")
+        const data = await res.json()
+        setMyGroups(data)
       } catch (err) {
-        console.error("Error fetching my groups:", err);
+        console.error("Error fetching my groups:", err)
       }
     };
-    fetchMyGroups();
-  }, [token]);
+    fetchMyGroups()
+  }, [token])
 
   // Haetaan kaikki ryhmät (kerran kun token on saatavilla/muuttuu)
   useEffect(() => {
@@ -35,29 +35,29 @@ function Groups() {
       try {
         const res = await fetch("http://localhost:3001/api/groups", {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        if (!res.ok) throw new Error("Virhe haettaessa ryhmiä");
-        const data = await res.json();
-        setAllGroups(data);
+        })
+        if (!res.ok) throw new Error("Virhe haettaessa ryhmiä")
+        const data = await res.json()
+        setAllGroups(data)
       } catch (err) {
-        console.error("Error fetching all groups:", err);
+        console.error("Error fetching all groups:", err)
       }
     };
-    fetchAllGroups();
-  }, [token]);
+    fetchAllGroups()
+  }, [token])
 
   const handleCreateGroupClick = () => {
     if (!token) {
-      setShowSignInModal(true);
+      setShowSignInModal(true)
     } else {
-      setIsModalOpen(true);
+      setIsModalOpen(true)
     }
-  };
+  }
 
   const handleJoinRequest = async (groupId) => {
     if (!token) {
-      alert("Sinun täytyy kirjautua sisään tai luoda käyttäjä liittyäksesi ryhmään.");
-      return;
+      alert("Sinun täytyy kirjautua sisään tai luoda käyttäjä liittyäksesi ryhmään.")
+      return
     }
 
     try {
@@ -70,27 +70,27 @@ function Groups() {
         body: JSON.stringify({ groupId }),
       });
 
-      const msg = await res.json();
+      const msg = await res.json()
 
-      if (!res.ok) throw new Error(msg.error || "Liittymispyyntö epäonnistui");
+      if (!res.ok) throw new Error(msg.error || "Liittymispyyntö epäonnistui")
 
       alert(msg.message);
       // Päivitetään oma lista niin, että status näkyy heti
       setMyGroups((prev) => {
         // Jos ryhmä on jo listassa, älä tuplaa
-        if (prev.some((g) => g.id === groupId)) return prev;
-        return [...prev, { id: groupId, status: "pending" }];
-      });
+        if (prev.some((g) => g.id === groupId)) return prev
+        return [...prev, { id: groupId, status: "pending" }]
+      })
     } catch (err) {
-      console.error(err);
-      alert(err.message);
+      console.error(err)
+      alert(err.message)
     }
   };
 
   const getMembershipStatus = (groupId) => {
-    const membership = myGroups.find((g) => g.id === groupId);
-    return membership ? membership.status : null;
-  };
+    const membership = myGroups.find((g) => g.id === groupId)
+    return membership ? membership.status : null
+  }
 
   if (showSignInModal) {
     return (
@@ -165,7 +165,7 @@ function Groups() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default Groups;
+export default Groups

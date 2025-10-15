@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import './Modal.css';
+import React, { useState } from "react"
+import './Modal.css'
 
 function SignIn({ isOpen, onClose, onSignUp, onLoginSuccess }) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); 
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
 
 // Kirjautumisen käsittelijä
   const handleLogin = async (e) => {
@@ -68,4 +68,4 @@ function SignIn({ isOpen, onClose, onSignUp, onLoginSuccess }) {
   )
 }
 
-export default SignIn;
+export default SignIn

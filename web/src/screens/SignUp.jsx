@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import './Modal.css';
+import React, { useState } from "react"
+import './Modal.css'
 
 function SignUp({ isOpen, onClose, onSignIn }) {
     const [username, setUsername] = useState("")
@@ -71,7 +71,7 @@ function SignUp({ isOpen, onClose, onSignIn }) {
         <p>Already have an account? <a href="#" onClick={e => { e.preventDefault(); onSignIn(); }}>Sign in</a></p>
       </div>
     </div>
-  );
+  )
 }
 
-export default SignUp;
+export default SignUp
