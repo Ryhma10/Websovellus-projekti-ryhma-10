@@ -67,23 +67,29 @@
 
 /* OTSIKKO – täsmällinen 3 riviä kaikissa selaimissa */
 .movie-table-container .movie-info{
-  --title-lh: 1.3;               /* riviväli muuttujaksi */
   padding: 10px 12px 14px;
   text-align: center;
-  line-height: var(--title-lh);
+
+  /* rivit ja katkaisu */
+  line-height: 1.3;                
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;         /* näytä enintään 3 riviä (WebKit) */
-  overflow: hidden;
+  -webkit-line-clamp: 3;
+  overflow: clip;                   /* tai hidden */
   text-overflow: ellipsis;
   word-break: break-word;
   overflow-wrap: anywhere;
 
-  /* cross-browser varmistus: rajoita korkeus täsmälleen 3 riviin */
-  max-height: calc(3 * 1em * var(--title-lh));
-  min-height: calc(3 * 1em * var(--title-lh));  /* yhtenäinen korttikorkeus */
-  box-sizing: border-box;
+  /* täsmälleen 3 riviä – ei puolikkaita */
+  min-height: calc(3 * 1lh);
+  max-height: calc(3 * 1lh);
   margin: 0;
+  box-sizing: border-box;
+}
+
+/* varmistus, ettei mikään voi “vuotaa” reunan yli */
+.movie-table-container .movie-item{
+  overflow: hidden;
 }
 
 .genre-select, .year-select {
