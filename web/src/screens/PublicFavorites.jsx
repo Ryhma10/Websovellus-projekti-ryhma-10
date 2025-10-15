@@ -12,14 +12,14 @@ function PublicFavorites() {
   useEffect(() => {
     const fetchPublicFavorites = async () => {
         try {
-            const favRes = await fetch(`http://localhost:3001/api/favorites/public/${userId}`)
+            const favRes = await fetch(`${import.meta.env.VITE_API_URL}/api/favorites/public/${userId}`)
             if (!favRes.ok) {
                 throw new Error("Failed to fetch public favorites")
             }
             const favData = await favRes.json();
             setTmdbIds(favData);
             
-            const userRes = await fetch(`http://localhost:3001/api/users/public/${userId}`)
+            const userRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users/public/${userId}`)
             if (!userRes.ok) throw new Error ("Failed to fetch username")
             const userData = await userRes.json();
             setUsername(userData.username)

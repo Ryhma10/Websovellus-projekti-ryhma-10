@@ -12,7 +12,7 @@ function SignIn({ isOpen, onClose, onSignUp, onLoginSuccess }) {
     setError("") // Tyhjennä vanha virhe ennen uutta kirjautumista
     try {
       // Lähetä kirjautumispyyntö backendiin
-      const response = await fetch("http://localhost:3001/api/users/signin", {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/signin`, {
         method: "POST",
         headers: {"Content-Type": "application/json" },
         body: JSON.stringify({ username, password })

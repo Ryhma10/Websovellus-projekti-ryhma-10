@@ -28,7 +28,7 @@ function Favorites() {
         setShowSignInModal(true)
         return
       }
-      const res = await fetch("http://localhost:3001/api/user_favorites", {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user_favorites`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
