@@ -16,7 +16,7 @@ function Groups() {
     const fetchMyGroups = async () => {
       if (!authToken) return;
       try {
-        const res = await fetch("http://localhost:3001/api/groups/my", {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/groups/my`, {
           headers: { Authorization: `Bearer ${authToken}` },
         })
         if (!res.ok) throw new Error("Virhe haettaessa omia ryhmiä")
@@ -33,7 +33,7 @@ function Groups() {
   useEffect(() => {
     const fetchAllGroups = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/groups", {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/groups`, {
           headers: { Authorization: `Bearer ${authToken}` },
         })
         if (res.status === 401) {
@@ -67,7 +67,7 @@ function Groups() {
     }
 
     try {
-      const res = await fetch("http://localhost:3001/api/groups/join", {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/groups/join`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

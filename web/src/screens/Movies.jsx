@@ -25,7 +25,7 @@ function Movies() {
     const fetchMovies = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`http://localhost:3001/api/tmdb/search?query=${movieQuery}&page=${page}`, {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/tmdb/search?query=${movieQuery}&page=${page}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -50,7 +50,7 @@ function Movies() {
     const fetchPopular = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch('http://localhost:3001/api/tmdb/popular', {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/tmdb/popular`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -69,7 +69,7 @@ function Movies() {
     const fetchGenres = async () => {
       try {
         const token = localStorage.getItem("token")
-        const res = await fetch('http://localhost:3001/api/tmdb/genres', {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/tmdb/genres`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

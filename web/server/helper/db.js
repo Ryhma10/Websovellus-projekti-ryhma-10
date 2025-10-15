@@ -13,7 +13,8 @@ const openDb = () => {      //yhdistetään tietokantaan .envissä olevilla tied
         host: process.env.PGHOST,
         database: process.env.PGNAME,
         password: process.env.PGPASSWORD,  //.enviin PGPASSWORD=omasalasanasi
-        port: process.env.PGPORT
+        port: process.env.PGPORT,
+        ssl: process.env.DB_SSL
     })
     return pool
 }
