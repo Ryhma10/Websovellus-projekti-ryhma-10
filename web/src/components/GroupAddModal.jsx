@@ -61,6 +61,8 @@ export default function GroupAddModal({
     return { title, overview, poster_url: poster }
   }, [movie, source])
 
+  const isPosterOnly = !snapshot.overview?.trim()
+
   // Näytösajat
   const normalizedShowtimes = useMemo(() => {
     if (source !== "finnkino" || !movie) return []
@@ -219,7 +221,7 @@ export default function GroupAddModal({
             {snapshot.title}{" "}
             <span className="badge">{source === "tmdb" ? "TMDB" : "Finnkino"}</span>
           </h2>
-        <div className="modal-content">
+        <div className={`modal-content ${isPosterOnly ? "poster-only" : ""}`}>
           <div className="poster-wrap">
             <img
               src={snapshot.poster_url || placeholder}
@@ -228,7 +230,7 @@ export default function GroupAddModal({
             />
           </div>
 
-          {snapshot.overview && (
+          {snapshot.overview?.trim() && (
             <div className="desc-right">
               <p className="movie-overview">{snapshot.overview}</p>
             </div>
