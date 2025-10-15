@@ -56,6 +56,7 @@
   background: #111;
   overflow: hidden;          /* leikkaa kuvan kulmat */
 }
+
 .movie-table-container .movie-poster {
   width: 100%;
   height: 100%;
@@ -64,18 +65,25 @@
   border-radius: 0;
 }
 
-/* TITLE — max 3 riviä, ei mene kehyksen ulkopuolelle */
-.movie-table-container .movie-info {
+/* OTSIKKO – täsmällinen 3 riviä kaikissa selaimissa */
+.movie-table-container .movie-info{
+  --title-lh: 1.3;               /* riviväli muuttujaksi */
   padding: 10px 12px 14px;
   text-align: center;
-  line-height: 1.3;
+  line-height: var(--title-lh);
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;     /* näytä enintään 3 riviä */
-  overflow: hidden;          /* piilota ylimenevä siististi */
+  -webkit-line-clamp: 3;         /* näytä enintään 3 riviä (WebKit) */
+  overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
   overflow-wrap: anywhere;
+
+  /* cross-browser varmistus: rajoita korkeus täsmälleen 3 riviin */
+  max-height: calc(3 * 1em * var(--title-lh));
+  min-height: calc(3 * 1em * var(--title-lh));  /* yhtenäinen korttikorkeus */
+  box-sizing: border-box;
+  margin: 0;
 }
 
 .genre-select, .year-select {
