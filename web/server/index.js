@@ -14,7 +14,9 @@ const PORT = process.env.PORT || 3001 //Express-palvelin käynnistetään portis
 const app = express()           //luodaan Express-sovellus
 
 //Middlewaret kaikille pyynnöille
-app.use(cors())                 //sallitaan CORS
+app.use(cors({
+  origin: 'https://websovellus-projekti-ryhma-10-front.onrender.com'
+}));                //sallitaan CORS
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ limit: '10mb', extended: true }))
 
