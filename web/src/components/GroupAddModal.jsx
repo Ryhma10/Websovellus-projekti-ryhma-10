@@ -13,73 +13,21 @@ export default function GroupAddModal({
   defaultNote = "",
   onSuccess,     // ({ source, id }) => void
 }) {
-
-  // --- state ---
   const [note, setNote] = useState(defaultNote);
   const [stars, setStars] = useState(0);
   const [submitting, setSubmitting] = useState(false);
-  const [fkDetails, setFkDetails] = useState(null);
   const [showTimesOpen, setShowTimesOpen] = useState(true);
 
-  // Resetit modalin auetessa
   useEffect(() => {
-    if (!open) return
-    setNote(defaultNote || "")
-    setStars(0)
-    setShowTimesOpen(true)
-  }, [open, movie, defaultNote])
+    if (!open) return;
+    setNote(defaultNote || "");
+    setStars(0);
+    setShowTimesOpen(true);
+  }, [open, movie, defaultNote]);
 
-  // Finnkino-detaljien haku (synopsis/posteri), vain kun tarvitaan
-  useEffect(() => {
-    if (!open || source !== "finnkino" || !movie) {
-      setFkDetails(null)
-      return
-    }
-
-    const eventID =
-      movie?.id ??
-      movie?.raw?.eventID ??
-      movie?.raw?.EventID ??
-      movie?.raw?.Event?.ID;
-
-    if (!eventID) return;
-
-    const hasOverviewLocal =
-      movie?.overview ||
-      movie?.synopsis || movie?.Synopsis ||
-      movie?.shortSynopsis || movie?.ShortSynopsis ||
-      movie?.description || movie?.Description ||
-      movie?.raw?.Synopsis || movie?.raw?.ShortSynopsis ||
-      movie?.raw?.Event?.Synopsis || movie?.raw?.Event?.ShortSynopsis;
-
-    if (hasOverviewLocal) { setFkDetails(null); return; }
-
-    let aborted = false;
-    (async () => {
-      try {
-        const res = await fetch(
-          `http://localhost:3001/api/finnkino/events?eventID=${encodeURIComponent(eventID)}`
-        );
-        if (!res.ok) return;
-        const ev = await res.json();
-        if (!aborted) setFkDetails(ev || null);
-      } catch {
-        /* no-op */
-      }
-    })();
-
-    return () => { aborted = true; };
-  }, [open, source, movie]);
-
-  // (valinnainen debug) – top-level
-  useEffect(() => {
-    // console.log("[FK] movie:", movie);
-    // console.log("[FK] fkDetails:", fkDetails);
-  }, [movie, fkDetails]);
-
-  // Snapshot poster + overview + title
+  // Snapshot: vain title + poster. Overview poistettu.
   const snapshot = useMemo(() => {
-    if (!movie) return { title: "", overview: "", poster_url: placeholder };
+    if (!movie) return { title: "", poster_url: placeholder };
 
     if (source === "tmdb") {
       const poster = movie.poster_path
@@ -87,39 +35,25 @@ export default function GroupAddModal({
         : placeholder;
       return {
         title: movie.title || movie.name || "",
-        overview: movie.overview || "",
         poster_url: poster,
       };
     }
 
-    // FINNKINO
+    // FINNKINO – poimi robustisti posteri; kuvaus jätetään pois
     const m = movie || {};
-    const rawOverview =
-      m.overview ||
-      m.synopsis || m.Synopsis ||
-      m.shortSynopsis || m.ShortSynopsis ||
-      m.description || m.Description ||
-      m.raw?.Synopsis || m.raw?.ShortSynopsis ||
-      m.raw?.Event?.Synopsis || m.raw?.Event?.ShortSynopsis ||
-      fkDetails?.synopsis || fkDetails?.Synopsis || fkDetails?.ShortSynopsis ||
-      "";
-    const overview = String(rawOverview).replace(/<br\s*\/?>/gi, "\n").trim();
-
     const poster =
       m.posterUrl || m.PosterURL || m.images?.poster ||
       m.raw?.Images?.EventLargeImagePortrait || m.raw?.image ||
       m.raw?.Event?.Images?.EventLargeImagePortrait ||
-      fkDetails?.posterUrl || fkDetails?.Images?.EventLargeImagePortrait ||
       placeholder;
 
     const title =
-      m.title || m.Title || m.raw?.Title || m.raw?.Event?.Title ||
-      fkDetails?.title || fkDetails?.Title || "";
+      m.title || m.Title || m.raw?.Title || m.raw?.Event?.Title || "";
 
-    return { title, overview, poster_url: poster };
-  }, [movie, source, fkDetails]);
+    return { title, poster_url: poster };
+  }, [movie, source]);
 
-  // Näytösajat teattereittain
+  // Näytösajat (sama kuin ennen)
   const normalizedShowtimes = useMemo(() => {
     if (source !== "finnkino" || !movie) return [];
 
@@ -178,20 +112,11 @@ export default function GroupAddModal({
 
   const keyFor = (thId, s) => `${thId}|${s.startsAt}|${s.auditorium || ""}`;
 
-  // Kaikki mahdolliset avaimet
-  const allKeys = useMemo(() => {
-    const keys = [];
-    normalizedShowtimes.forEach((th) => {
-      (th.showtimes || []).forEach((s) => keys.push(keyFor(th.theatreId, s)));
-    });
-    return keys;
-  }, [normalizedShowtimes]);
-
   const [selectedKeys, setSelectedKeys] = useState(new Set());
   useEffect(() => {
     if (!open || source !== "finnkino") return;
     setSelectedKeys(new Set());
-  }, [open, source, allKeys]);
+  }, [open, source, normalizedShowtimes]);
 
   function toggleKey(k) {
     setSelectedKeys((prev) => {
@@ -202,7 +127,6 @@ export default function GroupAddModal({
     });
   }
 
-  // submit
   async function handleAdd() {
     try {
       setSubmitting(true);
@@ -213,10 +137,9 @@ export default function GroupAddModal({
           note: note?.trim() || null,
           stars: stars || null,
           snap_title: snapshot.title,
-          snap_overview: snapshot.overview,
+          snap_overview: "-", // ei overview’ta
           snap_poster_url: snapshot.poster_url,
         };
-
         const res = await fetch(
           `http://localhost:3001/api/group_movies/${groupId}/tmdb`,
           {
@@ -228,26 +151,16 @@ export default function GroupAddModal({
             body: JSON.stringify(body),
           }
         );
-
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-
-        if (typeof onSuccess === "function") {
-          onSuccess({ source: "tmdb", id: movie.id });
-        }
+        if (typeof onSuccess === "function") onSuccess({ source: "tmdb", id: movie.id });
         onClose && onClose();
         return;
       }
 
       // FINNKINO
-      const theatresSrc = Array.isArray(normalizedShowtimes)
-        ? normalizedShowtimes
-        : [];
-
-      const hasSelection =
-        selectedKeys instanceof Set && selectedKeys.size > 0;
-
-      const showtimesOut = theatresSrc
+      const hasSelection = selectedKeys.size > 0;
+      const showtimesOut = normalizedShowtimes
         .map(th => ({
           ...th,
           showtimes: (th.showtimes || []).filter(s =>
@@ -261,7 +174,7 @@ export default function GroupAddModal({
         note: note?.trim() || null,
         stars: stars || null,
         snap_title: snapshot.title || "",
-        snap_overview: (snapshot.overview && snapshot.overview.trim()) ? snapshot.overview.trim() : "-",
+        snap_overview: "-", // ei overview’ta
         snap_poster_url: snapshot.poster_url || "",
         finnkino_showtimes: showtimesOut
       };
@@ -277,9 +190,7 @@ export default function GroupAddModal({
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
-      if (typeof onSuccess === "function") {
-        onSuccess({ source: "finnkino", id: movie.id });
-      }
+      if (typeof onSuccess === "function") onSuccess({ source: "finnkino", id: movie.id });
       onClose && onClose();
     } catch (e) {
       alert(e.message || "Adding failed");
@@ -301,7 +212,8 @@ export default function GroupAddModal({
             <span className="badge">{source === "tmdb" ? "TMDB" : "Finnkino"}</span>
           </h2>
 
-          <div className="modal-content">
+          {/* VAIN POSTERI – keskitetty */}
+          <div className="modal-content poster-only">
             <div className="poster-wrap">
               <img
                 src={snapshot.poster_url || placeholder}
@@ -309,12 +221,6 @@ export default function GroupAddModal({
                 className="modal-poster"
               />
             </div>
-
-            {snapshot.overview?.trim() && (
-              <div className="desc-right">
-                <p className="movie-overview">{snapshot.overview}</p>
-              </div>
-            )}
           </div>
 
           <label className="stars-label" style={{ display: "block", marginTop: 12 }}>
@@ -402,5 +308,5 @@ export default function GroupAddModal({
         </div>
       </div>
     </div>
-  )
+  );
 }
