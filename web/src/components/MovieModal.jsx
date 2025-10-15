@@ -16,7 +16,7 @@ function MovieModal({ movie, onClose }) {
             setReviews(data);
         }
         if (movie) fetchReviews();
-    }, [movie]);
+    }, [movie])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -32,9 +32,9 @@ function MovieModal({ movie, onClose }) {
                 stars,
                 body: reviewText,
             }),
-        });
-        setReviewText("");
-        setStars(0);
+        })
+        setReviewText("")
+        setStars(0)
         // Refresh reviews
     const res = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/movie/${movie.id}`);
         const data = await res.json();
@@ -78,77 +78,80 @@ function MovieModal({ movie, onClose }) {
         <div className="modal-backdrop" onClick={onClose}>
             <div className="movie-modal" onClick={e => e.stopPropagation()}>
                 <button className="close-btn" onClick={onClose}>X</button>
-                <h2 className="modal-title">{movie.title}</h2>
-                <div className="modal-content">
-                <img 
-                src={movie.poster_path ? `https://image.tmdb.org/t/p/w200${movie.poster_path}` : placeholder} 
-                alt={movie.title} 
-                className="modal-poster"
-                />
-                <p className="movie-overview">{movie.overview}</p>
-                </div>
-                <h3>Average Rating: {averageStars} ⭐</h3>
-                <div className="modal-buttons">
-                    <button onClick={() => setShowReviews(!showReviews)}>
-                        {showReviews ? "Hide Reviews" : "Show Reviews"}
-                    </button>
-                    <button 
-                        className="favorite-btn"
-                        onClick={handleAddToFavorites}
-                        disabled={isFavorite}
-                    >
-                        {isFavorite ? "Added to Favorites" : "Add to Favorites"}
-                    </button>
-                    {/*<button className="group-btn">Add to Group</button>*/}
-                </div>
-                {showReviews && (
-                    <ul className="reviews-list">
-                        {reviews.length === 0 ? (
-                            <li>No reviews yet</li>
-                        ) : (
-                            reviews.map((r, idx) => (
-                                <li key={idx}>
-                                    <strong>{r.username}</strong>: {r.stars} ⭐ - "{r.body}"
-                                </li>
-                            ))
-                        )}
-                    </ul>
-                )}
-                <form onSubmit={handleSubmit}>
-                    <textarea
-                        className="review-textarea"
-                        value={reviewText}
-                        onChange={(e) => setReviewText(e.target.value)}
-                        placeholder="Write your review..."
-                        maxLength={300}
-                        required
+
+                <div className="modal-scroll">
+                    <h2 className="modal-title">{movie.title}</h2>
+                    <div className="modal-content">
+                    <img 
+                    src={movie.poster_path ? `https://image.tmdb.org/t/p/w200${movie.poster_path}` : placeholder} 
+                    alt={movie.title} 
+                    className="modal-poster"
                     />
-                    <label className="stars-label">
-                        Stars:
-                        <div style={{ display: "inline-block", marginLeft: "8px" }}>
-                            {[1, 2, 3, 4, 5].map((star) => (
-                                <span
-                                    key={star}
-                                    style={{
-                                        cursor: "pointer",
-                                        color: star <= stars ? "#FFD700" : "#ccc",
-                                        fontSize: "1.5rem",
-                                    }}
-                                    onClick={() => setStars(star)}
-                                    onMouseOver={() => setStars(star)}
-                                    onMouseOut={() => setStars(stars)}
-                                    role="button"
-                                    aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
-                                >
-                                    ★
-                                </span>
-                            ))}
-                        </div>
-                    </label>
-                    <div style={{ textAlign: "center", marginTop: "1em" }}>
-                        <button type="submit" className="modal-btn">Submit Review</button>
+                    <p className="movie-overview">{movie.overview}</p>
                     </div>
-                </form>
+                    <h3>Average Rating: {averageStars} ⭐</h3>
+                    <div className="modal-buttons">
+                        <button onClick={() => setShowReviews(!showReviews)}>
+                            {showReviews ? "Hide Reviews" : "Show Reviews"}
+                        </button>
+                        <button 
+                            className="favorite-btn"
+                            onClick={handleAddToFavorites}
+                            disabled={isFavorite}
+                        >
+                            {isFavorite ? "Added to Favorites" : "Add to Favorites"}
+                        </button>
+                        {/*<button className="group-btn">Add to Group</button>*/}
+                    </div>
+                    {showReviews && (
+                        <ul className="reviews-list">
+                            {reviews.length === 0 ? (
+                                <li>No reviews yet</li>
+                            ) : (
+                                reviews.map((r, idx) => (
+                                    <li key={idx}>
+                                        <strong>{r.username}</strong>: {r.stars} ⭐ - "{r.body}"
+                                    </li>
+                                ))
+                            )}
+                        </ul>
+                    )}
+                    <form onSubmit={handleSubmit}>
+                        <textarea
+                            className="review-textarea"
+                            value={reviewText}
+                            onChange={(e) => setReviewText(e.target.value)}
+                            placeholder="Write your review..."
+                            maxLength={300}
+                            required
+                        />
+                        <label className="stars-label">
+                            Stars:
+                            <div style={{ display: "inline-block", marginLeft: "8px" }}>
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <span
+                                        key={star}
+                                        style={{
+                                            cursor: "pointer",
+                                            color: star <= stars ? "#FFD700" : "#ccc",
+                                            fontSize: "1.5rem",
+                                        }}
+                                        onClick={() => setStars(star)}
+                                        onMouseOver={() => setStars(star)}
+                                        onMouseOut={() => setStars(stars)}
+                                        role="button"
+                                        aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
+                                    >
+                                        ★
+                                    </span>
+                                ))}
+                            </div>
+                        </label>
+                        <div style={{ textAlign: "center", marginTop: "1em" }}>
+                            <button type="submit" className="modal-btn">Submit Review</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     )

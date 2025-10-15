@@ -167,12 +167,12 @@ function Movies() {
                   }
                   alt={movie.title}
                   onClick={() => {
-                    setSelectedMovie(movie);
-                    setShowModal(true);
+                    setSelectedMovie(movie)
+                    setShowModal(true)
                   }}
                 />
-                <div className="movie-info">{movie.title}</div>
               </div>
+              <div className="movie-info">{movie.title}</div>
             </li>
           ))}
         </ul>
