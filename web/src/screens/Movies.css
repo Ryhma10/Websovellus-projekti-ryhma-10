@@ -39,15 +39,15 @@
     box-sizing: border-box;
 }
 
-/* KORTTI — pyöristetty kehys, klippaus päällä */
+/* KORTTI: pieni alapadding ettei border leikkaa sisältöä */
 .movie-table-container .movie-item{
-  display: flex;
-  flex-direction: column;
-  background: #0e0e0e;
-  border: 1px solid var(--accent-color);
-  border-radius: 16px;
-  overflow: hidden;
-  padding-bottom: 4px;        /* uusi */
+  display:flex;
+  flex-direction:column;
+  background:#0e0e0e;
+  border:1px solid var(--accent-color);
+  border-radius:16px;
+  overflow:hidden;
+  padding-bottom:4px;
 }
 
 /* poster-alueeseen ei radiusia – kortti klippaa reunat */
@@ -78,23 +78,17 @@
   display: block;
 }
 
-/* otsikko: 3 täyttä riviä + reilu alapadding */
+/* OTSIKKO – kovakorkeus = tasan 3 riviä, ei ellipsistä */
 .movie-table-container .movie-info{
-  padding: 10px 12px 16px;    /* isompi alapadding */
+  --lh: 1.35;                /* riviväli */
+  padding: 10px 12px 16px;   /* reilu alapadding */
   text-align: center;
-  line-height: 1.35;
-
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: var(--lh);
+  height: calc(3 * 1em * var(--lh));  /* täsmälleen 3 riviä */
+  overflow: hidden;                   /* ylimenevä piiloon */
+  display: block;
   word-break: break-word;
   overflow-wrap: anywhere;
-
-  /* varmista että 3. rivi mahtuu varmasti */
-  min-height: calc(3 * 1lh + 2px);
-  box-sizing: border-box;
 }
 
 /* varmistus, ettei mikään voi “vuotaa” reunan yli */
