@@ -9,15 +9,15 @@ function Groups() {
   const [myGroups, setMyGroups] = useState([])
   const [allGroups, setAllGroups] = useState([])
   const [showSignInModal, setShowSignInModal] = useState(false)
-  const token = localStorage.getItem("token")
+  const [authToken, setAuthToken] = useState(() => localStorage.getItem("token"))
 
   // Haetaan omat ryhmät (kerran kun token on saatavilla)
   useEffect(() => {
     const fetchMyGroups = async () => {
-      if (!token) return;
+      if (!authToken) return;
       try {
         const res = await fetch("http://localhost:3001/api/groups/my", {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${authToken}` },
         })
         if (!res.ok) throw new Error("Virhe haettaessa omia ryhmiä")
         const data = await res.json()
@@ -27,27 +27,33 @@ function Groups() {
       }
     };
     fetchMyGroups()
-  }, [token])
+  }, [authToken])
 
   // Haetaan kaikki ryhmät (kerran kun token on saatavilla/muuttuu)
   useEffect(() => {
     const fetchAllGroups = async () => {
       try {
         const res = await fetch("http://localhost:3001/api/groups", {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          headers: { Authorization: `Bearer ${authToken}` },
         })
+        if (res.status === 401) {
+          localStorage.removeItem("token")
+          setAuthToken(null)
+          setShowSignInModal(true)
+          return
+        }
         if (!res.ok) throw new Error("Virhe haettaessa ryhmiä")
         const data = await res.json()
         setAllGroups(data)
       } catch (err) {
         console.error("Error fetching all groups:", err)
       }
-    };
+    }
     fetchAllGroups()
-  }, [token])
+  }, [authToken])
 
   const handleCreateGroupClick = () => {
-    if (!token) {
+    if (!authToken) {
       setShowSignInModal(true)
     } else {
       setIsModalOpen(true)
@@ -55,7 +61,7 @@ function Groups() {
   }
 
   const handleJoinRequest = async (groupId) => {
-    if (!token) {
+    if (!authToken) {
       alert("Sinun täytyy kirjautua sisään tai luoda käyttäjä liittyäksesi ryhmään.")
       return
     }
@@ -65,10 +71,10 @@ function Groups() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${authToken}`,
         },
         body: JSON.stringify({ groupId }),
-      });
+      })
 
       const msg = await res.json()
 
@@ -85,7 +91,7 @@ function Groups() {
       console.error(err)
       alert(err.message)
     }
-  };
+  }
 
   const getMembershipStatus = (groupId) => {
     const membership = myGroups.find((g) => g.id === groupId)
@@ -97,9 +103,10 @@ function Groups() {
       <SignIn
         isOpen={true}
         onClose={() => setShowSignInModal(false)}
-        onLoginSuccess={() => {
-          setShowSignInModal(false);
-          window.location.reload();
+        onLoginSuccess={(newToken) => {
+          const t = newToken || localStorage.getItem("token")
+          if (t) setAuthToken(t)
+          setShowSignInModal(false)
         }}
       />
     );
@@ -110,10 +117,23 @@ function Groups() {
       <h1>Groups</h1>
 
       <button onClick={handleCreateGroupClick}>Create Group</button>
-      <GroupModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <GroupModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)} 
+        onCreated={(g) => {
+          setMyGroups(prev => [
+             { id: g.id, name: g.name, role: "owner", status: "approved"},
+             ...prev,
+          ])
+          setAllGroups(prev => [
+            { id: g.id, name: g.name },
+            ...prev,
+          ])
+        }}
+      />
 
       <div className="groups-lists-row">
-        {token && (
+        {authToken && (
           <div className="my-groups-list">
             <h2>My Groups</h2>
             <ul>
@@ -147,7 +167,7 @@ function Groups() {
             </li>
 
             {allGroups.map((g) => {
-              const status = getMembershipStatus(g.id);
+              const status = getMembershipStatus(g.id)
               return (
                 <li className="groups-individual-group-li groups-all-groups-li" key={g.id}>
                   <span className="groups-name-col">{g.name}</span>
@@ -159,7 +179,7 @@ function Groups() {
                     )}
                   </span>
                 </li>
-              );
+              )
             })}
           </ul>
         </div>

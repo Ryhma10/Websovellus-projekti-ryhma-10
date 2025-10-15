@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import "./Modal.css"
 
-function GroupModal({ isOpen, onClose }) {
+function GroupModal({ isOpen, onClose, onCreated }) {
   const [name, setName] = useState("")
   const [error, setError] = useState(null)
 
@@ -27,7 +27,7 @@ function GroupModal({ isOpen, onClose }) {
         return;
       }
 
-      alert(`Group "${data.name}" created!`)
+      onCreated?.(data)
       onClose()
     } catch (err) {
       setError("Server connection failed")
