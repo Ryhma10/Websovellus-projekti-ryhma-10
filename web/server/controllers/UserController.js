@@ -11,7 +11,7 @@ const EMAIL_RE = /^[^\s@]+@[a-z0-9-]+(?:\.[a-z0-9-]+)+$/i
 const PASS_RE = /^(?=.*[A-Z])(?=.*\d).{8,}$/
 
 //siivousapuri
-const clean = (v) => String(v ?? "").trim();
+const clean = (v) => String(v ?? "").trim()
 
 //tehdään viive epäonnistuneisiin signin pyyntöihin, auttaa botteja vastaan
 const sleep = (baseMs = 250, jitterMs = 250) =>
@@ -37,9 +37,9 @@ export const signup = async (req, res, next) => {
         error: "Password must be at least 8 characters long and include at least one uppercase letter and one digit"})
     }
 
-    const hashedPassword = await hash(password, 10);
+    const hashedPassword = await hash(password, 10)
     
-    let newUser;
+    let newUser
     try {
       newUser = await createUser(username, email, hashedPassword)
     } catch (err) {
@@ -53,10 +53,10 @@ export const signup = async (req, res, next) => {
       id: newUser.id, 
       email: newUser.email,
       username: newUser.username
-    });
+    })
   } catch (err) {
     //console.error(err); //tarkistetaan error
-    return next(err);
+    return next(err)
   }
 }
 
@@ -71,13 +71,13 @@ export const signin = async (req, res, next) => {
       return res.status(400).json({ error: "Username and password are required"})
     }
 
-    const dbUser = await findByUsername(username);
+    const dbUser = await findByUsername(username)
     if (!dbUser) {
       await sleep() //200-500 ms viive
-      return res.status(401).json({ error: "Invalid credentials"});
+      return res.status(401).json({ error: "Invalid credentials"})
     }
 
-    const isMatch = await compare(password, dbUser.password_hash);
+    const isMatch = await compare(password, dbUser.password_hash)
     if (!isMatch) {
       await sleep() //200-500 ms viive
       return res.status(401).json({ error: "Invalid credentials"})
@@ -125,31 +125,31 @@ export const getUsernameById = async (req, res, next) => {
     }
     res.json({username: user.username})
   } catch (err) {
-    console.error("getUsernameById error:", err.message);
+    console.error("getUsernameById error:", err.message)
     next(err);
   }
 }
 
 export const uploadProfilePicture = async (req, res, next) => {
   try {
-    const userId = req.user?.userId; // vaatii auth-middlewarea
+    const userId = req.user?.userId // vaatii auth-middlewarea
     if (!userId) {
-      return res.status(401).json({ message: "Authentication required" });
+      return res.status(401).json({ message: "Authentication required" })
     }
 
-    const pictureUrl = req.body.pictureUrl;
+    const pictureUrl = req.body.pictureUrl
     if (!pictureUrl) {
-      return res.status(400).json({ message: "Picture URL is required" });
+      return res.status(400).json({ message: "Picture URL is required" })
     }
 
-    const updatedUser = await addProfilePicture(userId, pictureUrl);
+    const updatedUser = await addProfilePicture(userId, pictureUrl)
     if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" })
     }
 
-    res.status(200).json({ message: "Profile picture updated", user: updatedUser });
+    res.status(200).json({ message: "Profile picture updated", user: updatedUser })
   } catch (err) {
-    next(err);
+    next(err)
   }
 }
 
@@ -157,16 +157,16 @@ export const getProfilePicture = async (req, res, next) => {
   try {
     const userId = req.user?.userId; // vaatii auth-middlewarea
     if (!userId) {
-      return res.status(401).json({ message: "Authentication required" });
+      return res.status(401).json({ message: "Authentication required" })
     }
 
-    const user = await getProfilePictureById(userId);
+    const user = await getProfilePictureById(userId)
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" })
     }
-    res.status(200).json({ profilePictureUrl: user.profile_picture_url });
+    res.status(200).json({ profilePictureUrl: user.profile_picture_url })
   } catch (err) {
-    next(err);
+    next(err)
   }
 }
 

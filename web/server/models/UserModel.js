@@ -1,4 +1,4 @@
-import { pool } from "../../server/helper/db.js"; // pg pool
+import { pool } from "../../server/helper/db.js" // pg pool
 
 export async function createUser(username, email, hashedPassword) {
   const result = await pool.query(

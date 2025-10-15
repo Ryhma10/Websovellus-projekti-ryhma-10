@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import placeholder from "../assets/placeholder.png";
-import "./Profile.css";
+import React, { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import placeholder from "../assets/placeholder.png"
+import "./Profile.css"
 
 function Profile({ setIsLoggedIn, setUser }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const username = localStorage.getItem("username")
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [profilePicture, setProfilePicture] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [profilePicture, setProfilePicture] = useState(null)
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token")
     fetch("http://localhost:3001/api/users/profile-picture", {
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -18,9 +18,9 @@ function Profile({ setIsLoggedIn, setUser }) {
     })
       .then(res => res.json())
       .then(data => {
-        setProfilePicture(data.profilePictureUrl);
-      });
-  }, []);
+        setProfilePicture(data.profilePictureUrl)
+      })
+  }, [])
 
   // Profiilikuvan käsittely
   const handleFileChange = (e) => {
@@ -30,10 +30,10 @@ function Profile({ setIsLoggedIn, setUser }) {
   //Profiilikuvan lähetys backendille
   const handleUpload = async () => {
     if (!selectedFile) return;
-    const token = localStorage.getItem("token");
-    const reader = new FileReader();
+    const token = localStorage.getItem("token")
+    const reader = new FileReader()
     reader.onloadend = async () => {
-      const base64String = reader.result;
+      const base64String = reader.result
       const response = await fetch("http://localhost:3001/api/users/profile-picture", {
         method: "PUT",
         headers: {
@@ -41,30 +41,30 @@ function Profile({ setIsLoggedIn, setUser }) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ pictureUrl: base64String })
-      });
+      })
       if (response.ok) {
-        alert("Profile picture updated!");
-        setProfilePicture(base64String);
+        alert("Profile picture updated!")
+        setProfilePicture(base64String)
       } else {
-        alert("Failed to upload profile picture.");
+        alert("Failed to upload profile picture.")
       }
-    };
-    reader.readAsDataURL(selectedFile);
-  };
+    }
+    reader.readAsDataURL(selectedFile)
+  }
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("token")
     localStorage.removeItem("username")
-    setIsLoggedIn(false);
-    navigate("/"); // vie etusivulle
-  };
+    setIsLoggedIn(false)
+    navigate("/") // vie etusivulle
+  }
 
   const handleDeleteAccount = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token")
     if (!token) {
-      alert("You are not logged in. Please log in first.");
-      navigate("/");
-      return;
+      alert("You are not logged in. Please log in first.")
+      navigate("/")
+      return
     }
     try {
       const response = await fetch("http://localhost:3001/api/users/delete", {
@@ -73,27 +73,27 @@ function Profile({ setIsLoggedIn, setUser }) {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
         }
-      });
+      })
       if (response.ok) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("username");
-        if (setUser) setUser(null);
-        if (setIsLoggedIn) setIsLoggedIn(false);
-        navigate("/"); // Vie kotisivulle
-        alert("Account deleted.");
+        localStorage.removeItem("token")
+        localStorage.removeItem("username")
+        if (setUser) setUser(null)
+        if (setIsLoggedIn) setIsLoggedIn(false)
+        navigate("/") // Vie kotisivulle
+        alert("Account deleted.")
       } else if (response.status === 401) {
-        alert("Unauthorized. Please log in again.");
-        localStorage.removeItem("token");
-        if (setUser) setUser(null);
-        if (setIsLoggedIn) setIsLoggedIn(false);
-        navigate("/");
+        alert("Unauthorized. Please log in again.")
+        localStorage.removeItem("token")
+        if (setUser) setUser(null)
+        if (setIsLoggedIn) setIsLoggedIn(false)
+        navigate("/")
       } else {
-        alert("Failed to delete account.");
+        alert("Failed to delete account.")
       }
     } catch (error) {
-      alert("Error deleting account.");
+      alert("Error deleting account.")
     }
-  };
+  }
 
   return (
     <div className="profile-container">
@@ -109,9 +109,8 @@ function Profile({ setIsLoggedIn, setUser }) {
       <button className="log-out-btn" onClick={handleLogout}>Log Out</button>
       <button className="delete-account-btn" onClick={handleDeleteAccount}>Delete Account</button>
     </div>
-  );
-
+  )
 }
 
 
-export default Profile;
+export default Profile

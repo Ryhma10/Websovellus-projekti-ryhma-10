@@ -20,11 +20,11 @@ export async function postTMDB(req, res, next) {
     //const userId = req.user?.id; // Authentication asettaa
     const userId = req.user?.id ?? req.user?.userId;
  if (!userId) {
-   const e = new Error("Unauthorized: missing user id");
+   const e = new Error("Unauthorized: missing user id")
    e.status = 401;
    throw e;
  }
-    requireFields(req.body, ["tmdb_id", "snap_title", "snap_overview", "snap_poster_url"]);
+    requireFields(req.body, ["tmdb_id", "snap_title", "snap_overview", "snap_poster_url"])
 
     const data = await addOrUpdateTMDBPost({
       groupId,
@@ -37,21 +37,21 @@ export async function postTMDB(req, res, next) {
         overview: req.body.snap_overview,
         poster_url: req.body.snap_poster_url
       }
-    });
+    })
 
-    res.json(data);
-  } catch (err) { next(err); }
+    res.json(data)
+  } catch (err) { next(err) }
 }
 
 export async function postFinnkino(req, res, next) {
   try {
-    const groupId = Number(req.params.groupId);
+    const groupId = Number(req.params.groupId)
     //const userId = req.user?.id;
     const userId = req.user?.id ?? req.user?.userId;
  if (!userId) {
-   const e = new Error("Unauthorized: missing user id");
-   e.status = 401;
-   throw e;
+   const e = new Error("Unauthorized: missing user id")
+   e.status = 401
+   throw e
  }
     requireFields(req.body, [
       "finnkino_id",
@@ -59,11 +59,11 @@ export async function postFinnkino(req, res, next) {
       "snap_overview",
       "snap_poster_url",
       "finnkino_showtimes"
-    ]);
+    ])
 
     const showtimesString = typeof req.body.finnkino_showtimes === "string"
       ? req.body.finnkino_showtimes
-      : JSON.stringify(req.body.finnkino_showtimes);
+      : JSON.stringify(req.body.finnkino_showtimes)
 
     const data = await addOrUpdateFinnkinoPost({
       groupId,
@@ -77,16 +77,16 @@ export async function postFinnkino(req, res, next) {
         poster_url: req.body.snap_poster_url
       },
       showtimesJsonString: showtimesString
-    });
+    })
 
-    res.json(data);
-  } catch (err) { next(err); }
+    res.json(data)
+  } catch (err) { next(err) }
 }
 
 export async function getFeed(req, res, next) {
   try {
-    const groupId = Number(req.params.groupId);
-    const data = await getGroupFeed(groupId);
-    res.json(data);
-  } catch (err) { next(err); }
+    const groupId = Number(req.params.groupId)
+    const data = await getGroupFeed(groupId)
+    res.json(data)
+  } catch (err) { next(err) }
 }

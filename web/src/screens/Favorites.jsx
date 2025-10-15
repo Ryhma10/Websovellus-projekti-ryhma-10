@@ -1,47 +1,47 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import SignIn from "./Signin.jsx";
-import './Favorites.css';
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import SignIn from "./Signin.jsx"
+import './Favorites.css'
 
 // Helper to decode JWT and get userId
 function getUserIdFromToken(token) {
-  if (!token) return null;
+  if (!token) return null
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.userId || payload.id || payload.sub;
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    return payload.userId || payload.id || payload.sub
   } catch {
-    return null;
+    return null
   }
 }
 
 function Favorites() {
-  const [movies, setMovies] = useState([]);
-  const [shareLink, setShareLink] = useState("");
-  const navigate = useNavigate();
-  const [showSignInModal, setShowSignInModal] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [movies, setMovies] = useState([])
+  const [shareLink, setShareLink] = useState("")
+  const navigate = useNavigate()
+  const [showSignInModal, setShowSignInModal] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     const fetchFavorites = async () => {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token")
       if (!token) {
-        setShowSignInModal(true);
-        return;
+        setShowSignInModal(true)
+        return
       }
       const res = await fetch("http://localhost:3001/api/user_favorites", {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      const data = await res.json();
-      setMovies(data);
+      const data = await res.json()
+      setMovies(data)
     };
-    fetchFavorites();
-  }, [navigate]);
+    fetchFavorites()
+  }, [navigate])
 
   // Get userId from JWT token
-  const token = localStorage.getItem("token");
-  const userId = getUserIdFromToken(token);
+  const token = localStorage.getItem("token")
+  const userId = getUserIdFromToken(token)
 
   const handleLinkClick = () => {
     setShareLink("");
@@ -49,36 +49,36 @@ function Favorites() {
 
   const handleShareClick = () => {
     if (userId) {
-      const url = `${window.location.origin}/public/${userId}`;
+      const url = `${window.location.origin}/public/${userId}`
       setShareLink(url);
       setCopied(false)
     }
-  };
+  }
 
     const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(shareLink);
+      await navigator.clipboard.writeText(shareLink)
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      console.error("Failed to copy:", err);
+      console.error("Failed to copy:", err)
     }
-  };
+  }
 
    if (showSignInModal) {
     return (
       <SignIn
         isOpen={true}
         onClose={() => {
-          setShowSignInModal(false);
-          navigate("/");
+          setShowSignInModal(false)
+          navigate("/")
         }}
         onLoginSuccess={() => {
-          setShowSignInModal(false);
-          window.location.reload(); // reload to fetch favorites after login
+          setShowSignInModal(false)
+          window.location.reload() // reload to fetch favorites after login
         }}
       />
-    );
+    )
   }
 
    return (
@@ -125,7 +125,7 @@ function Favorites() {
         )}
       </div>
     </div>
-  );
+  )
 }
 
-export default Favorites;
+export default Favorites

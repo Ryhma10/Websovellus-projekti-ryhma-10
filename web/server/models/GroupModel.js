@@ -1,10 +1,10 @@
-import { pool } from "../helper/db.js";
+import { pool } from "../helper/db.js"
 
 // Luo uusi ryhmä ja palauta group-id + nimi
 export async function createGroup(name, userId) {
-  const client = await pool.connect();
+  const client = await pool.connect()
   try {
-    await client.query("BEGIN");
+    await client.query("BEGIN")
 
     // Luo ryhmä
     const groupRes = await client.query(
@@ -12,23 +12,23 @@ export async function createGroup(name, userId) {
       VALUES ($1, $2) 
       RETURNING id, name, owner_id`,
       [name, userId]
-    );
-    const group = groupRes.rows[0];
+    )
+    const group = groupRes.rows[0]
 
     // Lisää owner ja approved memberships-tauluun
     await client.query(
       `INSERT INTO group_memberships (group_id, user_id, status, role) 
        VALUES ($1, $2, 'approved', 'owner')`,
       [group.id, userId]
-    );
+    )
 
-    await client.query("COMMIT");
-    return group;
+    await client.query("COMMIT")
+    return group
   } catch (err) {
-    await client.query("ROLLBACK");
-    throw err;
+    await client.query("ROLLBACK")
+    throw err
   } finally {
-    client.release();
+    client.release()
   }
 }
 
@@ -39,7 +39,7 @@ export async function joinGroup(groupId, userId) {
      VALUES ($1, $2, 'pending')
      ON CONFLICT (group_id, user_id) DO NOTHING`,
     [groupId, userId]
-  );
+  )
 }
 
 // Owner hyväksyy jäsenen
@@ -49,7 +49,7 @@ export async function approveMembership(groupId, memberId) {
      SET status = 'approved', role = 'member' 
      WHERE group_id = $1 AND user_id = $2`,
     [groupId, memberId]
-  );
+  )
 }
 
 // Hae kaikki ryhmät (vain perustiedot)
@@ -58,8 +58,8 @@ export async function getAllGroups() {
     `SELECT g.id, g.name
      FROM groups g
      ORDER BY g.id DESC`
-  );
-  return res.rows;
+  )
+  return res.rows
 }
 
 // Hae käyttäjän ryhmät
@@ -71,8 +71,8 @@ export async function getMyGroups(userId) {
      WHERE m.user_id = $1
      ORDER BY g.id DESC`,
     [userId]
-  );
-  return res.rows;
+  )
+  return res.rows
 }
 
 // Tarkista, että käyttäjä on ryhmän owner
@@ -82,8 +82,8 @@ export async function isOwner(groupId, userId) {
      WHERE group_id = $1 AND user_id = $2 
        AND role = 'owner' AND status = 'approved'`,
     [groupId, userId]
-  );
-  return res.rowCount > 0;
+  )
+  return res.rowCount > 0
 }
 
 // Hae jäsenyys
@@ -113,8 +113,8 @@ export async function getPendingRequestsForOwner(ownerId, groupId) {
     ORDER BY gm.group_id;
     `,
     [ownerId, groupId]
-  );
-  return res.rows;
+  )
+  return res.rows
 }
 
 // Hae ryhmän tiedot näytettäväksi sivulla approved-jäsenille

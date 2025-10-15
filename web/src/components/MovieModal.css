@@ -218,6 +218,75 @@
   margin-top: 1em;
 }
 
+/* VAIN GroupAddModalille */
+
+.modal-backdrop.modal-backdrop--high {
+  align-items: flex-start;
+  padding-top: clamp(16px, 4vh, 56px);
+}
+
+.movie-modal.movie-modal--groupadd {
+  top: 0;
+  overflow: hidden;
+  /* Leikataan sisäscrolli siististi pyöristyksen sisään */
+  overflow: hidden; /* kumoaa yleisen overflow-y: auto */
+}
+
+/* Piilotetaan haun lähde */
+.movie-modal.movie-modal--groupadd .badge {
+  display: none;
+}
+
+/* Sisäkonteille scroll, pyöristykset säilyy */
+.movie-modal.movie-modal--groupadd .modal-scroll {
+  max-height: 72vh;
+  overflow: auto;      /* scrollbar näkyy sisällä, ei ulkoreunan yli */
+  padding-bottom: 1rem;
+  scrollbar-gutter: stable both-edges;
+}
+
+/* Varmista, että posteri ei keskity pystysuunnassa tässä modaalissa */
+.movie-modal.movie-modal--groupadd .poster-wrap {
+  align-items: flex-start;   /* jos flex; varmistaa yläreunan linjauksen */
+  justify-content: center;
+}
+
+/* Kuvaustekstin säätö tälle modaalille (valinnainen) */
+.movie-modal.movie-modal--groupadd .desc-right .movie-overview {
+  max-width: 65ch;  /* pidä mukavan levyisenä oikealla puolella */
+}
+
+/* Vain GroupAddModalin "vain posteri" -layoutille */
+.movie-modal.movie-modal--groupadd .modal-content.poster-only {
+  display: grid;
+  grid-template-columns: 1fr;   /* ei tyhjää oikeaa palstaa */
+  justify-items: center;        /* keskitys */
+  text-align: center;
+}
+
+
+/* Fix: modalin nappeihin taas tausta */
+.movie-modal .btn,
+.movie-modal .modal-buttons button,
+.movie-modal .modal-btn {
+  background: var(--accent-color);
+  color: var(--background-color);
+  border-color: var(--accent-color);
+}
+
+.movie-modal .btn:hover:not(:disabled),
+.movie-modal .modal-buttons button:hover:not(:disabled),
+.movie-modal .modal-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.movie-modal .btn:disabled,
+.movie-modal .modal-buttons button:disabled,
+.movie-modal .modal-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* ------ Responsiivisuus ------ */
 @media (max-width: 1000px) {
   .modal-title { padding-top: 1em; }
@@ -264,27 +333,5 @@
   .movie-modal { max-width: 90vw; padding: 1em; top: 5vh; }
   .modal-content { font-size: 0.85em; }
   .modal-buttons { flex-direction: column; }
-}
-
-/* --- Fix: modalin nappeihin taas tausta --- */
-.movie-modal .btn,
-.movie-modal .modal-buttons button,
-.movie-modal .modal-btn {
-  background: var(--accent-color);
-  color: var(--background-color);
-  border-color: var(--accent-color);
-}
-
-.movie-modal .btn:hover:not(:disabled),
-.movie-modal .modal-buttons button:hover:not(:disabled),
-.movie-modal .modal-btn:hover:not(:disabled) {
-  filter: brightness(1.08);
-}
-
-.movie-modal .btn:disabled,
-.movie-modal .modal-buttons button:disabled,
-.movie-modal .modal-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 

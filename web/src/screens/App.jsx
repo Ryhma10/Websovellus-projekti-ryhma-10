@@ -1,19 +1,19 @@
-import './App.css';
-import { Routes, Route } from 'react-router-dom';
-import { useState } from 'react';
+import './App.css'
+import { Routes, Route } from 'react-router-dom'
+import { useState } from 'react'
 
-import NavBar from '../components/NavBar';
-import Movies from "./Movies";
-import Groups from './Groups';
-import Favorites from './Favorites';
-import Home from './Home';
-import Profile from './Profile';
-import PublicFavorites from './PublicFavorites';
-import GroupPage from "./GroupPage";
+import NavBar from '../components/NavBar'
+import Movies from "./Movies"
+import Groups from './Groups'
+import Favorites from './Favorites'
+import Home from './Home'
+import Profile from './Profile'
+import PublicFavorites from './PublicFavorites'
+import GroupPage from "./GroupPage"
 
 function App() {
   // Kirjautumistila App-tasolla, jotta NavBar ja Profile saavat saman tilan
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   return (
     <>

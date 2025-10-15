@@ -53,7 +53,7 @@ function GroupModal({ isOpen, onClose }) {
         {error && <p className="error-message">{error}</p>}
       </div>
     </div>
-  );
+  )
 }
 
-export default GroupModal;
+export default GroupModal

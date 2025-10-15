@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import './PublicFavorites.css';
+import { useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
+import './PublicFavorites.css'
 
 function PublicFavorites() {
-  const { userId } = useParams();
-  const [tmdbIds, setTmdbIds] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [username, setUsername] = useState("");
+  const { userId } = useParams()
+  const [tmdbIds, setTmdbIds] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+  const [username, setUsername] = useState("")
 
   useEffect(() => {
     const fetchPublicFavorites = async () => {
@@ -30,7 +30,7 @@ function PublicFavorites() {
         }
     }
     fetchPublicFavorites()
-  }, [userId]);
+  }, [userId])
 
   return (
     <div>
@@ -56,7 +56,7 @@ function PublicFavorites() {
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default PublicFavorites;
+export default PublicFavorites

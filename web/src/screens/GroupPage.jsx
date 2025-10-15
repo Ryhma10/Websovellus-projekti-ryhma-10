@@ -178,6 +178,7 @@ function GroupPage() {
 
       const title = s.title || s.Title || "";
       const posterUrl = s.posterUrl || s.image || placeholder;
+
       const startsAt = s.start ?? s.raw?.start;
 
       const theatreId = String(s.theatreId ?? s.raw?.TheatreID ?? s.raw?.theatreId ?? "");
@@ -219,7 +220,6 @@ function GroupPage() {
     return m.role === "owner" || m.role === "member";
   });
 }, [group?.members]);
-
 
   // Owner-toiminnot
   async function handleApprove(groupIdArg, memberId) {
@@ -388,23 +388,18 @@ function GroupPage() {
     </header>
 
     {/* Keskitetty työkalurivi: Search + Delete/Leave samalle riville */}
-    <div className="group-actions">
-      <div className="group-searchbar">
-        <button className="btn" onClick={() => setShowFinnkino(v => !v)}>
-          {showFinnkino ? "Hide Finnkino search" : "Search from Finnkino"}
-        </button>
-        <button className="btn" onClick={() => setShowTmdb(v => !v)}>
-          {showTmdb ? "Hide TMDB search" : "Search from TMDB"}
-        </button>
-      </div>
-
-      <div className="group-danger">
-        {isOwner ? (
-          <button className="btn deleting-btn" onClick={onDeleteGroup}>Delete this group</button>
-        ) : (
-          <button className="btn leavegroup-btn" onClick={onLeaveGroup}>Leave this group</button>
-        )}
-      </div>
+    <div className="group-toolbar">
+      <button className="btn" onClick={() => setShowFinnkino(v => !v)}>
+        {showFinnkino ? "Hide Finnkino search" : "Search from Finnkino"}
+      </button>
+      <button className="btn" onClick={() => setShowTmdb(v => !v)}>
+        {showTmdb ? "Hide TMDB search" : "Search from TMDB"}
+      </button>
+      {isOwner ? (
+        <button className="btn deleting-btn" onClick={onDeleteGroup}>Delete this group</button>
+      ) : (
+        <button className="btn leavegroup-btn" onClick={onLeaveGroup}>Leave this group</button>
+      )}
     </div>
 
     {/* FINNKINO – tulokset nappien alle */}
@@ -481,7 +476,7 @@ function GroupPage() {
             const poster = m.poster_path
               ? `https://image.tmdb.org/t/p/w200${m.poster_path}`
               : placeholder;
-            const cls = m.poster_path ? "movie-poster" : "placeholder-image";
+            const cls = m.poster_path ? "movie-poster" : "placeholder-image"
             return (
               <li
                 className="movie-item"
@@ -493,7 +488,7 @@ function GroupPage() {
                 </div>
                 <div className="movie-info">{m.title}</div>
               </li>
-            );
+            )
           })}
         </ul>
       </section>
@@ -562,7 +557,7 @@ function GroupPage() {
       </section>
     )}
 
-    {/* Posts */}
+    {/* Postaukset */}
     <section className="group-feed" style={{ marginTop: "1rem" }}>
       <h3>Posts</h3>
       {feed.length === 0 ? (
@@ -585,9 +580,9 @@ function GroupPage() {
         token={token}
         onSuccess={({ source, id }) => {
           if (source === "tmdb") {
-            setExisting(prev => ({ ...prev, tmdb: new Set(prev.tmdb).add(String(id)) }));
+            setExisting(prev => ({ ...prev, tmdb: new Set(prev.tmdb).add(String(id)) }))
           } else if (source === "finnkino") {
-            setExisting(prev => ({ ...prev, finnkino: new Set(prev.finnkino).add(String(id)) }));
+            setExisting(prev => ({ ...prev, finnkino: new Set(prev.finnkino).add(String(id)) }))
           }
           reloadFeed();
           }}
@@ -597,4 +592,4 @@ function GroupPage() {
 )
 }
 
-export default GroupPage;
+export default GroupPage

@@ -1,4 +1,4 @@
-import { pool } from "../helper/db.js";
+import { pool } from "../helper/db.js"
 
 const FEED_SELECT = `
   SELECT
@@ -16,7 +16,7 @@ const FEED_SELECT = `
     gm.finnkino_showtimes
   FROM group_movies gm
   JOIN users u ON u.id = gm.user_id
-`;
+`
 
 export async function addOrUpdateTMDBPost({ groupId, userId, tmdb_id, note, stars, snap }) {
   const q = `
@@ -31,7 +31,7 @@ export async function addOrUpdateTMDBPost({ groupId, userId, tmdb_id, note, star
         snap_overview = EXCLUDED.snap_overview,
         snap_poster_url = EXCLUDED.snap_poster_url
     RETURNING *;
-  `;
+  `
   const params = [
     groupId,
     userId,
@@ -41,9 +41,9 @@ export async function addOrUpdateTMDBPost({ groupId, userId, tmdb_id, note, star
     snap.title,
     snap.overview,
     snap.poster_url
-  ];
-  const { rows } = await pool.query(q, params);
-  return rows[0];
+  ]
+  const { rows } = await pool.query(q, params)
+  return rows[0]
 }
 
 export async function addOrUpdateFinnkinoPost({ groupId, userId, finnkino_id, note, stars, snap, showtimesJsonString }) {
@@ -60,7 +60,7 @@ export async function addOrUpdateFinnkinoPost({ groupId, userId, finnkino_id, no
         snap_poster_url = EXCLUDED.snap_poster_url,
         finnkino_showtimes = EXCLUDED.finnkino_showtimes
     RETURNING *;
-  `;
+  `
   const params = [
     groupId,
     userId,
@@ -71,9 +71,9 @@ export async function addOrUpdateFinnkinoPost({ groupId, userId, finnkino_id, no
     snap.overview,
     snap.poster_url,
     showtimesJsonString
-  ];
-  const { rows } = await pool.query(q, params);
-  return rows[0];
+  ]
+  const { rows } = await pool.query(q, params)
+  return rows[0]
 }
 
 export async function getGroupFeed(groupId) {
@@ -81,7 +81,7 @@ export async function getGroupFeed(groupId) {
     ${FEED_SELECT}
     WHERE gm.group_id = $1
     ORDER BY gm.created_at DESC;
-  `;
-  const { rows } = await pool.query(q, [groupId]);
-  return rows;
+  `
+  const { rows } = await pool.query(q, [groupId])
+  return rows
 }

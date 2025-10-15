@@ -13,16 +13,11 @@ export default function GroupAddModal({
   defaultNote = "",
   onSuccess,     // ({ source, id }) => void
 }) {
-
-  // ----- local state -----
   const [note, setNote] = useState(defaultNote);
   const [stars, setStars] = useState(0);
   const [submitting, setSubmitting] = useState(false);
-
-  // Finnkino: show/hide showtimes list (collapse)
   const [showTimesOpen, setShowTimesOpen] = useState(true);
 
-  // Reset note/stars/toggles when modal or movie changes
   useEffect(() => {
     if (!open) return;
     setNote(defaultNote || "");
@@ -30,36 +25,38 @@ export default function GroupAddModal({
     setShowTimesOpen(true);
   }, [open, movie, defaultNote]);
 
-  // ----- snapshot for both sources (ALWAYS fill snap_* fields) -----
+  // Snapshot: vain title + poster. Overview poistettu.
   const snapshot = useMemo(() => {
-    if (!movie) {
-      return { title: "", overview: "", poster_url: placeholder };
-    }
+    if (!movie) return { title: "", poster_url: placeholder };
+
     if (source === "tmdb") {
       const poster = movie.poster_path
         ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
         : placeholder;
       return {
         title: movie.title || movie.name || "",
-        overview: movie.overview || "",
         poster_url: poster,
       };
     }
-    // Finnkino
-    return {
-      title: movie.title || "",
-      overview: movie.synopsis || movie.shortSynopsis || "", // tyhjä string ok
-      poster_url: movie.posterUrl || placeholder,
-    };
+
+    // FINNKINO – poimi robustisti posteri; kuvaus jätetään pois
+    const m = movie || {};
+    const poster =
+      m.posterUrl || m.PosterURL || m.images?.poster ||
+      m.raw?.Images?.EventLargeImagePortrait || m.raw?.image ||
+      m.raw?.Event?.Images?.EventLargeImagePortrait ||
+      placeholder;
+
+    const title =
+      m.title || m.Title || m.raw?.Title || m.raw?.Event?.Title || "";
+
+    return { title, poster_url: poster };
   }, [movie, source]);
 
-  // ----- Finnkino showtimes normalize -----
-  // Palauttaa listan:
-  // [{ theatreId, theatreName, city, showtimes:[{ startsAt, auditorium }] }]
+  // Näytösajat (sama kuin ennen)
   const normalizedShowtimes = useMemo(() => {
     if (source !== "finnkino" || !movie) return [];
 
-    // 1) jos mukana theatre-ryhmiteltynä
     if (Array.isArray(movie.theatres)) {
       return movie.theatres
         .map((th) => ({
@@ -76,7 +73,6 @@ export default function GroupAddModal({
         .filter((t) => t.theatreName || (t.showtimes && t.showtimes.length > 0));
     }
 
-    // 2) jos litteä lista showtimes[]
     if (Array.isArray(movie.showtimes)) {
       const byTh = new Map();
       movie.showtimes.forEach((s) => {
@@ -97,7 +93,6 @@ export default function GroupAddModal({
       return Array.from(byTh.values());
     }
 
-    // 3) fallback
     const theatreId = String(
       movie.theatreId ?? movie.raw?.TheatreID ?? movie.raw?.theatreId ?? ""
     );
@@ -107,38 +102,21 @@ export default function GroupAddModal({
     const auditorium = movie.raw?.Auditorium ?? movie.raw?.auditorium ?? null;
 
     if (theatreId || startsAt) {
-      return [
-        {
-          theatreId,
-          theatreName,
-          city,
-          showtimes: startsAt ? [{ startsAt, auditorium }] : [],
-        },
-      ];
+      return [{
+        theatreId, theatreName, city,
+        showtimes: startsAt ? [{ startsAt, auditorium }] : [],
+      }];
     }
     return [];
   }, [source, movie]);
 
-  // ----- selection (multi by click) -----
-  // key format: `${theatreId}|${startsAt}|${auditorium || ""}`
   const keyFor = (thId, s) => `${thId}|${s.startsAt}|${s.auditorium || ""}`;
 
-  // Kerätään kaikki mahdolliset avaimet
-  const allKeys = useMemo(() => {
-    const keys = [];
-    normalizedShowtimes.forEach((th) => {
-      (th.showtimes || []).forEach((s) => keys.push(keyFor(th.theatreId, s)));
-    });
-    return keys;
-  }, [normalizedShowtimes]);
-
   const [selectedKeys, setSelectedKeys] = useState(new Set());
-
-  // Kun modal avataan → ei valita mitään oletuksena
   useEffect(() => {
     if (!open || source !== "finnkino") return;
     setSelectedKeys(new Set());
-  }, [open, source, allKeys]);
+  }, [open, source, normalizedShowtimes]);
 
   function toggleKey(k) {
     setSelectedKeys((prev) => {
@@ -149,7 +127,6 @@ export default function GroupAddModal({
     });
   }
 
-  // ----- submit -----
   async function handleAdd() {
     try {
       setSubmitting(true);
@@ -160,10 +137,9 @@ export default function GroupAddModal({
           note: note?.trim() || null,
           stars: stars || null,
           snap_title: snapshot.title,
-          snap_overview: snapshot.overview, // TMDB: voi olla tyhjä string -> ok
+          snap_overview: "-", // ei overview’ta
           snap_poster_url: snapshot.poster_url,
         };
-
         const res = await fetch(
           `http://localhost:3001/api/group_movies/${groupId}/tmdb`,
           {
@@ -175,93 +151,47 @@ export default function GroupAddModal({
             body: JSON.stringify(body),
           }
         );
-
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-
-        onSuccess?.({ source: "tmdb", id: movie.id });
-        onClose();
+        if (typeof onSuccess === "function") onSuccess({ source: "tmdb", id: movie.id });
+        onClose && onClose();
         return;
       }
 
-  if (source === "finnkino") {
-  // --- 1) Kerää näytösajat teattereittain ---
-  // Käytä normalizedShowtimes jos sellainen on, muuten normalisoi "movie" tähän muotoon.
-  const theatresSrc = Array.isArray(normalizedShowtimes)
-    ? normalizedShowtimes
-    : (function buildFromMovie(m) {
-        if (!m) return [];
-        // Valmiiksi teattereittain?
-        if (Array.isArray(m.theatres)) return m.theatres;
-        // Litteä lista -> ryhmittele teattereittain
-        if (Array.isArray(m.showtimes)) {
-          const byTh = {};
-          m.showtimes.forEach(s => {
-            const thId = String(s.theatreId ?? s.theatre_id ?? s.theatre ?? "unknown");
-            if (!byTh[thId]) {
-              byTh[thId] = {
-                theatreId: thId,
-                theatreName: s.theatreName ?? s.theatre_name ?? "",
-                city: s.city ?? "",
-                showtimes: []
-              };
-            }
-            byTh[thId].showtimes.push({
-              startsAt: s.startsAt || s.time || s.starts_at,
-              auditorium: s.auditorium || s.screen || null
-            });
-          });
-          return Object.values(byTh);
-        }
-        return [];
-      })(movie);
+      // FINNKINO
+      const hasSelection = selectedKeys.size > 0;
+      const showtimesOut = normalizedShowtimes
+        .map(th => ({
+          ...th,
+          showtimes: (th.showtimes || []).filter(s =>
+            !hasSelection || selectedKeys.has(keyFor(String(th.theatreId), s))
+          )
+        }))
+        .filter(th => (th.showtimes || []).length > 0);
 
-  // --- 2) Suodata valintojen mukaan (jos käytössä), muuten lähetä kaikki ---
-  const hasSelection = typeof selectedKeys !== "undefined" && selectedKeys instanceof Set && selectedKeys.size > 0;
+      const body = {
+        finnkino_id: movie.id,
+        note: note?.trim() || null,
+        stars: stars || null,
+        snap_title: snapshot.title || "",
+        snap_overview: "-", // ei overview’ta
+        snap_poster_url: snapshot.poster_url || "",
+        finnkino_showtimes: showtimesOut
+      };
 
-  // Jos sinulla on sama keyFor kuin aiemmin, käytä sitä. Muuten miniversio:
-  const _keyFor = (thId, s) =>
-    (typeof keyFor === "function")
-      ? keyFor(thId, s)
-      : `${thId}|${s.startsAt}|${s.auditorium || ""}`;
+      const res = await fetch(`http://localhost:3001/api/group_movies/${groupId}/finnkino`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
-  const showtimesOut = theatresSrc
-    .map(th => ({
-      ...th,
-      showtimes: (th.showtimes || []).filter(s =>
-        !hasSelection || selectedKeys.has(_keyFor(String(th.theatreId), s))
-      )
-    }))
-    .filter(th => (th.showtimes || []).length > 0);
-
-  // --- 3) Rakenna body (huom: snap_overview oikein kirjoitettuna + ei-tyhjä) ---
-  const body = {
-    finnkino_id: movie.id,
-    note: note?.trim() || null,
-    stars: stars || null,
-    snap_title: snapshot.title || "",
-    snap_overview: (snapshot.overview && snapshot.overview.trim()) ? snapshot.overview.trim() : "-",
-    snap_poster_url: snapshot.poster_url || "",
-    finnkino_showtimes: showtimesOut
-  };
-
-  console.log("[GroupAddModal] POST /group_movies/finnkino body =", body);
-
-  const res = await fetch(`http://localhost:3001/api/group_movies/${groupId}/finnkino`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    },
-    body: JSON.stringify(body)
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-  onSuccess?.({ source: "finnkino", id: movie.id });
-  onClose();
-  return;
-}
-
+      if (typeof onSuccess === "function") onSuccess({ source: "finnkino", id: movie.id });
+      onClose && onClose();
     } catch (e) {
       alert(e.message || "Adding failed");
     } finally {
@@ -271,122 +201,112 @@ export default function GroupAddModal({
 
   if (!open || !movie) return null;
 
-  // ----- UI -----
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="movie-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-backdrop modal-backdrop--high" onClick={onClose}>
+      <div className="movie-modal movie-modal--groupadd" onClick={(e) => e.stopPropagation()}>
         <button className="close-btn" onClick={onClose}>X</button>
 
-        <h2 className="modal-title">
-          {snapshot.title}{" "}
-          <span className="badge">{source === "tmdb" ? "TMDB" : "Finnkino"}</span>
-        </h2>
+        <div className="modal-scroll">
+          <h2 className="modal-title">
+            {snapshot.title}{" "}
+            <span className="badge">{source === "tmdb" ? "TMDB" : "Finnkino"}</span>
+          </h2>
 
-        <div className="modal-content">
-          <div className="poster-wrap">
-            <img
-              src={snapshot.poster_url || placeholder}
-              alt={snapshot.title}
-              className="modal-poster"
-            />
+          {/* VAIN POSTERI – keskitetty */}
+          <div className="modal-content poster-only">
+            <div className="poster-wrap">
+              <img
+                src={snapshot.poster_url || placeholder}
+                alt={snapshot.title}
+                className="modal-poster"
+              />
+            </div>
           </div>
 
-          {/* Overview vain TMDB:lle */}
-          {source === "tmdb" && snapshot.overview && (
-            <p className="movie-overview">{snapshot.overview}</p>
-          )}
-        </div>
+          <label className="stars-label" style={{ display: "block", marginTop: 12 }}>
+            Stars:
+            <span style={{ display: "inline-block", marginLeft: 8 }}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  style={{
+                    cursor: "pointer",
+                    color: star <= stars ? "#FFD700" : "#ccc",
+                    fontSize: "1.5rem",
+                  }}
+                  onClick={() => setStars(star)}
+                  onMouseOver={() => setStars(star)}
+                  onMouseOut={() => setStars(stars)}
+                  role="button"
+                  aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
+                >
+                  ★
+                </span>
+              ))}
+            </span>
+          </label>
 
-        {/* tähdet */}
-        <label className="stars-label" style={{ display: "block", marginTop: 12 }}>
-          Stars:
-          <span style={{ display: "inline-block", marginLeft: 8 }}>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <span
-                key={star}
-                style={{
-                  cursor: "pointer",
-                  color: star <= stars ? "#FFD700" : "#ccc",
-                  fontSize: "1.5rem",
-                }}
-                onClick={() => setStars(star)}
-                onMouseOver={() => setStars(star)}
-                onMouseOut={() => setStars(stars)}
-                role="button"
-                aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
+          <textarea
+            className="review-textarea"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder={source === "tmdb" ? "Write a message to the group…" : "Write a message or notes…"}
+            maxLength={300}
+            style={{ marginTop: 12 }}
+          />
+
+          {source === "finnkino" && normalizedShowtimes.length > 0 && (
+            <div className="fk-showtimes">
+              <button
+                type="button"
+                className="small-btn"
+                onClick={() => setShowTimesOpen((v) => !v)}
+                style={{ marginTop: 8 }}
               >
-                ★
-              </span>
-            ))}
-          </span>
-        </label>
+                {showTimesOpen ? "Hide showtimes" : "Show showtimes"}
+              </button>
 
-        {/* note */}
-        <textarea
-          className="review-textarea"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder={
-            source === "tmdb"
-              ? "Write a message to the group…"
-              : "Write a message or notes…"
-          }
-          maxLength={300}
-          style={{ marginTop: 12 }}
-        />
+              {showTimesOpen && (
+                <div className="fk-showtimes__list" style={{ marginTop: 8 }}>
+                  {normalizedShowtimes.map((th, i) => (
+                    <div key={`${th.theatreId}-${i}`} className="fk-theatre">
+                      <div className="fk-theatre-name">
+                        {th.theatreName}
+                        {th.city ? `, ${th.city}` : ""}
+                      </div>
 
-        {/* Finnkino showtimes chips */}
-        {source === "finnkino" && normalizedShowtimes.length > 0 && (
-          <div className="fk-showtimes">
-            <button
-              type="button"
-              className="small-btn"
-              onClick={() => setShowTimesOpen((v) => !v)}
-              style={{ marginTop: 8 }}
-            >
-              {showTimesOpen ? "Hide showtimes" : "Show showtimes"}
+                      <div className="chips">
+                        {(th.showtimes || []).map((s, j) => {
+                          const k = keyFor(th.theatreId, s);
+                          const active = selectedKeys.has(k);
+                          return (
+                            <button
+                              type="button"
+                              key={`${k}-${j}`}
+                              className={`chip ${active ? "chip--selected" : ""}`}
+                              onClick={() => toggleKey(k)}
+                              title={s.auditorium || ""}
+                            >
+                              {new Date(s.startsAt).toLocaleString()}
+                              {s.auditorium ? ` — ${s.auditorium}` : ""}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div style={{ textAlign: "center", marginTop: 16 }}>
+            <button className="modal-btn" disabled={submitting} onClick={handleAdd}>
+              {submitting ? "Adding…" : "Add to group"}
             </button>
-
-            {showTimesOpen && (
-              <div className="fk-showtimes__list" style={{ marginTop: 8 }}>
-                {normalizedShowtimes.map((th, i) => (
-                  <div key={`${th.theatreId}-${i}`} className="fk-theatre">
-                    <div className="fk-theatre-name">
-                      {th.theatreName}
-                      {th.city ? `, ${th.city}` : ""}
-                    </div>
-
-                    <div className="chips">
-                      {(th.showtimes || []).map((s, j) => {
-                        const k = keyFor(th.theatreId, s);
-                        const active = selectedKeys.has(k);
-                        return (
-                          <button
-                            type="button"
-                            key={`${k}-${j}`}
-                            className={`chip ${active ? "chip--selected" : ""}`}
-                            onClick={() => toggleKey(k)}
-                            title={s.auditorium || ""}
-                          >
-                            {new Date(s.startsAt).toLocaleString()}
-                            {s.auditorium ? ` — ${s.auditorium}` : ""}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
-        )}
-
-        <div style={{ textAlign: "center", marginTop: 16 }}>
-          <button className="modal-btn" disabled={submitting} onClick={handleAdd}>
-            {submitting ? "Adding…" : "Add to group"}
-          </button>
         </div>
       </div>
     </div>
-  )
+  );
 }
