@@ -32,10 +32,10 @@ function Favorites() {
         headers: {
           Authorization: `Bearer ${token}`
         }
-      });
+      })
       const data = await res.json()
       setMovies(data)
-    };
+    }
     fetchFavorites()
   }, [navigate])
 

@@ -1,7 +1,7 @@
 // src/components/GroupAddModal.jsx
-import { useEffect, useMemo, useState } from "react";
-import "./MovieModal.css";
-import placeholder from "../assets/placeholder.png";
+import { useEffect, useMemo, useState } from "react"
+import "./MovieModal.css"
+import placeholder from "../assets/placeholder.png"
 
 export default function GroupAddModal({
   open,
@@ -13,49 +13,57 @@ export default function GroupAddModal({
   defaultNote = "",
   onSuccess,     // ({ source, id }) => void
 }) {
-  const [note, setNote] = useState(defaultNote);
-  const [stars, setStars] = useState(0);
-  const [submitting, setSubmitting] = useState(false);
-  const [showTimesOpen, setShowTimesOpen] = useState(true);
+  const [note, setNote] = useState(defaultNote)
+  const [stars, setStars] = useState(0)
+  const [submitting, setSubmitting] = useState(false)
+  const [showTimesOpen, setShowTimesOpen] = useState(true)
 
   useEffect(() => {
-    if (!open) return;
-    setNote(defaultNote || "");
-    setStars(0);
-    setShowTimesOpen(true);
-  }, [open, movie, defaultNote]);
+    if (!open) return
+    setNote(defaultNote || "")
+    setStars(0)
+    setShowTimesOpen(true)
+  }, [open, movie, defaultNote])
 
-  // Snapshot: vain title + poster. Overview poistettu.
+ // snapshotit TMDB ja Finnkino
   const snapshot = useMemo(() => {
-    if (!movie) return { title: "", poster_url: placeholder };
+    if (!movie) return { title: "", overview: "", poster_url: placeholder }
 
     if (source === "tmdb") {
+      const title = movie.title || movie.name || ""
       const poster = movie.poster_path
         ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
         : placeholder;
-      return {
-        title: movie.title || movie.name || "",
-        poster_url: poster,
-      };
+      const overview = String(
+        movie.overview ||
+        movie.description ||
+        movie.plot ||
+        ""
+      ).trim()
+
+      return { title, overview, poster_url: poster }
     }
 
-    // FINNKINO – poimi robustisti posteri; kuvaus jätetään pois
-    const m = movie || {};
+    // FINNKINO (ei fkDetails-lookupia)
+    const m = movie || {}
     const poster =
       m.posterUrl || m.PosterURL || m.images?.poster ||
       m.raw?.Images?.EventLargeImagePortrait || m.raw?.image ||
       m.raw?.Event?.Images?.EventLargeImagePortrait ||
-      placeholder;
+      placeholder
 
     const title =
-      m.title || m.Title || m.raw?.Title || m.raw?.Event?.Title || "";
+      m.title || m.Title || m.raw?.Title || m.raw?.Event?.Title || ""
 
-    return { title, poster_url: poster };
-  }, [movie, source]);
+    // Finnkinolla ei kuvausta
+    const overview = ""
 
-  // Näytösajat (sama kuin ennen)
+    return { title, overview, poster_url: poster }
+  }, [movie, source])
+
+  // Näytösajat
   const normalizedShowtimes = useMemo(() => {
-    if (source !== "finnkino" || !movie) return [];
+    if (source !== "finnkino" || !movie) return []
 
     if (Array.isArray(movie.theatres)) {
       return movie.theatres
@@ -70,66 +78,66 @@ export default function GroupAddModal({
               }))
             : [],
         }))
-        .filter((t) => t.theatreName || (t.showtimes && t.showtimes.length > 0));
+        .filter((t) => t.theatreName || (t.showtimes && t.showtimes.length > 0))
     }
 
     if (Array.isArray(movie.showtimes)) {
       const byTh = new Map();
       movie.showtimes.forEach((s) => {
-        const tid = String(s.theatreId ?? s.theatre_id ?? s.theatre ?? "unknown");
+        const tid = String(s.theatreId ?? s.theatre_id ?? s.theatre ?? "unknown")
         if (!byTh.has(tid)) {
           byTh.set(tid, {
             theatreId: tid,
             theatreName: s.theatreName ?? s.theatre_name ?? "",
             city: s.city ?? "",
             showtimes: [],
-          });
+          })
         }
         byTh.get(tid).showtimes.push({
           startsAt: s.startsAt || s.time || s.starts_at,
           auditorium: s.auditorium || s.screen || null,
-        });
-      });
-      return Array.from(byTh.values());
+        })
+      })
+      return Array.from(byTh.values())
     }
 
     const theatreId = String(
       movie.theatreId ?? movie.raw?.TheatreID ?? movie.raw?.theatreId ?? ""
     );
-    const theatreName = movie.theatre ?? movie.raw?.theatre ?? movie.raw?.Theatre ?? "";
-    const city = movie.raw?.TheatreArea ?? movie.raw?.city ?? "";
-    const startsAt = movie.start ?? movie.raw?.start;
-    const auditorium = movie.raw?.Auditorium ?? movie.raw?.auditorium ?? null;
+    const theatreName = movie.theatre ?? movie.raw?.theatre ?? movie.raw?.Theatre ?? ""
+    const city = movie.raw?.TheatreArea ?? movie.raw?.city ?? ""
+    const startsAt = movie.start ?? movie.raw?.start
+    const auditorium = movie.raw?.Auditorium ?? movie.raw?.auditorium ?? null
 
     if (theatreId || startsAt) {
       return [{
         theatreId, theatreName, city,
         showtimes: startsAt ? [{ startsAt, auditorium }] : [],
-      }];
+      }]
     }
     return [];
-  }, [source, movie]);
+  }, [source, movie])
 
-  const keyFor = (thId, s) => `${thId}|${s.startsAt}|${s.auditorium || ""}`;
+  const keyFor = (thId, s) => `${thId}|${s.startsAt}|${s.auditorium || ""}`
 
-  const [selectedKeys, setSelectedKeys] = useState(new Set());
+  const [selectedKeys, setSelectedKeys] = useState(new Set())
   useEffect(() => {
-    if (!open || source !== "finnkino") return;
-    setSelectedKeys(new Set());
-  }, [open, source, normalizedShowtimes]);
+    if (!open || source !== "finnkino") return
+    setSelectedKeys(new Set())
+  }, [open, source, normalizedShowtimes])
 
   function toggleKey(k) {
     setSelectedKeys((prev) => {
-      const next = new Set(prev);
-      if (next.has(k)) next.delete(k);
-      else next.add(k);
-      return next;
-    });
+      const next = new Set(prev)
+      if (next.has(k)) next.delete(k)
+      else next.add(k)
+      return next
+    })
   }
 
   async function handleAdd() {
     try {
-      setSubmitting(true);
+      setSubmitting(true)
 
       if (source === "tmdb") {
         const body = {
@@ -137,9 +145,9 @@ export default function GroupAddModal({
           note: note?.trim() || null,
           stars: stars || null,
           snap_title: snapshot.title,
-          snap_overview: "-", // ei overview’ta
+          snap_overview: snapshot.overview || "-", // ei overview’ta
           snap_poster_url: snapshot.poster_url,
-        };
+        }
         const res = await fetch(
           `http://localhost:3001/api/group_movies/${groupId}/tmdb`,
           {
@@ -150,16 +158,16 @@ export default function GroupAddModal({
             },
             body: JSON.stringify(body),
           }
-        );
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-        if (typeof onSuccess === "function") onSuccess({ source: "tmdb", id: movie.id });
-        onClose && onClose();
-        return;
+        )
+        const data = await res.json().catch(() => ({}))
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`)
+        if (typeof onSuccess === "function") onSuccess({ source: "tmdb", id: movie.id })
+        onClose && onClose()
+        return
       }
 
       // FINNKINO
-      const hasSelection = selectedKeys.size > 0;
+      const hasSelection = selectedKeys.size > 0
       const showtimesOut = normalizedShowtimes
         .map(th => ({
           ...th,
@@ -167,7 +175,7 @@ export default function GroupAddModal({
             !hasSelection || selectedKeys.has(keyFor(String(th.theatreId), s))
           )
         }))
-        .filter(th => (th.showtimes || []).length > 0);
+        .filter(th => (th.showtimes || []).length > 0)
 
       const body = {
         finnkino_id: movie.id,
@@ -177,7 +185,7 @@ export default function GroupAddModal({
         snap_overview: "-", // ei overview’ta
         snap_poster_url: snapshot.poster_url || "",
         finnkino_showtimes: showtimesOut
-      };
+      }
 
       const res = await fetch(`http://localhost:3001/api/group_movies/${groupId}/finnkino`, {
         method: "POST",
@@ -186,20 +194,20 @@ export default function GroupAddModal({
           ...(token ? { Authorization: `Bearer ${token}` } : {})
         },
         body: JSON.stringify(body)
-      });
+      })
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`)
 
-      if (typeof onSuccess === "function") onSuccess({ source: "finnkino", id: movie.id });
-      onClose && onClose();
+      if (typeof onSuccess === "function") onSuccess({ source: "finnkino", id: movie.id })
+      onClose && onClose()
     } catch (e) {
-      alert(e.message || "Adding failed");
+      alert(e.message || "Adding failed")
     } finally {
       setSubmitting(false);
     }
   }
 
-  if (!open || !movie) return null;
+  if (!open || !movie) return null
 
   return (
     <div className="modal-backdrop modal-backdrop--high" onClick={onClose}>
@@ -211,17 +219,21 @@ export default function GroupAddModal({
             {snapshot.title}{" "}
             <span className="badge">{source === "tmdb" ? "TMDB" : "Finnkino"}</span>
           </h2>
-
-          {/* VAIN POSTERI – keskitetty */}
-          <div className="modal-content poster-only">
-            <div className="poster-wrap">
-              <img
-                src={snapshot.poster_url || placeholder}
-                alt={snapshot.title}
-                className="modal-poster"
-              />
-            </div>
+        <div className="modal-content">
+          <div className="poster-wrap">
+            <img
+              src={snapshot.poster_url || placeholder}
+              alt={snapshot.title}
+              className="modal-poster"
+            />
           </div>
+
+          {snapshot.overview && (
+            <div className="desc-right">
+              <p className="movie-overview">{snapshot.overview}</p>
+            </div>
+          )}
+        </div>
 
           <label className="stars-label" style={{ display: "block", marginTop: 12 }}>
             Stars:
@@ -290,7 +302,7 @@ export default function GroupAddModal({
                               {new Date(s.startsAt).toLocaleString()}
                               {s.auditorium ? ` — ${s.auditorium}` : ""}
                             </button>
-                          );
+                          )
                         })}
                       </div>
                     </div>
@@ -308,5 +320,5 @@ export default function GroupAddModal({
         </div>
       </div>
     </div>
-  );
+  )
 }

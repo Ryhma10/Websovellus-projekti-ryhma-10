@@ -109,7 +109,7 @@ function Groups() {
           setShowSignInModal(false)
         }}
       />
-    );
+    )
   }
 
   return (

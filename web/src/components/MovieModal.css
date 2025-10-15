@@ -1,4 +1,4 @@
-/* ------ Yleisrakenne ------ */
+/* Modaalit */
 .modal-backdrop {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -43,7 +43,7 @@
   background: var(--accent-color);
 }
 
-/* ------ Otsikko ------ */
+/* Otsikko */
 .modal-title {
   text-align: center;
   margin-bottom: 0.5em;
@@ -59,7 +59,7 @@
   color: var(--accent-color);
 }
 
-/* ------ Sisältöalue (kuva + teksti) ------ */
+/* Sisältöalue (kuva + teksti) */
 .modal-content {
   display: grid;
   grid-template-columns: 220px 1fr;
@@ -94,7 +94,7 @@
   max-width: 60ch;
 }
 
-/* ------ Arvostelukentät ------ */
+/* Arvostelukentät */
 .stars-label {
   display: block;
   text-align: center;
@@ -124,7 +124,7 @@
   background: var(--background-color, #222);
 }
 
-/* ------ Finnkino showtimes ------ */
+/* Finnkino näytösajat */
 .fk-showtimes { margin-top: 12px; }
 .fk-showtimes__list { margin-top: 8px; }
 
@@ -162,7 +162,7 @@
   border-color: #0f8a3b;
 }
 
-/* ------ Napit ------ */
+/* Napit */
 .modal-buttons {
   display: flex;
   gap: 1rem;
@@ -208,7 +208,7 @@
   color: var(--background-color);
 }
 
-/* ------ Listat (esim. reviews) ------ */
+/* Reviews listat */
 .reviews-list {
   list-style-type: none;
   padding: 0;
@@ -219,7 +219,6 @@
 }
 
 /* VAIN GroupAddModalille */
-
 .modal-backdrop.modal-backdrop--high {
   align-items: flex-start;
   padding-top: clamp(16px, 4vh, 56px);
@@ -247,23 +246,22 @@
 
 /* Varmista, että posteri ei keskity pystysuunnassa tässä modaalissa */
 .movie-modal.movie-modal--groupadd .poster-wrap {
-  align-items: flex-start;   /* jos flex; varmistaa yläreunan linjauksen */
+  align-items: flex-start;
   justify-content: center;
 }
 
-/* Kuvaustekstin säätö tälle modaalille (valinnainen) */
+/* Kuvaustekstin säätö tälle modaalille */
 .movie-modal.movie-modal--groupadd .desc-right .movie-overview {
   max-width: 65ch;  /* pidä mukavan levyisenä oikealla puolella */
 }
 
-/* Vain GroupAddModalin "vain posteri" -layoutille */
+/* GroupAddModalin "vain posteri" -layoutille */
 .movie-modal.movie-modal--groupadd .modal-content.poster-only {
   display: grid;
   grid-template-columns: 1fr;   /* ei tyhjää oikeaa palstaa */
   justify-items: center;        /* keskitys */
   text-align: center;
 }
-
 
 /* Fix: modalin nappeihin taas tausta */
 .movie-modal .btn,
@@ -287,7 +285,54 @@
   cursor: not-allowed;
 }
 
-/* ------ Responsiivisuus ------ */
+/* TMDB-hakupalkin keskitys GroupPagella */
+.tmdb-search-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;   /* keskitys */
+  gap: 12px;
+  margin: 12px 0 8px;
+  flex-wrap: wrap;           /* mobiilissa rivittyy siististi */
+}
+
+.tmdb-search-controls input,
+.tmdb-search-controls select {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--accent-color);
+  background: var(--background-color);
+  color: var(--text-color);
+  outline: none;
+}
+
+/* pientä viimeistelyä */
+.tmdb-search-controls input {
+  min-width: 240px;
+  max-width: 420px;
+}
+.tmdb-search-controls select {
+  min-width: 120px;
+}
+
+/* myös sivutusnapit keskelle */
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 8px 0 16px;
+}
+
+.pager .pager__info {
+  opacity: 0.9;
+}
+
+/* otsikko keskelle varmuuden vuoksi */
+.group-page-search > h3 {
+  text-align: center;
+}
+
+/* Responsiivisuus */
 @media (max-width: 1000px) {
   .modal-title { padding-top: 1em; }
   .movie-modal { max-width: 70vw; padding: 1em; }
