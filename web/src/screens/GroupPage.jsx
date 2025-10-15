@@ -43,7 +43,7 @@ function GroupPage() {
   // Feed
   async function reloadFeed() {
     try {
-      const res = await fetch(`http://localhost:3001/api/group_movies/${groupId}/feed`, {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/group_movies/${groupId}/feed`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -59,7 +59,7 @@ function GroupPage() {
     const ctrl = new AbortController();
     (async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/groups/${groupId}`, {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/groups/${groupId}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
           signal: ctrl.signal
         });
@@ -105,7 +105,7 @@ function GroupPage() {
     if (!group || group.myMembership?.role !== "owner") return;
     (async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/groups/${groupId}/requests`, {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/groups/${groupId}/requests`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) return;
@@ -122,7 +122,7 @@ function GroupPage() {
     if (!showTmdb) return;
     (async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/tmdb/genres", {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/tmdb/genres`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -145,7 +145,7 @@ function GroupPage() {
       setLoading(true);
       try {
         const res = await fetch(
-          `http://localhost:3001/api/tmdb/search?query=${encodeURIComponent(movieQuery)}&page=${page}`,
+          `${import.meta.env.VITE_API_URL}/api/tmdb/search?query=${encodeURIComponent(movieQuery)}&page=${page}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const data = await res.json();
@@ -224,7 +224,7 @@ function GroupPage() {
   // Owner-toiminnot
   async function handleApprove(groupIdArg, memberId) {
     try {
-      const res = await fetch("http://localhost:3001/api/groups/approve", {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/groups/approve`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ groupId: groupIdArg, memberId }),
@@ -242,7 +242,7 @@ function GroupPage() {
 
   async function handleReject(groupIdArg, memberId) {
     try {
-      const res = await fetch("http://localhost:3001/api/groups/reject", {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/groups/reject`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ groupId: groupIdArg, memberId }),
@@ -261,7 +261,7 @@ function GroupPage() {
 
   async function onDeleteGroup() {
     if (!window.confirm(`Delete the group "${group.name}"?`)) return;
-    const res = await fetch(`http://localhost:3001/api/groups/${groupId}`, {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/groups/${groupId}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -276,7 +276,7 @@ function GroupPage() {
 
   async function onRemoveMember(userId) {
     if (!window.confirm("Remove member from the group?")) return;
-    const res = await fetch(`http://localhost:3001/api/groups/${groupId}/members/${userId}`, {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/groups/${groupId}/members/${userId}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -290,7 +290,7 @@ function GroupPage() {
 
   async function onLeaveGroup() {
     if (!window.confirm("Do you want to leave the group?")) return;
-    const res = await fetch(`http://localhost:3001/api/groups/${groupId}/members/me`, {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/groups/${groupId}/members/me`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });

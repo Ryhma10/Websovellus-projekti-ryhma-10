@@ -11,7 +11,7 @@ function Profile({ setIsLoggedIn, setUser }) {
 
   useEffect(() => {
     const token = localStorage.getItem("token")
-    fetch("http://localhost:3001/api/users/profile-picture", {
+  fetch(`${import.meta.env.VITE_API_URL}/api/users/profile-picture`, {
       headers: {
         "Authorization": `Bearer ${token}`,
       },
@@ -34,7 +34,7 @@ function Profile({ setIsLoggedIn, setUser }) {
     const reader = new FileReader()
     reader.onloadend = async () => {
       const base64String = reader.result
-      const response = await fetch("http://localhost:3001/api/users/profile-picture", {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile-picture`, {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -67,7 +67,7 @@ function Profile({ setIsLoggedIn, setUser }) {
       return
     }
     try {
-      const response = await fetch("http://localhost:3001/api/users/delete", {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/delete`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,

@@ -11,7 +11,7 @@ function MovieModal({ movie, onClose }) {
 
     useEffect(() => {
         async function fetchReviews() {
-            const res = await fetch(`http://localhost:3001/api/reviews/movie/${movie.id}`);
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/movie/${movie.id}`);
             const data = await res.json();
             setReviews(data);
         }
@@ -21,7 +21,7 @@ function MovieModal({ movie, onClose }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem("token");
-        await fetch("http://localhost:3001/api/reviews", {
+    await fetch(`${import.meta.env.VITE_API_URL}/api/reviews`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -36,7 +36,7 @@ function MovieModal({ movie, onClose }) {
         setReviewText("");
         setStars(0);
         // Refresh reviews
-        const res = await fetch(`http://localhost:3001/api/reviews/movie/${movie.id}`);
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/movie/${movie.id}`);
         const data = await res.json();
         setReviews(data);
         console.log("Review submitted: ", data);
@@ -45,7 +45,7 @@ function MovieModal({ movie, onClose }) {
     const handleAddToFavorites = async () => {
         const token = localStorage.getItem("token");
         try {
-            const res = await fetch("http://localhost:3001/api/user_favorites", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user_favorites`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

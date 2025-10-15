@@ -149,7 +149,7 @@ export default function GroupAddModal({
           snap_poster_url: snapshot.poster_url,
         }
         const res = await fetch(
-          `http://localhost:3001/api/group_movies/${groupId}/tmdb`,
+          `${import.meta.env.VITE_API_URL}/api/group_movies/${groupId}/tmdb`,
           {
             method: "POST",
             headers: {
@@ -187,7 +187,7 @@ export default function GroupAddModal({
         finnkino_showtimes: showtimesOut
       }
 
-      const res = await fetch(`http://localhost:3001/api/group_movies/${groupId}/finnkino`, {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/group_movies/${groupId}/finnkino`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
