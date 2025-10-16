@@ -2,7 +2,7 @@
 
 A movie web application built with React, Express, and PostgreSQL. Users can sign up, log in, review movies, manage favorites, join groups, and upload profile pictures.
 
-![MadMooseMovies](https://websovellus-projekti-ryhma-10-front.onrender.com/)
+[MadMooseMovies](https://websovellus-projekti-ryhma-10-front.onrender.com/)
 
 ## Features
 
