@@ -12,6 +12,12 @@ A movie web application built with React, Express, and PostgreSQL. Users can sig
 - **Groups:** Create and join groups, manage group memberships.
 - **Group Movies:** Add movies to groups with notes and ratings.
 
+## Extra Features
+- **Animation:** Various animations on our page on headers etc.
+- **Finnkino search with 3 criterias:** Finnkino search with title, theatre and showtime.
+- **Profile picture:** Users can add profile pictures to profile page.
+- **Movie Carousels:** Popular & Now in theatres carousels for each search to highlight trending movies.
+
 ## Technologies
 
 - **Frontend:** React (Vite)
