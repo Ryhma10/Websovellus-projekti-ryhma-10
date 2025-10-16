@@ -59,11 +59,13 @@ web/
 ![Databasediagram](web/src/assets/tietokantakaavio.png)
 ---
 
-## Tests
+## Tests and Backlog
 
 Tests were done in Postman 
 
 [Tests here](https://documenter.getpostman.com/view/48990018/2sB3QJQBnL)
+
+[Backlog here](https://github.com/orgs/Ryhma10/projects/1)
 
 ---
 
