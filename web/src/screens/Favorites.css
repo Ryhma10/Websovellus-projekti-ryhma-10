@@ -20,6 +20,7 @@
   background-color: rgba(20, 20, 20, 0.3);
   text-align: center;  /* keskitetään sisältö kortissa */
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin: 0 auto;
 }
 
 .favorite-movie:hover {

@@ -14,6 +14,8 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
   font-family: var(--font-family);
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 input,
