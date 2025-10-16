@@ -5,6 +5,8 @@
     justify-content: center;
     min-height: 100vh;
     background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
 }
 
 .profile-picture {
