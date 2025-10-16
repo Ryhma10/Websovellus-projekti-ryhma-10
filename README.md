@@ -35,6 +35,10 @@ web/
       └── components/
 ```
 
+## Wireframe
+
+![Wireframe](web/src/assets/wireframe.png)
+
 ## Database Schema Overview
 
 - **users:** Stores user info and profile picture URL.
