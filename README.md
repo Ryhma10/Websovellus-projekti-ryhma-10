@@ -62,6 +62,7 @@ web/
 ## Tests
 Tests were done with Postman
 [Tests here](https://documenter.getpostman.com/view/48990018/2sB3QJQBnL)
+---
 
 **Group 10**  
 Jesse Hirvonen, Merja Sotkasiira, Salla-Mari Rokkonen, Tommy Näsänen, Anna Seppänen
