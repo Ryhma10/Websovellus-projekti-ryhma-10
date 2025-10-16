@@ -59,13 +59,17 @@ web/
 ![Databasediagram](web/src/assets/tietokantakaavio.png)
 ---
 
-## Tests and Backlog
+## Documentations
 
 Tests were done in Postman 
 
 [Tests here](https://documenter.getpostman.com/view/48990018/2sB3QJQBnL)
 
 [Backlog here](https://github.com/orgs/Ryhma10/projects/1)
+
+[Work hours here](https://unioulu-my.sharepoint.com/:x:/g/personal/t3rosa01_students_oamk_fi/Eci2o0QBeK9EmDaI_gvUpSkBmReBRgEO9hzHQ_K3Yl5zDg?e=Q9Xu8E)
+
+[Powerpoint presentation here](https://1drv.ms/p/c/61ab208d4fe3fd9c/EZZyyD8QAEpEvy9jYdZuxP8B2fAUsDTQuXYnapdoaZe-bA?e=b9qPhH)
 
 ---
 
