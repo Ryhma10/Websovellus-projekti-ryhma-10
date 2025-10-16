@@ -19,6 +19,7 @@ A movie web application built with React, Express, and PostgreSQL. Users can sig
 - **Finnkino search with 3 criterias:** Finnkino search with title, theatre and showtime.
 - **Profile picture:** Users can add profile pictures to profile page.
 - **Movie Carousels:** Popular & Now in theatres carousels for each search to highlight trending movies.
+- **Username:** Users may register and sign in with username. Username will be shown on posts and reviews instead of email.
 
 ## Technologies
 
