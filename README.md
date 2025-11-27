@@ -1,5 +1,8 @@
 # Web-Application-Project Group 10
 
+## (EDIT: 27.11.2025)
+Our web application doesn't work no longer due to finnkino API changes and backend not being on. However you can still visit the site and see the application's information down below and other documentation!
+
 A movie web application built with React, Express, and PostgreSQL. Users can sign up, log in, review movies, manage favorites, join groups, and upload profile pictures.
 
 [MadMooseMovies](https://websovellus-projekti-ryhma-10-front.onrender.com/) <-- Find our web application here!
